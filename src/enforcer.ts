@@ -12,6 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import Model from './model.ts'
+import FunctionMap from './function_map.ts'
+import IEffector from './effector.ts'
+import IAdapter from './adapter.ts'
+import IWatcher from './watcher.ts'
+import RoleManager from './role_manager.ts'
+
 export class Enforcer {
   protected modelPath: string
   public model: Model
