@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import RoleManager from './role_manager';
+
 export class Policy {
   public model: { [index: string]: string };
 
