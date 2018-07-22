@@ -13,9 +13,9 @@
 // limitations under the License.
 
 export class Config {
-  private static DEFAULT_SECTION = "default";
-  private static DEFAULT_COMMENT   = "#";
-  private static DEFAULT_COMMENT_SEM = ";";
+  private static DEFAULT_SECTION = 'default';
+  private static DEFAULT_COMMENT   = '#';
+  private static DEFAULT_COMMENT_SEM = ';';
 
   private data: {[index: string]: string};
 
@@ -49,7 +49,7 @@ export class Config {
   }
 
   public getString(key: string): string {
-    return "";
+    return '';
   }
 
   public getStrings(key: string): string[] {
@@ -60,6 +60,6 @@ export class Config {
   }
 
   public get(key: string): string {
-    return "";
+    return '';
   }
 }
