@@ -18,8 +18,8 @@ class Enforcer {
   protected fm: FunctionMap;
   private eft: Effector;
 
-  protected adapter: Adapter;
-  protected watcher: Watcher;
+  protected adapter: IAdapter;
+  protected watcher: IWatcher;
   private rm RoleManager;
 
   private enabled: boolean;
