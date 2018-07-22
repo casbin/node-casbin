@@ -16,7 +16,7 @@ class Enforcer {
   protected modelPath: string;
   public model: Model;
   protected fm: FunctionMap;
-  private eft: Effector;
+  private eft: IEffector;
 
   protected adapter: IAdapter;
   protected watcher: IWatcher;

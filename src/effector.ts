@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-class Effector {
+enum Effect {
+  Allow = 1,
+  Indeterminate,
+  Deny,
+}
 
+interface IEffector {
+  mergeEffects(expr: string, effects: Effect[], results: number[]): boolean;
 }
