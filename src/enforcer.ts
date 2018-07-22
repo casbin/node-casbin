@@ -12,26 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Model from './model.ts'
-import FunctionMap from './function_map.ts'
-import IEffector from './effector.ts'
-import IAdapter from './adapter.ts'
-import IWatcher from './watcher.ts'
-import RoleManager from './role_manager.ts'
+import Model from './model.ts';
+import FunctionMap from './function_map.ts';
+import IEffector from './effector.ts';
+import IAdapter from './adapter.ts';
+import IWatcher from './watcher.ts';
+import RoleManager from './role_manager.ts';
 
 export class Enforcer {
-  protected modelPath: string
-  public model: Model
-  protected fm: FunctionMap
-  private eft: IEffector
+  protected modelPath: string;
+  public model: Model;
+  protected fm: FunctionMap;
+  private eft: IEffector;
 
-  protected adapter: IAdapter
-  protected watcher: IWatcher
-  private rm: RoleManager
+  protected adapter: IAdapter;
+  protected watcher: IWatcher;
+  private rm: RoleManager;
 
-  private enabled: boolean
-  protected autoSave: boolean
-  protected autoBuildRoleLinks: boolean
+  private enabled: boolean;
+  protected autoSave: boolean;
+  protected autoBuildRoleLinks: boolean;
 
   public newModel(): Model {}
 

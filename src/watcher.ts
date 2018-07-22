@@ -13,7 +13,7 @@
 // limitations under the License.
 
 export interface IWatcher {
-  setUpdateCallback(): void
+  setUpdateCallback(): void;
 
-  update(): void
+  update(): void;
 }

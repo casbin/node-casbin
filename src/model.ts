@@ -21,17 +21,17 @@ export class Model {
     model: Model,
     cfg: Config,
     sec: string,
-    key: string
+    key: string,
   ): boolean {
-    return true
+    return true;
   }
 
   public addDef(sec: string, key: string, value: string): boolean {
-    return true
+    return true;
   }
 
   private getKeySuffix(i: number): string {
-    return ''
+    return '';
   }
 
   private loadSection(model: Model, cfg: Config, sec: string): void {}

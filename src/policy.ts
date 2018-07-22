@@ -13,7 +13,7 @@
 // limitations under the License.
 
 export class Policy {
-  public model: { [index: string]: string }
+  public model: { [index: string]: string };
 
   public buildRoleLinks(rm: RoleManager): void {}
 
@@ -22,44 +22,44 @@ export class Policy {
   public clearPolicy(): void {}
 
   public getPolicy(sec: string, ptype: string): string[][] {
-    return []
+    return [];
   }
 
   public getFilteredPolicy(
     sec: string,
     ptype: string,
     fieldIndex: number,
-    ...fieldValues: string[]
+    ...fieldValues: string[],
   ): string[][] {
-    return []
+    return [];
   }
 
   public hasPolicy(sec: string, ptype: string, rule: string[]): boolean {
-    return true
+    return true;
   }
 
   public addPolicy(sec: string, ptype: string, rule: string[]): boolean {
-    return true
+    return true;
   }
 
   public removePolicy(sec: string, ptype: string, rule: string[]): boolean {
-    return true
+    return true;
   }
 
   public removeFilteredPolicy(
     sec: string,
     ptype: string,
     fieldIndex: number,
-    ...fieldValues: string[]
+    ...fieldValues: string[],
   ): boolean {
-    return true
+    return true;
   }
 
   public getValuesForFieldInPolicy(
     sec: string,
     ptype: string,
-    fieldIndex: number
+    fieldIndex: number,
   ): string[] {
-    return []
+    return [];
   }
 }

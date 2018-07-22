@@ -13,18 +13,18 @@
 // limitations under the License.
 
 export interface IAdapter {
-  loadPolicy(model: Model): void
+  loadPolicy(model: Model): void;
 
-  savePolicy(model: Model): void
+  savePolicy(model: Model): void;
 
-  addPolicy(sec: string, ptype: string, rule: string[]): void
+  addPolicy(sec: string, ptype: string, rule: string[]): void;
 
-  removePolicy(sec: string, ptype: string, rule: string[]): void
+  removePolicy(sec: string, ptype: string, rule: string[]): void;
 
   removeFilteredPolicy(
     sec: string,
     ptype: string,
     fieldIndex: number,
-    ...fieldValues: string[]
-  ): void
+    ...fieldValues: string[],
+  ): void;
 }

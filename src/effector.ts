@@ -19,5 +19,5 @@ enum Effect {
 }
 
 export interface IEffector {
-  mergeEffects(expr: string, effects: Effect[], results: number[]): boolean
+  mergeEffects(expr: string, effects: Effect[], results: number[]): boolean;
 }
