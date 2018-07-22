@@ -12,4 +12,54 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export class Config {}
+export class Config {
+  private static DEFAULT_SECTION = "default";
+  private static DEFAULT_COMMENT   = "#";
+  private static DEFAULT_COMMENT_SEM = ";";
+
+  private data: {[index: string]: string};
+
+  constructor() {
+  }
+
+  public static newConfig(confName: string): Config {
+    return new Config();
+  }
+
+  public static newConfigFromText(text: string): Config {
+    return new Config();
+  }
+
+  private addConfig(section: string, option: string, value: string): boolean {
+    return true;
+  }
+
+  private parse(fname: string): void {
+  }
+
+  private parseBuffer(buf: string): void {
+  }
+
+  public getBool(key: string): boolean {
+    return true;
+  }
+
+  public getNumber(key: string): number {
+    return 0;
+  }
+
+  public getString(key: string): string {
+    return "";
+  }
+
+  public getStrings(key: string): string[] {
+    return [];
+  }
+
+  public set(key: string, value: string): void {
+  }
+
+  public get(key: string): string {
+    return "";
+  }
+}
