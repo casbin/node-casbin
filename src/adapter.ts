@@ -12,14 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-interface IAdapter {
-  loadPolicy(model: Model): void;
+export interface IAdapter {
+  loadPolicy(model: Model): void
 
-  savePolicy(model: Model): void;
+  savePolicy(model: Model): void
 
-  addPolicy(sec: string, ptype: string, rule: string[]): void;
+  addPolicy(sec: string, ptype: string, rule: string[]): void
 
-  removePolicy(sec: string, ptype: string, rule: string[]): void;
+  removePolicy(sec: string, ptype: string, rule: string[]): void
 
-  removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]): void;
+  removeFilteredPolicy(
+    sec: string,
+    ptype: string,
+    fieldIndex: number,
+    ...fieldValues: string[]
+  ): void
 }

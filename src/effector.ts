@@ -15,9 +15,9 @@
 enum Effect {
   Allow = 1,
   Indeterminate,
-  Deny,
+  Deny
 }
 
-interface IEffector {
-  mergeEffects(expr: string, effects: Effect[], results: number[]): boolean;
+export interface IEffector {
+  mergeEffects(expr: string, effects: Effect[], results: number[]): boolean
 }

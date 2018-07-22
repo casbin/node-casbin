@@ -12,33 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-class Model {
-  private sectionNameMap: {[index: string]: string};
+export class Model {
+  private sectionNameMap: { [index: string]: string }
 
-  constructor() {
-  }
+  constructor() {}
 
-  private loadAssertion(model: Model, cfg: Config, sec: string, key: string): boolean {
-    return true;
+  private loadAssertion(
+    model: Model,
+    cfg: Config,
+    sec: string,
+    key: string
+  ): boolean {
+    return true
   }
 
   public addDef(sec: string, key: string, value: string): boolean {
-    return true;
+    return true
   }
 
   private getKeySuffix(i: number): string {
-    return "";
+    return ''
   }
 
-  private loadSection(model: Model, cfg: Config, sec: string): void {
-  }
+  private loadSection(model: Model, cfg: Config, sec: string): void {}
 
-  public loadModel(path: string): void {
-  }
+  public loadModel(path: string): void {}
 
-  public loadModelFromText(text: string): void {
-  }
+  public loadModelFromText(text: string): void {}
 
-  public printModel(): void {
-  }
+  public printModel(): void {}
 }

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-interface IWatcher {
-  setUpdateCallback(): void;
+export interface IWatcher {
+  setUpdateCallback(): void
 
-  update(): void;
+  update(): void
 }
