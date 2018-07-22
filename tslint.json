@@ -8,7 +8,9 @@
     "member-ordering": false,
     "ordered-imports": false,
     "object-literal-sort-keys": false,
-    "no-empty": false
+    "no-empty": false,
+    "semicolon": false,
+    "quotemark": [true, "single"]
   },
   "rulesDirectory": []
 }
