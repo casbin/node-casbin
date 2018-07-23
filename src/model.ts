@@ -12,18 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Config from './config';
+import { Config } from './config';
 
 export class Model {
-  private sectionNameMap: { [index: string]: string }
+  private sectionNameMap: { [index: string]: string };
 
-  constructor() {}
+  constructor() {
+    this.sectionNameMap = {};
+  }
 
   private loadAssertion(
     model: Model,
     cfg: Config,
     sec: string,
-    key: string,
+    key: string
   ): boolean {
     return true;
   }

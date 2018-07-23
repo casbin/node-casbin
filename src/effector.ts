@@ -21,3 +21,13 @@ enum Effect {
 export interface IEffector {
   mergeEffects(expr: string, effects: Effect[], results: number[]): boolean;
 }
+
+export class Effector implements IEffector {
+  public mergeEffects(
+    expr: string,
+    effects: Effect[],
+    results: number[]
+  ): boolean {
+    return false;
+  }
+}

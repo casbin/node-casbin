@@ -9,7 +9,8 @@
     "ordered-imports": false,
     "object-literal-sort-keys": false,
     "no-empty": false,
-    "quotemark": [true, "single"]
+    "quotemark": [true, "single"],
+    "trailing-comma": false
   },
   "rulesDirectory": []
 }

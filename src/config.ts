@@ -14,13 +14,12 @@
 
 export class Config {
   private static DEFAULT_SECTION = 'default';
-  private static DEFAULT_COMMENT   = '#';
+  private static DEFAULT_COMMENT = '#';
   private static DEFAULT_COMMENT_SEM = ';';
 
-  private data: {[index: string]: string};
+  private data: { [index: string]: string } = {};
 
-  constructor() {
-  }
+  constructor() {}
 
   public static newConfig(confName: string): Config {
     return new Config();
@@ -34,11 +33,9 @@ export class Config {
     return true;
   }
 
-  private parse(fname: string): void {
-  }
+  private parse(fname: string): void {}
 
-  private parseBuffer(buf: string): void {
-  }
+  private parseBuffer(buf: string): void {}
 
   public getBool(key: string): boolean {
     return true;
@@ -56,8 +53,7 @@ export class Config {
     return [];
   }
 
-  public set(key: string, value: string): void {
-  }
+  public set(key: string, value: string): void {}
 
   public get(key: string): string {
     return '';

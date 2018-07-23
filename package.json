@@ -35,7 +35,7 @@
   ],
   "lint-staged": {
     "*.{ts,js}": [
-      "yarn lint",
+      "yarn tslint \"src/**/*.ts\"",
       "prettier --write",
       "git add"
     ]

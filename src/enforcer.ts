@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Model from './model';
-import FunctionMap from './function_map';
-import IEffector from './effector';
-import IAdapter from './adapter';
-import IWatcher from './watcher';
-import RoleManager from './role_manager';
+import { Model } from './model';
+import { FunctionMap } from './functionMap';
+import { Effector, IEffector } from './effector';
+import { Adapter, IAdapter } from './adapter';
+import { IWatcher, Watcher } from './watcher';
+import { RoleManager } from './roleManager';
 
 export class Enforcer {
   protected modelPath: string;
@@ -33,7 +33,22 @@ export class Enforcer {
   protected autoSave: boolean;
   protected autoBuildRoleLinks: boolean;
 
-  public newModel(): Model {}
+  constructor() {
+    this.modelPath = '';
+    this.model = new Model();
+    this.fm = new FunctionMap();
+    this.eft = new Effector();
+    this.adapter = new Adapter();
+    this.watcher = new Watcher();
+    this.rm = new RoleManager();
+    this.enabled = false;
+    this.autoSave = false;
+    this.autoBuildRoleLinks = false;
+  }
+
+  public newModel(): Model {
+    return new Model();
+  }
 
   private initialize(): void {}
 }

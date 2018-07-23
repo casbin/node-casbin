@@ -17,3 +17,9 @@ export interface IWatcher {
 
   update(): void;
 }
+
+export class Watcher implements IWatcher {
+  public setUpdateCallback(): void {}
+
+  public update(): void {}
+}

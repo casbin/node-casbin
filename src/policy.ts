@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import RoleManager from './role_manager';
+import { RoleManager } from './roleManager';
 
 export class Policy {
-  public model: { [index: string]: string };
+  public model: { [index: string]: string } = {};
 
   public buildRoleLinks(rm: RoleManager): void {}
 
@@ -31,7 +31,7 @@ export class Policy {
     sec: string,
     ptype: string,
     fieldIndex: number,
-    ...fieldValues: string[],
+    ...fieldValues: string[]
   ): string[][] {
     return [];
   }
@@ -52,7 +52,7 @@ export class Policy {
     sec: string,
     ptype: string,
     fieldIndex: number,
-    ...fieldValues: string[],
+    ...fieldValues: string[]
   ): boolean {
     return true;
   }
@@ -60,7 +60,7 @@ export class Policy {
   public getValuesForFieldInPolicy(
     sec: string,
     ptype: string,
-    fieldIndex: number,
+    fieldIndex: number
   ): string[] {
     return [];
   }

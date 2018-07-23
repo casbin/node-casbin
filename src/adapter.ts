@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Model from './model';
+import { Model } from './model';
 
 export interface IAdapter {
   loadPolicy(model: Model): void;
@@ -27,6 +27,23 @@ export interface IAdapter {
     sec: string,
     ptype: string,
     fieldIndex: number,
-    ...fieldValues: string[],
+    ...fieldValues: string[]
   ): void;
+}
+
+export class Adapter implements IAdapter {
+  public addPolicy(sec: string, ptype: string, rule: string[]): void {}
+
+  public loadPolicy(model: Model): void {}
+
+  public removeFilteredPolicy(
+    sec: string,
+    ptype: string,
+    fieldIndex: number,
+    ...fieldValues: string[]
+  ): void {}
+
+  public removePolicy(sec: string, ptype: string, rule: string[]): void {}
+
+  public savePolicy(model: Model): void {}
 }
