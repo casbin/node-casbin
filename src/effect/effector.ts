@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-enum Effect {
+export enum Effect {
   Allow = 1,
   Indeterminate,
   Deny
@@ -20,14 +20,4 @@ enum Effect {
 
 export interface IEffector {
   mergeEffects(expr: string, effects: Effect[], results: number[]): boolean;
-}
-
-export class Effector implements IEffector {
-  public mergeEffects(
-    expr: string,
-    effects: Effect[],
-    results: number[]
-  ): boolean {
-    return false;
-  }
 }

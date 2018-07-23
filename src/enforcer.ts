@@ -14,10 +14,11 @@
 
 import { Model } from './model';
 import { FunctionMap } from './functionMap';
-import { Effector, IEffector } from './effector';
+import { IEffector } from './effect';
 import { Adapter, IAdapter } from './adapter';
 import { IWatcher, Watcher } from './watcher';
 import { RoleManager } from './roleManager';
+import { DefaultEffector } from './effect';
 
 export class Enforcer {
   protected modelPath: string;
@@ -37,7 +38,7 @@ export class Enforcer {
     this.modelPath = '';
     this.model = new Model();
     this.fm = new FunctionMap();
-    this.eft = new Effector();
+    this.eft = new DefaultEffector();
     this.adapter = new Adapter();
     this.watcher = new Watcher();
     this.rm = new RoleManager();
