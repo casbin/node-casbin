@@ -5,6 +5,7 @@
   ],
   "jsRules": {},
   "rules": {
+    "arrow-parens": false,
     "member-ordering": false,
     "ordered-imports": false,
     "object-literal-sort-keys": false,
