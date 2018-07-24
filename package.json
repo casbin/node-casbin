@@ -22,7 +22,8 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.113"
+    "@types/lodash": "^4.14.113",
+    "lodash": "^4.17.10"
   },
   "homepage": "http://casbin.org",
   "repository": {

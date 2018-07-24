@@ -790,7 +790,7 @@ listr@^0.14.1:
     rxjs "^6.1.0"
     strip-ansi "^3.0.1"
 
-lodash@^4.17.5:
+lodash@^4.17.10, lodash@^4.17.5:
   version "4.17.10"
   resolved "http://registry.npm.taobao.org/lodash/download/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
