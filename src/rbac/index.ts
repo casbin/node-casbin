@@ -12,4 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export class RoleManager {}
+export * from './defaultRoleManager';
+export * from './roleManager';

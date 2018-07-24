@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Effect, IEffector } from './effector';
+import { Effect, Effector } from './effector';
 
 /**
  * DefaultEffector is default effector for Casbin.
  */
-export class DefaultEffector implements IEffector {
+export class DefaultEffector implements Effector {
   /**
    * DefaultEffector is the constructor for DefaultEffector.
    */

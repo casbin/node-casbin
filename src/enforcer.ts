@@ -14,17 +14,18 @@
 
 import { Model } from './model';
 import { FunctionMap } from './functionMap';
-import { IEffector } from './effect';
+import { Effector } from './effect';
 import { Adapter, IAdapter } from './adapter';
 import { IWatcher, Watcher } from './watcher';
-import { RoleManager } from './roleManager';
+import { RoleManager } from './rbac';
 import { DefaultEffector } from './effect';
+import { DefaultRoleManager } from './rbac';
 
 export class Enforcer {
   protected modelPath: string;
   public model: Model;
   protected fm: FunctionMap;
-  private eft: IEffector;
+  private eft: Effector;
 
   protected adapter: IAdapter;
   protected watcher: IWatcher;
@@ -41,7 +42,7 @@ export class Enforcer {
     this.eft = new DefaultEffector();
     this.adapter = new Adapter();
     this.watcher = new Watcher();
-    this.rm = new RoleManager();
+    this.rm = new DefaultRoleManager();
     this.enabled = false;
     this.autoSave = false;
     this.autoBuildRoleLinks = false;

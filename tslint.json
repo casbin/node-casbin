@@ -5,6 +5,8 @@
   ],
   "jsRules": {},
   "rules": {
+    "max-classes-per-file": false,
+    "interface-name": false,
     "arrow-parens": false,
     "member-ordering": false,
     "ordered-imports": false,

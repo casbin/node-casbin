@@ -18,6 +18,6 @@ export enum Effect {
   Deny
 }
 
-export interface IEffector {
+export interface Effector {
   mergeEffects(expr: string, effects: Effect[], results: number[]): boolean;
 }
