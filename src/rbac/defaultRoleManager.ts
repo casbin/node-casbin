@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { RoleManager } from './roleManager';
+import { logPrint } from '../util';
 
 // RoleManager provides a default implementation for the RoleManager interface
 export class DefaultRoleManager implements RoleManager {
@@ -143,7 +144,9 @@ export class DefaultRoleManager implements RoleManager {
    * printRoles prints all the roles to log.
    */
   public printRoles(): void {
-    // TODO code
+    [...this.allRoles.values()].map(n => {
+      logPrint(n.toString());
+    });
   }
 
   private createRole(name: string): Role {
