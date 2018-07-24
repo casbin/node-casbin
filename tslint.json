@@ -7,6 +7,7 @@
   "rules": {
     "max-classes-per-file": false,
     "interface-name": false,
+    "no-console": [false],
     "arrow-parens": false,
     "member-ordering": false,
     "ordered-imports": false,

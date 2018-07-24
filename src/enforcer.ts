@@ -42,7 +42,7 @@ export class Enforcer {
     this.eft = new DefaultEffector();
     this.adapter = new Adapter();
     this.watcher = new Watcher();
-    this.rm = new DefaultRoleManager();
+    this.rm = new DefaultRoleManager(0);
     this.enabled = false;
     this.autoSave = false;
     this.autoBuildRoleLinks = false;
@@ -52,5 +52,9 @@ export class Enforcer {
     return new Model();
   }
 
-  private initialize(): void {}
+  private initialize(): void {
+    this.enabled = true;
+    this.autoSave = true;
+    this.autoBuildRoleLinks = true;
+  }
 }
