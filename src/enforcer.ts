@@ -51,5 +51,9 @@ export class Enforcer {
     return new Model();
   }
 
-  private initialize(): void {}
+  private initialize(): void {
+    this.enabled = true;
+    this.autoSave = true;
+    this.autoBuildRoleLinks = true;
+  }
 }
