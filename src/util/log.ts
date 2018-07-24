@@ -32,4 +32,4 @@ const logPrintf: (format: string, ...v: any[]) => void = (
   }
 };
 
-export = { logPrint, logPrintf };
+export { logPrint, logPrintf };

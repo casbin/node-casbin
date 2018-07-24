@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { _ } from 'lodash';
+import * as _ from 'lodash';
 
 // escapeAssertion escapes the dots in the assertion,
 // because the expression evaluation doesn't support such variable names.
@@ -56,7 +56,7 @@ const arrayToString: (a: string[]) => string = (a: string[]) => {
 };
 
 // paramsToString gets a printable string for variable number of parameters.
-const paramsToString: (...v: string) => string = (...v: string) => {
+const paramsToString: (...v: string[]) => string = (...v: string[]) => {
   return _.join(v, ', ');
 };
 
@@ -68,7 +68,7 @@ const setEquals: (a: string[], b: string[]) => boolean = (
   return _.isEqual(_.sortedUniq(a), _.sortedUniq(b));
 };
 
-export = {
+export {
   escapeAssertion,
   removeComments,
   arrayEquals,
