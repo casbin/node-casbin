@@ -38,9 +38,9 @@ export class DefaultEffector implements Effector {
     let result = false;
 
     if (expr === 'some(where (p_eft == allow))') {
-      result = !!effects.find(n => n === Effect.Allow);
+      result = effects.some(n => n === Effect.Allow);
     } else if (expr === '!some(where (p_eft == deny))') {
-      result = !effects.find(n => n === Effect.Deny);
+      result = !effects.some(n => n === Effect.Deny);
     } else if (
       expr === 'some(where (p_eft == allow)) && !some(where (p_eft == deny))'
     ) {
@@ -54,7 +54,7 @@ export class DefaultEffector implements Effector {
         }
       }
     } else if (expr === 'priority(p_eft) || deny') {
-      result = !!effects.find(
+      result = effects.some(
         n => n !== Effect.Indeterminate && n === Effect.Allow
       );
     } else {

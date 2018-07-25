@@ -161,7 +161,7 @@ export class DefaultRoleManager implements RoleManager {
   }
 
   private hasRole(name: string) {
-    return !!this.allRoles.get(name);
+    return this.allRoles.has(name);
   }
 }
 
