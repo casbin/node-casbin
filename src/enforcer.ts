@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Model } from './model';
-import { FunctionMap } from './functionMap';
+import { FunctionMap } from './model';
 import { Effector } from './effect';
 import { Adapter, IAdapter } from './adapter';
 import { IWatcher, Watcher } from './watcher';

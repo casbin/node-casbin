@@ -15,7 +15,7 @@
 import * as util from '../util';
 
 // FunctionMap represents the collection of Function.
-class FunctionMap {
+export class FunctionMap {
   private functions: Map<string, any>;
 
   /**
