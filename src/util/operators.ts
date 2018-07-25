@@ -50,7 +50,7 @@ const keyMatch2: (key1: string, key2: string) => boolean = (
   key1: string,
   key2: string
 ) => {
-  key2 = key2.replace('//*/g', '/.*');
+  key2 = key2.replace(/\/\*/g, '/.*');
 
   const regexp: RegExp = new RegExp(/(.*):[^/]+(.*)/g);
   for (;;) {
@@ -77,7 +77,7 @@ const keyMatch3: (key1: string, key2: string) => boolean = (
   key1: string,
   key2: string
 ) => {
-  key2 = key2.replace('//*/g', '/.*');
+  key2 = key2.replace(/\/\*/g, '/.*');
 
   const regexp: RegExp = new RegExp(/(.*){[^/]+}(.*)/g);
   for (;;) {
