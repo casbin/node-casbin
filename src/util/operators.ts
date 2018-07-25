@@ -16,73 +16,59 @@ import * as rbac from '../rbac';
 import * as ip from 'ip';
 import * as _ from 'lodash';
 
-// keyMatch determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
+// keyMatch determines whether key1 matches the pattern of key2 (similar to RESTful path),
+// key2 can contain a *.
 // For example, '/foo/bar' matches '/foo/*'
 const keyMatch: (key1: string, key2: string) => boolean = (
   key1: string,
   key2: string
 ) => {
   const pos: number = key2.indexOf('*');
-  try {
-    if (pos === -1) {
-      return key1 === key2;
-    }
-
-    if (key1.length > pos) {
-      return key1.slice(0, pos) === key2.slice(0, pos);
-    }
-
-    return key1 === key2.slice(0, pos);
-  } catch (e) {
-    throw e;
+  if (pos === -1) {
+    return key1 === key2;
   }
+
+  if (key1.length > pos) {
+    return key1.slice(0, pos) === key2.slice(0, pos);
+  }
+
+  return key1 === key2.slice(0, pos);
 };
 
 // keyMatchFunc is the wrapper for keyMatch.
 const keyMatchFunc: (...args: any[]) => boolean = (...args: any[]) => {
-  try {
-    const name1: string = _.toString(args[0]);
-    const name2: string = _.toString(args[1]);
+  const name1: string = _.toString(args[0]);
+  const name2: string = _.toString(args[1]);
 
-    return keyMatch(name1, name2);
-  } catch (e) {
-    throw e;
-  }
+  return keyMatch(name1, name2);
 };
 
-// keyMatch2 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
+// keyMatch2 determines whether key1 matches the pattern of key2 (similar to RESTful path),
+// key2 can contain a *.
 // For example, '/foo/bar' matches '/foo/*', '/resource1' matches '/:resource'
 const keyMatch2: (key1: string, key2: string) => boolean = (
   key1: string,
   key2: string
 ) => {
-  try {
-    key2 = key2.replace('//*/g', '/.*');
+  key2 = key2.replace(/\/\*/g, '/.*');
 
-    const regexp = new RegExp(/(.*):[^/]+(.*)/g);
-    for (;;) {
-      if (!_.includes(key2, '/:')) {
-        break;
-      }
-      key2 = '^' + key2.replace(regexp, '$1[^/]+$2') + '$';
+  const regexp: RegExp = new RegExp(/(.*):[^/]+(.*)/g);
+  for (;;) {
+    if (!_.includes(key2, '/:')) {
+      break;
     }
-
-    return regexMatch(key1, key2);
-  } catch (e) {
-    throw e;
+    key2 = '^' + key2.replace(regexp, '$1[^/]+$2') + '$';
   }
+
+  return regexMatch(key1, key2);
 };
 
 // keyMatch2Func is the wrapper for keyMatch2.
 const keyMatch2Func: (...args: any[]) => boolean = (...args: any[]) => {
-  try {
-    const name1: string = _.toString(args[0]);
-    const name2: string = _.toString(args[1]);
+  const name1: string = _.toString(args[0]);
+  const name2: string = _.toString(args[1]);
 
-    return keyMatch2(name1, name2);
-  } catch (e) {
-    throw e;
-  }
+  return keyMatch2(name1, name2);
 };
 
 // keyMatch3 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
@@ -91,33 +77,25 @@ const keyMatch3: (key1: string, key2: string) => boolean = (
   key1: string,
   key2: string
 ) => {
-  try {
-    key2 = key2.replace('//*/g', '/.*');
+  key2 = key2.replace(/\/\*/g, '/.*');
 
-    const regexp = new RegExp(/(.*)\{[^/]+\}(.*)/g);
-    for (;;) {
-      if (!_.includes(key2, '/{')) {
-        break;
-      }
-      key2 = key2.replace(regexp, '$1[^/]+$2');
+  const regexp: RegExp = new RegExp(/(.*){[^/]+}(.*)/g);
+  for (;;) {
+    if (!_.includes(key2, '/{')) {
+      break;
     }
-
-    return regexMatch(key1, key2);
-  } catch (e) {
-    throw e;
+    key2 = key2.replace(regexp, '$1[^/]+$2');
   }
+
+  return regexMatch(key1, key2);
 };
 
 // keyMatch3Func is the wrapper for keyMatch3.
 const keyMatch3Func: (...args: any[]) => boolean = (...args: any[]) => {
-  try {
-    const name1: string = _.toString(args[0]);
-    const name2: string = _.toString(args[1]);
+  const name1: string = _.toString(args[0]);
+  const name2: string = _.toString(args[1]);
 
-    return keyMatch3(name1, name2);
-  } catch (e) {
-    throw e;
-  }
+  return keyMatch3(name1, name2);
 };
 
 // regexMatch determines whether key1 matches the pattern of key2 in regular expression.
@@ -125,23 +103,15 @@ const regexMatch: (key1: string, key2: string) => boolean = (
   key1: string,
   key2: string
 ) => {
-  try {
-    return new RegExp(key2).test(key1); // key1.match(key2);
-  } catch (e) {
-    throw e;
-  }
+  return new RegExp(key2).test(key1); // key1.match(key2);
 };
 
 // regexMatchFunc is the wrapper for RegexMatch.
 const regexMatchFunc: (...args: any[]) => boolean = (...args: any[]) => {
-  try {
-    const name1: string = _.toString(args[0]);
-    const name2: string = _.toString(args[1]);
+  const name1: string = _.toString(args[0]);
+  const name2: string = _.toString(args[1]);
 
-    return keyMatch3(name1, name2);
-  } catch (e) {
-    throw e;
-  }
+  return keyMatch3(name1, name2);
 };
 
 // IPMatch determines whether IP address ip1 matches the pattern of IP address ip2,
@@ -151,40 +121,32 @@ const IPMatch: (ip1: string, ip2: string) => boolean = (
   ip1: string,
   ip2: string
 ) => {
-  try {
-    // check ip1
-    if (!(ip.isV4Format(ip1) || ip.isV6Format(ip1))) {
+  // check ip1
+  if (!(ip.isV4Format(ip1) || ip.isV6Format(ip1))) {
+    throw new Error(
+      'invalid argument: ip1 in IPMatch() function is not an IP address.'
+    );
+  }
+  // check ip2
+  const cidrParts: string[] = ip2.split('/');
+  if (cidrParts.length === 2) {
+    return ip.cidrSubnet(ip2).contains(ip1);
+  } else {
+    if (!(ip.isV4Format(ip2) || ip.isV6Format(ip2))) {
       throw new Error(
-        'invalid argument: ip1 in IPMatch() function is not an IP address.'
+        'invalid argument: ip2 in IPMatch() function is not an IP address.'
       );
     }
-    // check ip2
-    const cidrParts = ip2.split('/');
-    if (cidrParts.length === 2) {
-      return ip.cidrSubnet(ip2).contains(ip1);
-    } else {
-      if (!(ip.isV4Format(ip2) || ip.isV6Format(ip2))) {
-        throw new Error(
-          'invalid argument: ip2 in IPMatch() function is not an IP address.'
-        );
-      }
-      return ip.isEqual(ip1, ip2);
-    }
-  } catch (e) {
-    throw e;
+    return ip.isEqual(ip1, ip2);
   }
 };
 
 // IPMatchFunc is the wrapper for IPMatch.
 const IPMatchFunc: (...args: any[]) => boolean = (...args: any[]) => {
-  try {
-    const ip1: string = _.toString(args[0]);
-    const ip2: string = _.toString(args[1]);
+  const ip1: string = _.toString(args[0]);
+  const ip2: string = _.toString(args[1]);
 
-    return IPMatch(ip1, ip2);
-  } catch (e) {
-    throw e;
-  }
+  return IPMatch(ip1, ip2);
 };
 
 // generateGFunction is the factory method of the g(_, _) function.
