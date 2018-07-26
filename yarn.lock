@@ -14,17 +14,21 @@
 
 "@types/ip@^0.0.31":
   version "0.0.31"
-  resolved "https://registry.yarnpkg.com/@types/ip/-/ip-0.0.31.tgz#a363989e72dd11bb21f932d6fe96bd6a85b2b74b"
+  resolved "http://registry.npm.taobao.org/@types/ip/download/@types/ip-0.0.31.tgz#a363989e72dd11bb21f932d6fe96bd6a85b2b74b"
   dependencies:
     "@types/node" "*"
 
 "@types/lodash@^4.14.113":
   version "4.14.113"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.113.tgz#1d1cb063f17fec4cc46f1a90d978ebf441113061"
+  resolved "http://registry.npm.taobao.org/@types/lodash/download/@types/lodash-4.14.113.tgz#1d1cb063f17fec4cc46f1a90d978ebf441113061"
 
 "@types/node@*":
   version "10.5.2"
   resolved "http://registry.npm.taobao.org/@types/node/download/@types/node-10.5.2.tgz#f19f05314d5421fe37e74153254201a7bf00a707"
+
+"@types/node@^10.5.3":
+  version "10.5.3"
+  resolved "http://registry.npm.taobao.org/@types/node/download/@types/node-10.5.3.tgz#5bcfaf088ad17894232012877669634c06b20cc5"
 
 ansi-escapes@^1.0.0:
   version "1.4.0"
