@@ -29,7 +29,7 @@ const sectionNameMap: { [index: string]: string } = {
 export class Model {
   // Model represents the whole access control model.
   // Mest-map is the collection of assertions, can be "r", "p", "g", "e", "m".
-  private model: Map<string, Map<string, Assertion>>;
+  public model: Map<string, Map<string, Assertion>>;
 
   /**
    * constructor is the constructor for Model.
