@@ -25,6 +25,18 @@ export class FunctionMap {
     this.functions = new Map<string, any>();
   }
 
+  // loadFunctionMap loads an initial function map.
+  public static loadFunctionMap(): Map<string, any> {
+    const fm = new FunctionMap();
+
+    fm.addFunction('keyMatch', util.keyMatchFunc);
+    fm.addFunction('keyMatch2', util.keyMatch2Func);
+    fm.addFunction('regexMatch', util.regexMatchFunc);
+    fm.addFunction('ipMatch', util.IPMatchFunc);
+
+    return fm.getFunctions();
+  }
+
   // addFunction adds an expression function.
   public addFunction(name: string, func: any): void {
     if (!this.functions.get(name)) {
@@ -36,16 +48,4 @@ export class FunctionMap {
   public getFunctions(): any {
     return this.functions;
   }
-}
-
-// LoadFunctionMap loads an initial function map.
-export function LoadFunctionMap(): Map<string, any> {
-  const fm = new FunctionMap();
-
-  fm.addFunction('keyMatch', util.keyMatchFunc);
-  fm.addFunction('keyMatch2', util.keyMatch2Func);
-  fm.addFunction('regexMatch', util.regexMatchFunc);
-  fm.addFunction('ipMatch', util.IPMatchFunc);
-
-  return fm.getFunctions();
 }
