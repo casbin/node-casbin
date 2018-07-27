@@ -39,7 +39,7 @@ export class FunctionMap {
 }
 
 // LoadFunctionMap loads an initial function map.
-export function LoadFunctionMap() {
+export function LoadFunctionMap(): Map<string, any> {
   const fm = new FunctionMap();
 
   fm.addFunction('keyMatch', util.keyMatchFunc);

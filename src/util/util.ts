@@ -46,7 +46,7 @@ const array2DEquals: (a: string[][], b: string[][]) => boolean = (
 };
 
 // arrayRemoveDuplicates removes any duplicated elements in a string array.
-const arrayRemoveDuplicates: (s: string) => string[] = (s: string) => {
+const arrayRemoveDuplicates: (s: string[]) => string[] = (s: string[]) => {
   return _.uniq(s);
 };
 
