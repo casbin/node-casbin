@@ -15,8 +15,9 @@
 import * as util from './util';
 import { Model, FunctionMap } from './model';
 import { Effector, DefaultEffector } from './effect';
-import { IAdapter, Adapter, FilteredAdapter } from './persist';
-import { IWatcher, Watcher } from './persist';
+import { Adapter, FileAdapter } from './persist';
+import { DefaultFilteredAdapter } from './persist';
+import { Watcher } from './persist';
 import { RoleManager, DefaultRoleManager } from './rbac';
 
 // Enforcer is the main interface for authorization enforcement and policy management.
@@ -26,8 +27,8 @@ export class Enforcer {
   private fm: Map<string, any>;
   public eft: Effector;
 
-  private adapter: IAdapter;
-  private watcher: IWatcher;
+  private adapter: Adapter;
+  // private watcher: IWatcher;
   public rm: RoleManager;
 
   public enabled: boolean;
@@ -43,8 +44,8 @@ export class Enforcer {
     this.fm = new Map<string, any>();
     this.eft = new DefaultEffector();
 
-    this.adapter = new Adapter();
-    this.watcher = new Watcher();
+    this.adapter = new FileAdapter('');
+    // this.watcher = new Watcher();
     this.rm = new DefaultRoleManager(0);
 
     this.enabled = false;
@@ -88,7 +89,7 @@ export class Enforcer {
       if (typeof params[0] === 'string') {
         e.initWithFile(params[0].toString, '');
       } else {
-        e.initWithModelAndAdapter(params[0], null);
+        e.initWithModelAndAdapter(params[0], new FileAdapter(''));
       }
     } else if (params.length === parsedParamLen) {
       e.initWithFile('', '');
@@ -101,13 +102,13 @@ export class Enforcer {
 
   // initWithFile initializes an enforcer with a model file and a policy file.
   public initWithFile(modelPath: string, policyPath: string): void {
-    const a = Adapter.NewAdapter(policyPath);
+    const a = new FileAdapter(policyPath);
     this.initWithAdapter(modelPath, a);
   }
 
   // initWithAdapter initializes an enforcer with a database adapter.
   public initWithAdapter(modelPath: string, adapter: Adapter): void {
-    const m = this.newModel(modelPath, '');
+    const m = Enforcer.newModel(modelPath, '');
     this.initWithModelAndAdapter(m, adapter);
 
     this.modelPath = modelPath;
@@ -116,7 +117,7 @@ export class Enforcer {
   // initWithModelAndAdapter initializes an enforcer with a model and a database adapter.
   public initWithModelAndAdapter(m: Model, adapter: Adapter): void {
     this.adapter = adapter;
-    this.watcher = null;
+    // this.watcher = new Watcher();
 
     this.model = m;
     this.model.printModel();
@@ -136,7 +137,7 @@ export class Enforcer {
     this.autoBuildRoleLinks = true;
   }
 
-  public newModel(...text: string[]): Model {
+  public static newModel(...text: string[]): Model {
     const m = new Model();
 
     if (text.length === 2) {
@@ -156,7 +157,7 @@ export class Enforcer {
   // Because the policy is attached to a model,
   // so the policy is invalidated and needs to be reloaded by calling LoadPolicy().
   public loadModel(): void {
-    this.model = this.newModel();
+    this.model = Enforcer.newModel();
     this.model.loadModel(this.modelPath);
     this.model.printModel();
     this.fm = FunctionMap.loadFunctionMap();
@@ -185,12 +186,12 @@ export class Enforcer {
 
   // setWatcher sets the current watcher.
   public setWatcher(watcher: Watcher): void {
-    this.watcher = watcher;
-    // error intentionally ignored
-    const func = (): void => {
-      this.loadPolicy();
-    };
-    watcher.SetUpdateCallback(func);
+    // this.watcher = watcher;
+    // // error intentionally ignored
+    // const func = (): void => {
+    //   this.loadPolicy();
+    // };
+    // watcher.setUpdateCallback(func);
   }
 
   // setRoleManager sets the current role manager.
@@ -226,10 +227,10 @@ export class Enforcer {
   public loadFilteredPolicy(filter: any): boolean {
     this.model.clearPolicy();
 
-    let filteredAdapter = new FilteredAdapter();
+    let filteredAdapter = new DefaultFilteredAdapter('');
 
     // Attempt to cast the Adapter as a FilteredAdapter
-    if (FilteredAdapter instanceof this.adapter) {
+    if (filteredAdapter instanceof this.adapter) {
       filteredAdapter = this.adapter;
     } else {
       throw new Error('filtered policies are not supported by this adapter');
@@ -247,7 +248,8 @@ export class Enforcer {
 
   // isFiltered returns true if the loaded policy has been filtered.
   public isFiltered(): boolean {
-    if (!(FilteredAdapter instanceof this.adapter)) {
+    const filteredAdapter = new DefaultFilteredAdapter('');
+    if (!(filteredAdapter instanceof this.adapter)) {
       return false;
     }
     return this.adapter.isFiltered();
@@ -261,9 +263,9 @@ export class Enforcer {
     if (!this.adapter.savePolicy(this.model)) {
       return false;
     }
-    if (!this.watcher) {
-      return this.watcher.update();
-    }
+    // if (!this.watcher) {
+    //   return this.watcher.update();
+    // }
     return true;
   }
 
@@ -274,8 +276,8 @@ export class Enforcer {
   }
 
   // enableLog changes whether to print Casbin log to the standard output.
-  public enableLog(enable: boolean): void {
-    // util.enableLog = enable;
+  public static enableLog(enable: boolean): void {
+    util.enableLog = enable;
   }
 
   // enableAutoSave controls whether to save a policy rule automatically to
@@ -300,10 +302,11 @@ export class Enforcer {
   // Enforce decides whether a "subject" can access a "object" with the
   // operation "action", input parameters are usually: (sub, obj, act).
   public enforce(...rvals: any[]): boolean {
-    if (!this.enabled) {
-      return true;
-    }
-    return false;
+    return !this.enabled;
+
+    // if (!this.enabled) {
+    //   return true;
+    // }
 
     // functions := make(map[string]govaluatthis.ExpressionFunction)
     // for key, function := range this.fm {
