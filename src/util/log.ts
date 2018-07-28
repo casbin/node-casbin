@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // enableLog controls whether to print log to console.
-const enableLog = true;
+let enableLog = false;
 
 // logPrint prints the log.
 const logPrint: (...v: any[]) => void = (...v: any[]): void => {
@@ -32,4 +32,8 @@ const logPrintf: (format: string, ...v: any[]) => void = (
   }
 };
 
-export { logPrint, logPrintf };
+function setEnableLog(val: boolean) {
+  enableLog = val;
+}
+
+export { logPrint, logPrintf, setEnableLog };
