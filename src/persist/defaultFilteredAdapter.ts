@@ -1,4 +1,4 @@
-import { FilterAdapter } from './filteredAdapter';
+import { FilteredAdapter } from './filteredAdapter';
 import { Model } from '../model';
 import { FileAdapter } from './fileAdapter';
 import { Adapter } from './adapter';
@@ -11,7 +11,7 @@ export class Filter {
 }
 
 export class DefaultFilteredAdapter extends FileAdapter
-  implements FilterAdapter {
+  implements FilteredAdapter {
   private filtered: boolean;
 
   constructor(filePath: string) {
