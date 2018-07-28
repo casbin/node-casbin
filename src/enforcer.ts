@@ -276,8 +276,8 @@ export class Enforcer {
   }
 
   // enableLog changes whether to print Casbin log to the standard output.
-  public static enableLog(enable: boolean): void {
-    util.enableLog = enable;
+  public enableLog(enable: boolean): void {
+    util.setEnableLog(enable);
   }
 
   // enableAutoSave controls whether to save a policy rule automatically to
