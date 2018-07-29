@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as util from './util';
-import { Model, FunctionMap } from './model';
-import { Effector, DefaultEffector } from './effect';
-import { Adapter, FileAdapter } from './persist';
-import { DefaultFilteredAdapter } from './persist';
-import { Watcher } from './persist';
-import { RoleManager, DefaultRoleManager } from './rbac';
+import { setEnableLog } from './util';
+import { FunctionMap, Model } from './model';
+import { DefaultEffector, Effector } from './effect';
+import {
+  Adapter,
+  DefaultFilteredAdapter,
+  FileAdapter,
+  Filter,
+  FilteredAdapter,
+  Watcher
+} from './persist';
+import { DefaultRoleManager, RoleManager } from './rbac';
 
 // Enforcer is the main interface for authorization enforcement and policy management.
 export class Enforcer {
@@ -27,10 +32,9 @@ export class Enforcer {
   private fm: Map<string, any>;
   public eft: Effector;
 
-  private adapter: Adapter;
-  // private watcher: IWatcher;
+  private adapter: FilteredAdapter | Adapter;
+  private watcher: Watcher | null = null;
   public rm: RoleManager;
-
   public enabled: boolean;
   private autoSave: boolean;
   private autoBuildRoleLinks: boolean;
@@ -44,8 +48,7 @@ export class Enforcer {
     this.fm = new Map<string, any>();
     this.eft = new DefaultEffector();
 
-    this.adapter = new FileAdapter('');
-    // this.watcher = new Watcher();
+    this.adapter = new DefaultFilteredAdapter('');
     this.rm = new DefaultRoleManager(0);
 
     this.enabled = false;
@@ -67,7 +70,7 @@ export class Enforcer {
     let parsedParamLen = 0;
     if (params.length >= 1) {
       const enableLog = params[params.length - 1];
-      e.enableLog(enableLog);
+      setEnableLog(enableLog);
       parsedParamLen++;
     }
 
@@ -186,12 +189,8 @@ export class Enforcer {
 
   // setWatcher sets the current watcher.
   public setWatcher(watcher: Watcher): void {
-    // this.watcher = watcher;
-    // // error intentionally ignored
-    // const func = (): void => {
-    //   this.loadPolicy();
-    // };
-    // watcher.setUpdateCallback(func);
+    this.watcher = watcher;
+    watcher.setUpdateCallback(() => this.loadPolicy());
   }
 
   // setRoleManager sets the current role manager.
@@ -224,19 +223,13 @@ export class Enforcer {
   }
 
   // loadFilteredPolicy reloads a filtered policy from file/database.
-  public loadFilteredPolicy(filter: any): boolean {
+  public loadFilteredPolicy(filter: Filter): boolean {
     this.model.clearPolicy();
 
-    let filteredAdapter = new DefaultFilteredAdapter('');
-
-    // Attempt to cast the Adapter as a FilteredAdapter
-    if (filteredAdapter instanceof this.adapter) {
-      filteredAdapter = this.adapter;
+    if ((this.adapter as FilteredAdapter).isFiltered) {
+      (this.adapter as FilteredAdapter).loadFilteredPolicy(this.model, filter);
     } else {
       throw new Error('filtered policies are not supported by this adapter');
-    }
-    if (filteredAdapter.loadFilteredPolicy(this.model, filter)) {
-      return false;
     }
 
     this.model.printPolicy();
@@ -248,11 +241,10 @@ export class Enforcer {
 
   // isFiltered returns true if the loaded policy has been filtered.
   public isFiltered(): boolean {
-    const filteredAdapter = new DefaultFilteredAdapter('');
-    if (!(filteredAdapter instanceof this.adapter)) {
-      return false;
+    if ((this.adapter as FilteredAdapter).isFiltered) {
+      return (this.adapter as FilteredAdapter).isFiltered();
     }
-    return this.adapter.isFiltered();
+    return false;
   }
 
   // savePolicy saves the current policy (usually after changed with Casbin API) back to file/databasthis.
@@ -263,9 +255,9 @@ export class Enforcer {
     if (!this.adapter.savePolicy(this.model)) {
       return false;
     }
-    // if (!this.watcher) {
-    //   return this.watcher.update();
-    // }
+    if (this.watcher) {
+      return this.watcher.update();
+    }
     return true;
   }
 
@@ -277,7 +269,7 @@ export class Enforcer {
 
   // enableLog changes whether to print Casbin log to the standard output.
   public static enableLog(enable: boolean): void {
-    util.enableLog = enable;
+    setEnableLog(enable);
   }
 
   // enableAutoSave controls whether to save a policy rule automatically to
@@ -302,6 +294,7 @@ export class Enforcer {
   // Enforce decides whether a "subject" can access a "object" with the
   // operation "action", input parameters are usually: (sub, obj, act).
   public enforce(...rvals: any[]): boolean {
+    // TODO code
     return !this.enabled;
 
     // if (!this.enabled) {
@@ -431,5 +424,6 @@ export class Enforcer {
     // }
 
     // return result
+    ':'.replace('-', ' ');
   }
 }
