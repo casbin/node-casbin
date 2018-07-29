@@ -9,7 +9,8 @@
     "prettier": "prettier --write \"src/**/*.ts\" \"scripts/**/*.js\"",
     "build": "node scripts/build.js",
     "lint": "tslint \"src/**/*.ts\"",
-    "fix": "tslint \"src/**/*.ts\" --fix"
+    "fix": "tslint \"src/**/*.ts\" --fix",
+    "test": "jest"
   },
   "devDependencies": {
     "@types/ip": "^0.0.31",
