@@ -424,6 +424,5 @@ export class Enforcer {
     // }
 
     // return result
-    ':'.replace('-', ' ');
   }
 }
