@@ -13,9 +13,11 @@
   },
   "devDependencies": {
     "@types/ip": "^0.0.31",
+    "@types/jest": "^23.3.1",
     "@types/lodash": "^4.14.113",
     "@types/node": "^10.5.3",
     "husky": "^0.14.3",
+    "jest": "^23.4.2",
     "lint-staged": "^7.2.0",
     "prettier": "^1.13.7",
     "rollup": "^0.62.0",
@@ -44,6 +46,22 @@
       "tslint --fix",
       "prettier --write",
       "git add"
+    ]
+  },
+  "jest": {
+    "testURL": "http://localhost",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/\\./"
+    ],
+    "testRegex": "(test/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
     ]
   }
 }
