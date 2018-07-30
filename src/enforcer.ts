@@ -12,9 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { setEnableLog } from './util';
-import { FunctionMap, Model } from './model';
-import { DefaultEffector, Effector } from './effect';
+import * as _ from 'lodash';
+import { Parser } from 'expr-eval';
+import {
+  setEnableLog,
+  getEnableLog,
+  generateGFunction,
+  logPrint
+} from './util';
+import { Assertion, FunctionMap, Model } from './model';
+import { Effect, DefaultEffector, Effector } from './effect';
 import {
   Adapter,
   DefaultFilteredAdapter,
@@ -294,135 +301,145 @@ export class Enforcer {
   // Enforce decides whether a "subject" can access a "object" with the
   // operation "action", input parameters are usually: (sub, obj, act).
   public enforce(...rvals: any[]): boolean {
-    // TODO code
-    return !this.enabled;
+    if (!this.enabled) {
+      return true;
+    }
 
-    // if (!this.enabled) {
-    //   return true;
-    // }
+    const functions = new Map<string, any>();
+    for (const key in this.fm) {
+      if (this.fm.hasOwnProperty(key)) {
+        const parser = new Parser();
+        const func = _.get(this.fm, key);
+        const expr = parser.parse(func);
+        _.set(functions, key, expr);
+      }
+    }
 
-    // functions := make(map[string]govaluatthis.ExpressionFunction)
-    // for key, function := range this.fm {
-    //   functions[key] = function
-    // }
-    // if _, ok := this.model['g']; ok {
-    //   for key, ast := range this.model['g'] {
-    //     rm := ast.RM
-    //     functions[key] = util.GenerateGFunction(rm)
-    //   }
-    // }
+    let astMap = _.get(this.model, 'g');
+    let ast: Assertion;
+    if (astMap) {
+      for (const key in astMap) {
+        if (astMap.hasOwnProperty(key)) {
+          ast = _.get(astMap, key);
+          const rm = ast.rm;
+          _.set(functions, key, generateGFunction(rm));
+        }
+      }
+    }
 
-    // expString := this.model['m']['m'].Value
-    // expression, _ := govaluatthis.NewEvaluableExpressionWithFunctions(expString, functions)
+    astMap = _.get(this.model, 'm');
+    ast = _.get(astMap, 'm');
 
-    // var policyEffects []effect.Effect
-    // var matcherResults []float64
-    // if policyLen := len(this.model['p']['p'].Policy); policyLen != 0 {
-    //   policyEffects = make([]effect.Effect, policyLen)
-    //   matcherResults = make([]float64, policyLen)
+    const expression = _.get(functions, ast.value);
+    let result: boolean;
 
-    //   for i, pvals := range this.model['p']['p'].Policy {
-    //     // util.LogPrint('Policy Rule: ', pvals)
+    let policyEffects: number[];
+    let matcherResults: number[];
+    ast = _.get(_.get(this.model, 'p'), 'p');
+    const policy = ast.policy;
+    if (policy.length !== 0) {
+      policyEffects = new Array(policy.length);
+      matcherResults = new Array(policy.length);
 
-    //     parameters := make(map[string]interface{}, 8)
-    //     for j, token := range this.model['r']['r'].Tokens {
-    //       parameters[token] = rvals[j]
-    //     }
-    //     for j, token := range this.model['p']['p'].Tokens {
-    //       parameters[token] = pvals[j]
-    //     }
+      for (let i = 0; i < policy.length; i++) {
+        const pvals = policy[i];
+        logPrint('Policy Rule: ', pvals);
 
-    //     result, err := expression.Evaluate(parameters)
-    //     // util.LogPrint('Result: ', result)
+        const parameters = new Map<string, any>();
+        let tokens = _.get(_.get(this.model, 'r'), 'r').tokens;
+        for (let j = 0; j < tokens.length; j++) {
+          _.set(parameters, tokens[j], rvals[j]);
+        }
+        tokens = _.get(_.get(this.model, 'p'), 'p').tokens;
+        for (let j = 0; j < tokens.length; j++) {
+          _.set(parameters, tokens[j], pvals[j]);
+        }
 
-    //     if err != nil {
-    //       policyEffects[i] = effect.Indeterminate
-    //       panic(err)
-    //     }
+        result = expression.evaluate(parameters);
+        logPrint(`Result: ${result}`);
 
-    //     switch result.(type) {
-    //     case bool:
-    //       if !result.(bool) {
-    //         policyEffects[i] = effect.Indeterminate
-    //         continue
-    //       }
-    //     case float64:
-    //       if result.(float64) == 0 {
-    //         policyEffects[i] = effect.Indeterminate
-    //         continue
-    //       } else {
-    //         matcherResults[i] = result.(float64)
-    //       }
-    //       default:
-    //         panic(errors.New('matcher result should be bool, int or float'))
-    //     }
+        if (typeof result === 'boolean') {
+          if (!result) {
+            policyEffects[i] = Effect.Indeterminate;
+          }
+        } else if (typeof result === 'number') {
+          if (result === 0) {
+            policyEffects[i] = Effect.Indeterminate;
+          } else {
+            matcherResults[i] = result;
+          }
+        } else {
+          throw new Error('matcher result should be bool, int or float');
+        }
 
-    //     if eft, ok := parameters['p_eft']; ok {
-    //       if eft == 'allow' {
-    //         policyEffects[i] = effect.Allow
-    //       } else if eft == 'deny' {
-    //         policyEffects[i] = effect.Deny
-    //       } else {
-    //         policyEffects[i] = effect.Indeterminate
-    //       }
-    //     } else {
-    //       policyEffects[i] = effect.Allow
-    //     }
+        if (_.has(parameters, 'p_eft')) {
+          const eft = _.get(parameters, 'p_eft');
+          if (eft === 'allow') {
+            policyEffects[i] = Effect.Allow;
+          } else if (eft === 'deny') {
+            policyEffects[i] = Effect.Deny;
+          } else {
+            policyEffects[i] = Effect.Indeterminate;
+          }
+        } else {
+          policyEffects[i] = Effect.Allow;
+        }
 
-    //     if this.model['e']['e'].Value == 'priority(p_eft) || deny' {
-    //       break
-    //     }
+        if (
+          _.indexOf(
+            ['priority(p_eft)', 'deny'],
+            _.get(_.get(this.model, 'e'), 'e').value
+          ) > -1
+        ) {
+          break;
+        }
+      }
+    } else {
+      policyEffects = new Array(1);
+      matcherResults = new Array(1);
 
-    //   }
-    // } else {
-    //   policyEffects = make([]effect.Effect, 1)
-    //   matcherResults = make([]float64, 1)
+      const parameters = new Map<string, any>();
+      let tokens = _.get(_.get(this.model, 'r'), 'r').tokens;
+      for (let j = 0; j < tokens.length; j++) {
+        _.set(parameters, tokens[j], rvals[j]);
+      }
+      tokens = _.get(_.get(this.model, 'p'), 'p').tokens;
+      for (const token of tokens) {
+        _.set(parameters, tokens, '');
+      }
 
-    //   parameters := make(map[string]interface{}, 8)
-    //   for j, token := range this.model['r']['r'].Tokens {
-    //     parameters[token] = rvals[j]
-    //   }
-    //   for _, token := range this.model['p']['p'].Tokens {
-    //     parameters[token] = ''
-    //   }
+      result = expression.evaluate(parameters);
+      logPrint(`Result: ${result}`);
 
-    //   result, err := expression.Evaluate(parameters)
-    //   // util.LogPrint("Result: ", result)
+      if (result) {
+        policyEffects[0] = Effect.Allow;
+      } else {
+        policyEffects[0] = Effect.Indeterminate;
+      }
+    }
 
-    //   if err != nil {
-    //     policyEffects[0] = effect.Indeterminate
-    //     panic(err)
-    //   }
+    logPrint(`Rule Results: ${policyEffects}`);
 
-    //   if result.(bool) {
-    //     policyEffects[0] = effect.Allow
-    //   } else {
-    //     policyEffects[0] = effect.Indeterminate
-    //   }
-    // }
+    result = this.eft.mergeEffects(
+      _.get(_.get(this.model, 'e'), 'e').value,
+      policyEffects,
+      matcherResults
+    );
+    // only generate the request --> result string if the message
+    // is going to be logged.
+    if (getEnableLog()) {
+      let reqStr = 'Request: ';
+      for (let i = 0; i < rvals.length; i++) {
+        if (i + 1 !== rvals.length) {
+          reqStr += `${rvals[i]}, `;
+        } else {
+          reqStr += rvals[i];
+        }
+      }
+      reqStr += ` ---> ${result}`;
+      logPrint(reqStr);
+    }
 
-    // // util.LogPrint("Rule Results: ", policyEffects)
-
-    // result, err := this.eft.MergeEffects(this.model['e']['e'].Value, policyEffects, matcherResults)
-    // if err != nil {
-    //   panic(err)
-    // }
-
-    // // only generate the request --> result string if the message
-    // // is going to be logged.
-    // if util.EnableLog {
-    //   reqStr := 'Request: '
-    //   for i, rval := range rvals {
-    //     if i != len(rvals)-1 {
-    //       reqStr += fmt.Sprintf('%v, ', rval)
-    //     } else {
-    //       reqStr += fmt.Sprintf('%v', rval)
-    //     }
-    //   }
-    //   reqStr += fmt.Sprintf(' ---> %t', result)
-    //   util.LogPrint(reqStr)
-    // }
-
-    // return result
+    return result;
   }
 }
