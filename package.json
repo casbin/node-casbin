@@ -52,11 +52,12 @@
   },
   "jest": {
     "testURL": "http://localhost",
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/\\./"
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "testMatch": [
+      "**/test/*.+(ts|tsx)"
     ],
-    "testRegex": "(test/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",

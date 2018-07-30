@@ -22,7 +22,7 @@ export class Assertion {
   public key: string;
   public value: string;
   public tokens: string[];
-  public policy: string[][];
+  public policy: [string[]];
   public rm: rbac.RoleManager;
 
   /**
