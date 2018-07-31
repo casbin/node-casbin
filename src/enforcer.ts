@@ -18,7 +18,7 @@ import {
   logPrint,
   setEnableLog
 } from './util';
-import { Assertion, FunctionMap, Model } from './model';
+import { FunctionMap, Model } from './model';
 import { DefaultEffector, Effect, Effector } from './effect';
 
 import * as _ from 'lodash';
@@ -307,37 +307,40 @@ export class Enforcer {
     }
 
     const functions = new Map<string, any>();
-    for (const key in this.fm) {
-      if (this.fm.hasOwnProperty(key)) {
-        const parser = new Parser();
-        const func = _.get(this.fm, key);
-        const expr = parser.parse(func);
-        _.set(functions, key, expr);
-      }
-    }
+    this.fm.forEach((value, key) => {
+      functions.set(key, value);
+    });
 
-    let astMap = _.get(this.model, 'g');
-    let ast: Assertion;
+    const astMap = this.model.model.get('g');
     if (astMap) {
-      for (const key in astMap) {
-        if (astMap.hasOwnProperty(key)) {
-          ast = _.get(astMap, key);
-          const rm = ast.rm;
-          _.set(functions, key, generateGFunction(rm));
-        }
-      }
+      astMap.forEach((value, key) => {
+        const rm = value.rm;
+        functions.set(key, generateGFunction(rm));
+      });
     }
 
-    astMap = _.get(this.model, 'm');
-    ast = _.get(astMap, 'm');
+    const astItem = [...(this.model.model.get('m') || [])].find(
+      ([key]) => key === 'm'
+    );
+    if (!astItem) {
+      throw new Error('Ast is undefined');
+    }
+    const [, ast] = astItem;
 
-    const expression = _.get(functions, ast.value);
-    let result: boolean;
+    const functionsForJs: { [key: string]: any } = {};
+    functions.forEach((value, key) => {
+      functionsForJs[key] = value;
+    });
+
+    const expression = Parser.parse(ast.value);
+
+    let result: boolean = false;
 
     let policyEffects: number[];
     let matcherResults: number[];
-    ast = _.get(_.get(this.model, 'p'), 'p');
-    const policy = ast.policy;
+    const pRootValue = this.model.model.get('p');
+    const { policy }: any = pRootValue && pRootValue.get('p');
+
     if (policy.length > 0) {
       policyEffects = new Array(policy.length);
       matcherResults = new Array(policy.length);
@@ -346,17 +349,26 @@ export class Enforcer {
         const pvals = policy[i];
         logPrint('Policy Rule: ', pvals);
 
-        const parameters = new Map<string, any>();
-        let tokens = _.get(_.get(this.model, 'r'), 'r').tokens;
-        for (let j = 0; j < tokens.length; j++) {
-          _.set(parameters, tokens[j], rvals[j]);
+        const rRootValue = this.model.model.get('r');
+        const rValue = rRootValue && rRootValue.get('r');
+        let tokens = rValue && rValue.tokens;
+        if (!tokens) {
+          throw new Error('tokens is undefined');
         }
-        tokens = _.get(_.get(this.model, 'p'), 'p').tokens;
-        for (let j = 0; j < tokens.length; j++) {
-          _.set(parameters, tokens[j], pvals[j]);
-        }
+        tokens.forEach((n, index) => {
+          functionsForJs[n] = rvals[index];
+        });
 
-        result = expression.evaluate(parameters);
+        const pValue = pRootValue && pRootValue.get('p');
+        tokens = pValue && pValue.tokens;
+        if (!tokens) {
+          throw new Error('tokens is undefined');
+        }
+        tokens.forEach((n, index) => {
+          functionsForJs[n] = rvals[index];
+        });
+
+        result = expression.evaluate(functionsForJs);
         logPrint(`Result: ${result}`);
 
         if (typeof result === 'boolean') {
@@ -373,8 +385,8 @@ export class Enforcer {
           throw new Error('matcher result should be bool, int or float');
         }
 
-        if (_.has(parameters, 'p_eft')) {
-          const eft = _.get(parameters, 'p_eft');
+        if (_.has(functionsForJs, 'p_eft')) {
+          const eft = _.get(functionsForJs, 'p_eft');
           if (eft === 'allow') {
             policyEffects[i] = Effect.Allow;
           } else if (eft === 'deny') {
@@ -385,31 +397,38 @@ export class Enforcer {
         } else {
           policyEffects[i] = Effect.Allow;
         }
-
-        if (
-          _.indexOf(
-            ['priority(p_eft)', 'deny'],
-            _.get(_.get(this.model, 'e'), 'e').value
-          ) > -1
-        ) {
-          break;
+        const eRootMap = this.model.model.get('e');
+        const eValue = eRootMap && eRootMap.get('e');
+        if (eValue) {
+          if (_.indexOf(['priority(p_eft)', 'deny'], eValue.value) > -1) {
+            break;
+          }
         }
       }
     } else {
       policyEffects = new Array(1);
       matcherResults = new Array(1);
 
-      const parameters = new Map<string, any>();
-      let tokens = _.get(_.get(this.model, 'r'), 'r').tokens;
-      for (let j = 0; j < tokens.length; j++) {
-        _.set(parameters, tokens[j], rvals[j]);
+      const rRootValue = this.model.model.get('r');
+      const rValue = rRootValue && rRootValue.get('r');
+      let tokens = rValue && rValue.tokens;
+      if (!tokens) {
+        throw new Error('tokens is undefined');
       }
-      tokens = _.get(_.get(this.model, 'p'), 'p').tokens;
-      for (const token of tokens) {
-        _.set(parameters, tokens, '');
-      }
+      tokens.forEach((n, i) => {
+        functionsForJs[n] = rvals[i];
+      });
 
-      result = expression.evaluate(parameters);
+      const pValue = pRootValue && pRootValue.get('p');
+      tokens = pValue && pValue.tokens;
+      if (!tokens) {
+        throw new Error('tokens is undefined');
+      }
+      tokens.forEach((n, i) => {
+        functionsForJs[n] = rvals[i];
+      });
+
+      result = expression.evaluate(functionsForJs);
       logPrint(`Result: ${result}`);
 
       if (result) {
@@ -421,11 +440,12 @@ export class Enforcer {
 
     logPrint(`Rule Results: ${policyEffects}`);
 
-    result = this.eft.mergeEffects(
-      _.get(_.get(this.model, 'e'), 'e').value,
-      policyEffects,
-      matcherResults
-    );
+    const eRootMapValue = this.model.model.get('e');
+    const eMap = eRootMapValue && eRootMapValue.get('e');
+    if (eMap) {
+      result = this.eft.mergeEffects(eMap.value, policyEffects, matcherResults);
+    }
+
     // only generate the request --> result string if the message
     // is going to be logged.
     if (getEnableLog()) {
@@ -443,16 +463,4 @@ export class Enforcer {
 
     return result;
   }
-}
-
-function getValueFromMap(map: Map<any, any>, ...param: any[]): any {
-  let result = null;
-  param.forEach(n => {
-    if (!map) {
-      return;
-    }
-    result = map.get(n);
-    map = result;
-  });
-  return result;
 }
