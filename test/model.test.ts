@@ -27,7 +27,7 @@ class TestUtil {
 }
 
 test('testBasicModel', () => {
-  const e = new Enforcer(
+  const e = Enforcer.newEnforcer(
     'examples/basic_model.conf',
     'examples/basic_policy.csv'
   );

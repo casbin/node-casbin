@@ -39,6 +39,7 @@ export class Model {
   }
 
   private loadAssertion(cfg: Config, sec: string, key: string): boolean {
+    // console.log('loadAssertion: ', sec, key);
     const secName = sectionNameMap[sec];
     const value = cfg.getString(`${secName}::${key}`);
     return this.addDef(sec, key, value);
@@ -49,10 +50,11 @@ export class Model {
       return '';
     }
 
-    return i.toString();
+    return _.toString(i);
   }
 
   private loadSection(cfg: Config, sec: string): void {
+    // console.log('loadSection: ', sec);
     let i = 1;
     for (;;) {
       if (!this.loadAssertion(cfg, sec, sec + this.getKeySuffix(i))) {
@@ -65,6 +67,7 @@ export class Model {
 
   // addDef adds an assertion to the model.
   public addDef(sec: string, key: string, value: string): boolean {
+    // console.log('addDef: ', sec, key. value);
     if (value === '') {
       return false;
     }
@@ -92,6 +95,7 @@ export class Model {
 
   // loadModel loads the model from model CONF file.
   public loadModel(path: string): void {
+    // console.log('loadModel: ', path);
     const cfg = Config.newConfig(path);
 
     this.loadSection(cfg, 'r');

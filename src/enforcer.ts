@@ -78,8 +78,10 @@ export class Enforcer {
     let parsedParamLen = 0;
     if (params.length >= 1) {
       const enableLog = params[params.length - 1];
-      setEnableLog(enableLog);
-      parsedParamLen++;
+      if (typeof enableLog === 'boolean') {
+        setEnableLog(enableLog);
+        parsedParamLen++;
+      }
     }
 
     if (params.length - parsedParamLen === 2) {
@@ -120,6 +122,7 @@ export class Enforcer {
   // initWithAdapter initializes an enforcer with a database adapter.
   public initWithAdapter(modelPath: string, adapter: Adapter): void {
     const m = Enforcer.newModel(modelPath, '');
+    // console.log('modelPath, ', modelPath);
     this.initWithModelAndAdapter(m, adapter);
 
     this.modelPath = modelPath;
@@ -319,6 +322,7 @@ export class Enforcer {
       });
     }
 
+    // console.log('this.model.model: ', this.model.model);
     const astItem = [...(this.model.model.get('m') || [])].find(
       ([key]) => key === 'm'
     );
