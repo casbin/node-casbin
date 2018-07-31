@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { setEnableLog } from './util';
+import { generateGFunction, setEnableLog } from './util';
 import { FunctionMap, Model } from './model';
-import { DefaultEffector, Effector } from './effect';
+import { DefaultEffector, Effect, Effector } from './effect';
 import {
   Adapter,
   DefaultFilteredAdapter,
@@ -24,6 +24,7 @@ import {
   Watcher
 } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
+import { Parser } from 'expr-eval';
 
 // Enforcer is the main interface for authorization enforcement and policy management.
 export class Enforcer {
@@ -294,33 +295,44 @@ export class Enforcer {
   // Enforce decides whether a "subject" can access a "object" with the
   // operation "action", input parameters are usually: (sub, obj, act).
   public enforce(...rvals: any[]): boolean {
-    // TODO code
-    return !this.enabled;
+    if (!this.enabled) {
+      return true;
+    }
+    const functions = new Map<string, any>();
+    this.fm.forEach((value, key) => {
+      functions.set(key, value);
+    });
+    const gList = this.model.model.get('g');
+    if (gList) {
+      gList.forEach((value, key) => {
+        const rm = value.rm;
+        // TODO code review
+        functions.set(key, generateGFunction(rm));
+      });
+    }
 
-    // if (!this.enabled) {
-    //   return true;
-    // }
+    const mValue = this.model.model.get('m');
+    const nextMValue = mValue && mValue.get('m');
+    const expString = nextMValue && nextMValue.value;
+    if (!expString) { return false; }
+    const funcs: { [key: string]: any } = {};
+    functions.forEach((value, key) => {
+      funcs[key] = value;
+    });
+    const expression = Parser.evaluate(expString, funcs);
 
-    // functions := make(map[string]govaluatthis.ExpressionFunction)
-    // for key, function := range this.fm {
-    //   functions[key] = function
-    // }
-    // if _, ok := this.model['g']; ok {
-    //   for key, ast := range this.model['g'] {
-    //     rm := ast.RM
-    //     functions[key] = util.GenerateGFunction(rm)
-    //   }
-    // }
-
-    // expString := this.model['m']['m'].Value
-    // expression, _ := govaluatthis.NewEvaluableExpressionWithFunctions(expString, functions)
-
-    // var policyEffects []effect.Effect
-    // var matcherResults []float64
-    // if policyLen := len(this.model['p']['p'].Policy); policyLen != 0 {
-    //   policyEffects = make([]effect.Effect, policyLen)
-    //   matcherResults = make([]float64, policyLen)
-
+    const policyEffects: Effect[] = [];
+    const matcherResults: number[] = [];
+    const pValue = this.model.model.get('p');
+    const { policy }: any = pValue && pValue.get('p');
+    if (policy && policy.length !== 0) {
+      policy.forEach((n: string) => {
+        const pvals = n;
+        const parameters = new Map();
+      });
+    }
+    // TODO please code
+    return false;
     //   for i, pvals := range this.model['p']['p'].Policy {
     //     // util.LogPrint('Policy Rule: ', pvals)
 
@@ -425,4 +437,14 @@ export class Enforcer {
 
     // return result
   }
+}
+
+function getValueFromMap(map: Map<any, any>, ...param: any[]): any {
+  let result = null;
+  param.forEach(n => {
+    if (!map) { return; }
+    result = map.get(n);
+    map = result;
+  });
+  return result;
 }
