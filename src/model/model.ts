@@ -210,7 +210,7 @@ export class Model {
     key: string,
     fieldIndex: number,
     ...fieldValues: string[]
-  ): [string[]] {
+  ): string[][] {
     const res = [];
 
     const astMap = _.get(this.model, sec);

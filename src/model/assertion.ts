@@ -22,7 +22,7 @@ export class Assertion {
   public key: string;
   public value: string;
   public tokens: string[];
-  public policy: [string[]];
+  public policy: string[][];
   public rm: rbac.RoleManager;
 
   /**
@@ -32,7 +32,7 @@ export class Assertion {
     this.key = '';
     this.value = '';
     this.tokens = [];
-    this.policy = [[]];
+    this.policy = [];
     this.rm = new rbac.DefaultRoleManager(0);
   }
 
