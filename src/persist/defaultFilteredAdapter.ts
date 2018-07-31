@@ -45,7 +45,7 @@ export class DefaultFilteredAdapter extends FileAdapter
     handler: (line: string, model: Model) => void
   ) {
     const bodyBuf = readFileSync(this.filePath);
-    const lines = bodyBuf.toString().split('\r');
+    const lines = bodyBuf.toString().split('\n');
     lines.forEach((n, index) => {
       const line = n.trim();
       if (!line || DefaultFilteredAdapter.filterLine(line, filter)) {
