@@ -31,7 +31,7 @@ export class FileAdapter implements Adapter {
     handler: (line: string, model: Model) => void
   ) {
     const bodyBuf = readFileSync(this.filePath);
-    const lines = bodyBuf.toString().split('\r');
+    const lines = bodyBuf.toString().split('\n');
     lines.forEach((n, index) => {
       const line = n.trim();
       if (!line) {
