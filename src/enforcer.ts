@@ -337,7 +337,7 @@ export class Enforcer {
     let matcherResults: number[];
     ast = _.get(_.get(this.model, 'p'), 'p');
     const policy = ast.policy;
-    if (policy.length !== 0) {
+    if (policy.length > 0) {
       policyEffects = new Array(policy.length);
       matcherResults = new Array(policy.length);
 
