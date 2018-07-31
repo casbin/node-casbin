@@ -161,7 +161,7 @@ export class Model {
   }
 
   // getPolicy gets all rules in a policy.
-  public getPolicy(sec: string, key: string): string[][] {
+  public getPolicy(sec: string, key: string): [string[]] {
     const astMap = _.get(this.model, sec);
     const ast = _.get(astMap, key);
     return ast.policy;
@@ -210,7 +210,7 @@ export class Model {
     key: string,
     fieldIndex: number,
     ...fieldValues: string[]
-  ): string[][] {
+  ): [string[]] {
     const res = [];
 
     const astMap = _.get(this.model, sec);

@@ -38,9 +38,9 @@ const arrayEquals: (a: string[], b: string[]) => boolean = (
 };
 
 // array2DEquals determines whether two 2-dimensional string arrays are identical.
-const array2DEquals: (a: string[][], b: string[][]) => boolean = (
-  a: string[][],
-  b: string[][]
+const array2DEquals: (a: [string[]], b: [string[]]) => boolean = (
+  a: [string[]],
+  b: [string[]]
 ) => {
   return _.isEqual(a, b);
 };

@@ -16,24 +16,25 @@
 let enableLog = false;
 
 // logPrint prints the log.
-const logPrint: (...v: any[]) => void = (...v: any[]): void => {
+function logPrint(...v: any[]): void {
   if (enableLog) {
     console.log(...v);
   }
-};
+}
 
 // logPrintf prints the log with the format.
-const logPrintf: (format: string, ...v: any[]) => void = (
-  format: string,
-  ...v: any[]
-): void => {
+function logPrintf(format: string, ...v: any[]): void {
   if (enableLog) {
     console.log(...v);
   }
-};
+}
+
+function getEnableLog(): boolean {
+  return enableLog;
+}
 
 function setEnableLog(val: boolean) {
   enableLog = val;
 }
 
-export { logPrint, logPrintf, setEnableLog };
+export { logPrint, logPrintf, getEnableLog, setEnableLog };
