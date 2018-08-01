@@ -103,7 +103,7 @@ const regexMatch: (key1: string, key2: string) => boolean = (
   key1: string,
   key2: string
 ) => {
-  return new RegExp(key2).test(key1); // key1.match(key2);
+  return new RegExp(key2).test(key1);
 };
 
 // regexMatchFunc is the wrapper for RegexMatch.
@@ -133,6 +133,7 @@ const IPMatch: (ip1: string, ip2: string) => boolean = (
     return ip.cidrSubnet(ip2).contains(ip1);
   } else {
     if (!(ip.isV4Format(ip2) || ip.isV6Format(ip2))) {
+      console.log(ip2);
       throw new Error(
         'invalid argument: ip2 in IPMatch() function is not an IP address.'
       );
