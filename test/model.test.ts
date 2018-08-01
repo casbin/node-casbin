@@ -14,21 +14,19 @@
 
 import { Enforcer } from '../src/enforcer';
 
-class T {
-  public static testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: boolean): void {
-    expect(e.enforce(sub, obj, act)).toBe(res);
-  }
+function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: boolean): void {
+  expect(e.enforce(sub, obj, act)).toBe(res);
 }
 
 test('testBasicModel', () => {
   const e = Enforcer.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
 
-  T.testEnforce(e, 'alice', 'data1', 'read', true);
-  T.testEnforce(e, 'alice', 'data1', 'write', false);
-  T.testEnforce(e, 'alice', 'data2', 'read', false);
-  T.testEnforce(e, 'alice', 'data2', 'write', false);
-  T.testEnforce(e, 'bob', 'data1', 'read', false);
-  T.testEnforce(e, 'bob', 'data1', 'write', false);
-  T.testEnforce(e, 'bob', 'data2', 'read', false);
-  T.testEnforce(e, 'bob', 'data2', 'write', true);
+  testEnforce(e, 'alice', 'data1', 'read', true);
+  testEnforce(e, 'alice', 'data1', 'write', false);
+  testEnforce(e, 'alice', 'data2', 'read', false);
+  testEnforce(e, 'alice', 'data2', 'write', false);
+  testEnforce(e, 'bob', 'data1', 'read', false);
+  testEnforce(e, 'bob', 'data1', 'write', false);
+  testEnforce(e, 'bob', 'data2', 'read', false);
+  testEnforce(e, 'bob', 'data2', 'write', true);
 });
