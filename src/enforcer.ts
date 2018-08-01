@@ -16,13 +16,13 @@ import {
   generateGFunction,
   getEnableLog,
   logPrint,
-  setEnableLog
+  setEnableLog,
+  Valuate
 } from './util';
 import { FunctionMap, Model } from './model';
 import { DefaultEffector, Effect, Effector } from './effect';
 
 import * as _ from 'lodash';
-import { Parser } from 'expr-eval';
 import {
   Adapter,
   DefaultFilteredAdapter,
@@ -336,7 +336,7 @@ export class Enforcer {
       functionsForJs[key] = value;
     });
 
-    const expression = Parser.parse(ast.value);
+    const expression = Valuate.parse(ast.value);
 
     let result: boolean = false;
 
@@ -372,7 +372,7 @@ export class Enforcer {
           functionsForJs[n] = rvals[index];
         });
 
-        result = expression.evaluate(functionsForJs);
+        result = new Valuate().evaluate(expression, functionsForJs);
         logPrint(`Result: ${result}`);
 
         if (typeof result === 'boolean') {
@@ -431,8 +431,7 @@ export class Enforcer {
       tokens.forEach((n, i) => {
         functionsForJs[n] = rvals[i];
       });
-
-      result = expression.evaluate(functionsForJs);
+      result = new Valuate().evaluate(expression, functionsForJs);
       logPrint(`Result: ${result}`);
 
       if (result) {
