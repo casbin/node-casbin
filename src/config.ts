@@ -80,7 +80,9 @@ export class Config {
 
     lines.forEach((n, index) => {
       const line = n.trim();
-      if (!line) { return; }
+      if (!line) {
+        return;
+      }
 
       if (line.startsWith(Config.DEFAULT_COMMENT)) {
         return;
@@ -89,17 +91,23 @@ export class Config {
       } else if (line.startsWith('[') && line.endsWith(']')) {
         section = line.substring(1, line.length - 1);
       } else {
-        const optionVal = line.split('=', 2);
-        if (optionVal.length !== 2) {
-          throw new Error(
-            `parse the content error : line ${index + 1} , %s = ${
-              optionVal[0]
-            } `
-          );
+        const [option] = line.split('=');
+
+        const optionIndex = line.indexOf(option);
+        if (optionIndex === -1) {
+          throw new Error(`parse the content error : line ${index + 1}`);
         }
-        const option = optionVal[0].trim();
-        const value = optionVal[1].trim();
-        this.addConfig(section, option, value);
+
+        let value = line.substring(optionIndex + 1).trim();
+        if (value.startsWith('=')) {
+          value = value.substring(1);
+        }
+
+        if (option && value) {
+          this.addConfig(section, option.trim(), value.trim());
+        } else {
+          throw new Error(`parse the content error : line ${index + 1}`);
+        }
       }
     });
   }
