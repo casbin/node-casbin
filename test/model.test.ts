@@ -33,4 +33,11 @@ test('testBasicModel', () => {
   );
 
   TestUtil.testEnforce(e, 'alice', 'data1', 'read', true);
+  TestUtil.testEnforce(e, 'alice', 'data1', 'write', false);
+  TestUtil.testEnforce(e, 'alice', 'data2', 'read', false);
+  TestUtil.testEnforce(e, 'alice', 'data2', 'write', false);
+  TestUtil.testEnforce(e, 'bob', 'data1', 'read', false);
+  TestUtil.testEnforce(e, 'bob', 'data1', 'write', false);
+  TestUtil.testEnforce(e, 'bob', 'data2', 'read', false);
+  TestUtil.testEnforce(e, 'bob', 'data2', 'write', true);
 });
