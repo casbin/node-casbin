@@ -39,10 +39,7 @@ export class DefaultFilteredAdapter extends FileAdapter
     this.filtered = true;
   }
 
-  private loadFilteredPolicyFile(
-    model: Model,
-    filter: Filter,
-    handler: (line: string, model: Model) => void
+  private loadFilteredPolicyFile(model: Model, filter: Filter, handler: (line: string, model: Model) => void
   ) {
     const bodyBuf = readFileSync(this.filePath);
     const lines = bodyBuf.toString().split('\n');

@@ -23,10 +23,6 @@ export interface Adapter {
 
   removePolicy(sec: string, ptype: string, rule: string[]): void;
 
-  removeFilteredPolicy(
-    sec: string,
-    ptype: string,
-    fieldIndex: number,
-    ...fieldValues: string[]
+  removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]
   ): void;
 }

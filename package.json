@@ -6,7 +6,6 @@
   "typings": "lib/casbin.d.ts",
   "scripts": {
     "precommit": "lint-staged",
-    "prettier": "prettier --write \"src/**/*.ts\" \"scripts/**/*.js\"",
     "build": "node scripts/build.js",
     "lint": "tslint \"src/**/*.ts\"",
     "fix": "tslint \"src/**/*.ts\" --fix",
@@ -47,7 +46,6 @@
   ],
   "lint-staged": {
     "*.{ts,js}": [
-      "prettier --write",
       "tslint --fix",
       "git add"
     ]

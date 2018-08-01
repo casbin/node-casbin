@@ -19,10 +19,7 @@ import * as _ from 'lodash';
 // keyMatch determines whether key1 matches the pattern of key2 (similar to RESTful path),
 // key2 can contain a *.
 // For example, '/foo/bar' matches '/foo/*'
-const keyMatch: (key1: string, key2: string) => boolean = (
-  key1: string,
-  key2: string
-) => {
+const keyMatch: (key1: string, key2: string) => boolean = (key1: string, key2: string) => {
   const pos: number = key2.indexOf('*');
   if (pos === -1) {
     return key1 === key2;
@@ -46,10 +43,7 @@ const keyMatchFunc: (...args: any[]) => boolean = (...args: any[]) => {
 // keyMatch2 determines whether key1 matches the pattern of key2 (similar to RESTful path),
 // key2 can contain a *.
 // For example, '/foo/bar' matches '/foo/*', '/resource1' matches '/:resource'
-const keyMatch2: (key1: string, key2: string) => boolean = (
-  key1: string,
-  key2: string
-) => {
+const keyMatch2: (key1: string, key2: string) => boolean = (key1: string, key2: string) => {
   key2 = key2.replace(/\/\*/g, '/.*');
 
   const regexp: RegExp = new RegExp(/(.*):[^/]+(.*)/g);
@@ -73,10 +67,7 @@ const keyMatch2Func: (...args: any[]) => boolean = (...args: any[]) => {
 
 // keyMatch3 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
 // For example, '/foo/bar' matches '/foo/*', '/resource1' matches '/{resource}'
-const keyMatch3: (key1: string, key2: string) => boolean = (
-  key1: string,
-  key2: string
-) => {
+const keyMatch3: (key1: string, key2: string) => boolean = (key1: string, key2: string) => {
   key2 = key2.replace(/\/\*/g, '/.*');
 
   const regexp: RegExp = new RegExp(/(.*){[^/]+}(.*)/g);
@@ -99,11 +90,8 @@ const keyMatch3Func: (...args: any[]) => boolean = (...args: any[]) => {
 };
 
 // regexMatch determines whether key1 matches the pattern of key2 in regular expression.
-const regexMatch: (key1: string, key2: string) => boolean = (
-  key1: string,
-  key2: string
-) => {
-  return new RegExp(key2).test(key1); // key1.match(key2);
+const regexMatch: (key1: string, key2: string) => boolean = (key1: string, key2: string) => {
+  return new RegExp(key2).test(key1);
 };
 
 // regexMatchFunc is the wrapper for RegexMatch.
@@ -117,10 +105,7 @@ const regexMatchFunc: (...args: any[]) => boolean = (...args: any[]) => {
 // IPMatch determines whether IP address ip1 matches the pattern of IP address ip2,
 // ip2 can be an IP address or a CIDR pattern.
 // For example, '192.168.2.123' matches '192.168.2.0/24'
-const IPMatch: (ip1: string, ip2: string) => boolean = (
-  ip1: string,
-  ip2: string
-) => {
+const IPMatch: (ip1: string, ip2: string) => boolean = (ip1: string, ip2: string) => {
   // check ip1
   if (!(ip.isV4Format(ip1) || ip.isV6Format(ip1))) {
     throw new Error(
@@ -133,6 +118,7 @@ const IPMatch: (ip1: string, ip2: string) => boolean = (
     return ip.cidrSubnet(ip2).contains(ip1);
   } else {
     if (!(ip.isV4Format(ip2) || ip.isV6Format(ip2))) {
+      console.log(ip2);
       throw new Error(
         'invalid argument: ip2 in IPMatch() function is not an IP address.'
       );
@@ -150,9 +136,7 @@ const IPMatchFunc: (...args: any[]) => boolean = (...args: any[]) => {
 };
 
 // generateGFunction is the factory method of the g(_, _) function.
-const generateGFunction: (rm: rbac.RoleManager) => any = (
-  rm: rbac.RoleManager
-) => {
+const generateGFunction: (rm: rbac.RoleManager) => any = (rm: rbac.RoleManager) => {
   const func: (...args: any[]) => boolean = (...args: any[]) => {
     const name1: string = _.toString(args[0]);
     const name2: string = _.toString(args[1]);
