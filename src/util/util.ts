@@ -30,18 +30,12 @@ const removeComments: (s: string) => string = (s: string) => {
 };
 
 // arrayEquals determines whether two string arrays are identical.
-const arrayEquals: (a: string[], b: string[]) => boolean = (
-  a: string[],
-  b: string[]
-) => {
+const arrayEquals: (a: string[], b: string[]) => boolean = (a: string[], b: string[]) => {
   return _.isEqual(a, b);
 };
 
 // array2DEquals determines whether two 2-dimensional string arrays are identical.
-const array2DEquals: (a: [string[]], b: [string[]]) => boolean = (
-  a: [string[]],
-  b: [string[]]
-) => {
+const array2DEquals: (a: [string[]], b: [string[]]) => boolean = (a: [string[]], b: [string[]]) => {
   return _.isEqual(a, b);
 };
 
@@ -61,10 +55,7 @@ const paramsToString: (...v: string[]) => string = (...v: string[]) => {
 };
 
 // setEquals determines whether two string sets are identical.
-const setEquals: (a: string[], b: string[]) => boolean = (
-  a: string[],
-  b: string[]
-) => {
+const setEquals: (a: string[], b: string[]) => boolean = (a: string[], b: string[]) => {
   return _.isEqual(_.sortedUniq(a), _.sortedUniq(b));
 };
 
