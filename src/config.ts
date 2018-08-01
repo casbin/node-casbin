@@ -77,8 +77,11 @@ export class Config {
   private parseBuffer(buf: Buffer): void {
     let section = '';
     const lines = buf.toString().split('\n');
+
     lines.forEach((n, index) => {
       const line = n.trim();
+      if (!line) { return; }
+
       if (line.startsWith(Config.DEFAULT_COMMENT)) {
         return;
       } else if (line.startsWith(Config.DEFAULT_COMMENT_SEM)) {
