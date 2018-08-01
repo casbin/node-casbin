@@ -29,9 +29,9 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
-    "expr-eval": "^1.2.2",
     "fs-extra": "^7.0.0",
     "ip": "^1.1.5",
+    "jsep": "^0.3.4",
     "lodash": "^4.17.10"
   },
   "homepage": "http://casbin.org",
