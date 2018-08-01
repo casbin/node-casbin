@@ -14,7 +14,7 @@
 
 import { Enforcer } from '../src/enforcer';
 
-class TestUtil {
+class T {
   public static testEnforce(
     e: Enforcer,
     sub: string,
@@ -32,12 +32,12 @@ test('testBasicModel', () => {
     'examples/basic_policy.csv'
   );
 
-  TestUtil.testEnforce(e, 'alice', 'data1', 'read', true);
-  TestUtil.testEnforce(e, 'alice', 'data1', 'write', false);
-  TestUtil.testEnforce(e, 'alice', 'data2', 'read', false);
-  TestUtil.testEnforce(e, 'alice', 'data2', 'write', false);
-  TestUtil.testEnforce(e, 'bob', 'data1', 'read', false);
-  TestUtil.testEnforce(e, 'bob', 'data1', 'write', false);
-  TestUtil.testEnforce(e, 'bob', 'data2', 'read', false);
-  TestUtil.testEnforce(e, 'bob', 'data2', 'write', true);
+  T.testEnforce(e, 'alice', 'data1', 'read', true);
+  T.testEnforce(e, 'alice', 'data1', 'write', false);
+  T.testEnforce(e, 'alice', 'data2', 'read', false);
+  T.testEnforce(e, 'alice', 'data2', 'write', false);
+  T.testEnforce(e, 'bob', 'data1', 'read', false);
+  T.testEnforce(e, 'bob', 'data1', 'write', false);
+  T.testEnforce(e, 'bob', 'data2', 'read', false);
+  T.testEnforce(e, 'bob', 'data2', 'write', true);
 });
