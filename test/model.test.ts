@@ -30,3 +30,16 @@ test('testBasicModel', () => {
   testEnforce(e, 'bob', 'data2', 'read', false);
   testEnforce(e, 'bob', 'data2', 'write', true);
 });
+
+test('testBasicModelNoPolicy', () => {
+  const e = Enforcer.newEnforcer('examples/basic_model.conf');
+
+  testEnforce(e, 'alice', 'data1', 'read', false);
+  testEnforce(e, 'alice', 'data1', 'write', false);
+  testEnforce(e, 'alice', 'data2', 'read', false);
+  testEnforce(e, 'alice', 'data2', 'write', false);
+  testEnforce(e, 'bob', 'data1', 'read', false);
+  testEnforce(e, 'bob', 'data1', 'write', false);
+  testEnforce(e, 'bob', 'data2', 'read', false);
+  testEnforce(e, 'bob', 'data2', 'write', false);
+});
