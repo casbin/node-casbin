@@ -15,4 +15,3 @@
 export * from './operators';
 export * from './log';
 export * from './util';
-export * from './valuate';
