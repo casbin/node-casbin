@@ -12,25 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-  generateGFunction,
-  getEnableLog,
-  logPrint,
-  setEnableLog,
-  Valuate
-} from './util';
+import { generateGFunction, getEnableLog, logPrint, setEnableLog } from './util';
 import { FunctionMap, Model } from './model';
 import { DefaultEffector, Effect, Effector } from './effect';
+import { compile } from 'expression-eval';
 
 import * as _ from 'lodash';
-import {
-  Adapter,
-  DefaultFilteredAdapter,
-  FileAdapter,
-  Filter,
-  FilteredAdapter,
-  Watcher
-} from './persist';
+import { Adapter, FileAdapter, Filter, FilteredAdapter, Watcher } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 
 // Enforcer is the main interface for authorization enforcement and policy management.
@@ -316,7 +304,7 @@ export class Enforcer {
       functionsForJs[key] = value;
     });
 
-    const expression = Valuate.parse(ast.value);
+    const expression = compile(ast.value);
 
     let result: boolean = false;
 
@@ -352,7 +340,7 @@ export class Enforcer {
           functionsForJs[n] = rvals[index];
         });
 
-        result = new Valuate().evaluate(expression, functionsForJs);
+        result = expression(functionsForJs);
         logPrint(`Result: ${result}`);
 
         if (typeof result === 'boolean') {
@@ -411,7 +399,7 @@ export class Enforcer {
       tokens.forEach((n, i) => {
         functionsForJs[n] = rvals[i];
       });
-      result = new Valuate().evaluate(expression, functionsForJs);
+      result = expression(functionsForJs);
       logPrint(`Result: ${result}`);
 
       if (result) {
