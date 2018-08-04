@@ -73,7 +73,7 @@ export class Enforcer {
       if (typeof params[0] === 'string') {
         this.initWithFile(params[0], '');
       } else {
-        this.initWithModelAndAdapter(params[0], new FileAdapter(''));
+        this.initWithModelAndAdapter(params[0], null);
       }
     } else if (params.length === parsedParamLen) {
       this.initWithFile('', '');
@@ -97,8 +97,10 @@ export class Enforcer {
   }
 
   // initWithModelAndAdapter initializes an enforcer with a model and a database adapter.
-  public initWithModelAndAdapter(m: Model, adapter: Adapter): void {
-    this.adapter = adapter;
+  public initWithModelAndAdapter(m: Model, adapter: Adapter | null): void {
+    if (adapter) {
+      this.adapter = adapter;
+    }
     this.watcher = null;
 
     this.model = m;
