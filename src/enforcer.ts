@@ -71,7 +71,7 @@ export class Enforcer {
       }
     } else if (params.length - parsedParamLen === 1) {
       if (typeof params[0] === 'string') {
-        this.initWithFile(params[0].toString, '');
+        this.initWithFile(params[0], '');
       } else {
         this.initWithModelAndAdapter(params[0], new FileAdapter(''));
       }
