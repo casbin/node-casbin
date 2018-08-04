@@ -2,7 +2,7 @@ import { Model } from '../model';
 
 export class Helper {
   public static loadPolicyLine(line: string, model: Model) {
-    if (line) {
+    if (line === '') {
       return;
     }
 
