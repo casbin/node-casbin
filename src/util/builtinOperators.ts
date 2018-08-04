@@ -94,12 +94,12 @@ const regexMatch: (key1: string, key2: string) => boolean = (key1: string, key2:
   return new RegExp(key2).test(key1);
 };
 
-// regexMatchFunc is the wrapper for RegexMatch.
+// regexMatchFunc is the wrapper for regexMatch.
 const regexMatchFunc: (...args: any[]) => boolean = (...args: any[]) => {
   const name1: string = _.toString(args[0]);
   const name2: string = _.toString(args[1]);
 
-  return keyMatch3(name1, name2);
+  return regexMatch(name1, name2);
 };
 
 // IPMatch determines whether IP address ip1 matches the pattern of IP address ip2,
