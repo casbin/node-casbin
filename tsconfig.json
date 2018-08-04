@@ -5,7 +5,8 @@
     "moduleResolution": "node",
     "declaration": true,
     "strict": true,
-    "outDir": "lib/es6"
+    "outDir": "lib/es6",
+    "strictPropertyInitialization": false
   },
   "include": ["src/**/*.ts"]
 }

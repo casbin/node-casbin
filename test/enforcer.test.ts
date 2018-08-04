@@ -28,7 +28,7 @@ test('testKeyMatchModelInMemory', () => {
 
   const a = new FileAdapter('examples/keymatch_policy.csv');
 
-  let e = Enforcer.newEnforcer(m, a);
+  let e = new Enforcer(m, a);
 
   testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
   testEnforce(e, 'alice', '/alice_data/resource1', 'POST', true);
@@ -52,7 +52,7 @@ test('testKeyMatchModelInMemory', () => {
   testEnforce(e, 'cathy', '/cathy_data', 'POST', true);
   testEnforce(e, 'cathy', '/cathy_data', 'DELETE', false);
 
-  e = Enforcer.newEnforcer(m);
+  e = new Enforcer(m);
   a.loadPolicy(e.getModel());
 
   testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
