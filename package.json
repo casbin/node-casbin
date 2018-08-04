@@ -29,6 +29,7 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
+    "expression-eval": "^1.3.0",
     "fs-extra": "^7.0.0",
     "ip": "^1.1.5",
     "jsep": "^0.3.4",
