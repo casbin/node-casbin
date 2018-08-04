@@ -119,7 +119,7 @@ export class Enforcer {
 
     this.initialize();
 
-    if (!this.adapter) {
+    if (this.adapter) {
       // error intentionally ignored
       this.loadPolicy();
     }
