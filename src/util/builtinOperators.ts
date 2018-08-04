@@ -19,7 +19,7 @@ import * as _ from 'lodash';
 // keyMatch determines whether key1 matches the pattern of key2 (similar to RESTful path),
 // key2 can contain a *.
 // For example, '/foo/bar' matches '/foo/*'
-const keyMatch: (key1: string, key2: string) => boolean = (key1: string, key2: string) => {
+function keyMatch(key1: string, key2: string): boolean {
   const pos: number = key2.indexOf('*');
   if (pos === -1) {
     return key1 === key2;
@@ -30,20 +30,20 @@ const keyMatch: (key1: string, key2: string) => boolean = (key1: string, key2: s
   }
 
   return key1 === key2.slice(0, pos);
-};
+}
 
 // keyMatchFunc is the wrapper for keyMatch.
-const keyMatchFunc: (...args: any[]) => boolean = (...args: any[]) => {
+function keyMatchFunc(...args: any[]): boolean {
   const name1: string = _.toString(args[0]);
   const name2: string = _.toString(args[1]);
 
   return keyMatch(name1, name2);
-};
+}
 
 // keyMatch2 determines whether key1 matches the pattern of key2 (similar to RESTful path),
 // key2 can contain a *.
 // For example, '/foo/bar' matches '/foo/*', '/resource1' matches '/:resource'
-const keyMatch2: (key1: string, key2: string) => boolean = (key1: string, key2: string) => {
+function keyMatch2(key1: string, key2: string): boolean {
   key2 = key2.replace(/\/\*/g, '/.*');
 
   const regexp: RegExp = new RegExp(/(.*):[^/]+(.*)/g);
@@ -55,19 +55,19 @@ const keyMatch2: (key1: string, key2: string) => boolean = (key1: string, key2: 
   }
 
   return regexMatch(key1, key2);
-};
+}
 
 // keyMatch2Func is the wrapper for keyMatch2.
-const keyMatch2Func: (...args: any[]) => boolean = (...args: any[]) => {
+function keyMatch2Func(...args: any[]): boolean {
   const name1: string = _.toString(args[0]);
   const name2: string = _.toString(args[1]);
 
   return keyMatch2(name1, name2);
-};
+}
 
 // keyMatch3 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
 // For example, '/foo/bar' matches '/foo/*', '/resource1' matches '/{resource}'
-const keyMatch3: (key1: string, key2: string) => boolean = (key1: string, key2: string) => {
+function keyMatch3(key1: string, key2: string): boolean {
   key2 = key2.replace(/\/\*/g, '/.*');
 
   const regexp: RegExp = new RegExp(/(.*){[^/]+}(.*)/g);
@@ -79,33 +79,33 @@ const keyMatch3: (key1: string, key2: string) => boolean = (key1: string, key2: 
   }
 
   return regexMatch(key1, key2);
-};
+}
 
 // keyMatch3Func is the wrapper for keyMatch3.
-const keyMatch3Func: (...args: any[]) => boolean = (...args: any[]) => {
+function keyMatch3Func(...args: any[]): boolean {
   const name1: string = _.toString(args[0]);
   const name2: string = _.toString(args[1]);
 
   return keyMatch3(name1, name2);
-};
+}
 
 // regexMatch determines whether key1 matches the pattern of key2 in regular expression.
-const regexMatch: (key1: string, key2: string) => boolean = (key1: string, key2: string) => {
+function regexMatch(key1: string, key2: string): boolean {
   return new RegExp(key2).test(key1);
-};
+}
 
 // regexMatchFunc is the wrapper for regexMatch.
-const regexMatchFunc: (...args: any[]) => boolean = (...args: any[]) => {
+function regexMatchFunc(...args: any[]): boolean {
   const name1: string = _.toString(args[0]);
   const name2: string = _.toString(args[1]);
 
   return regexMatch(name1, name2);
-};
+}
 
 // ipMatch determines whether IP address ip1 matches the pattern of IP address ip2,
 // ip2 can be an IP address or a CIDR pattern.
 // For example, '192.168.2.123' matches '192.168.2.0/24'
-const ipMatch: (ip1: string, ip2: string) => boolean = (ip1: string, ip2: string) => {
+function ipMatch(ip1: string, ip2: string): boolean {
   // check ip1
   if (!(ip.isV4Format(ip1) || ip.isV6Format(ip1))) {
     throw new Error(
@@ -125,15 +125,15 @@ const ipMatch: (ip1: string, ip2: string) => boolean = (ip1: string, ip2: string
     }
     return ip.isEqual(ip1, ip2);
   }
-};
+}
 
 // ipMatchFunc is the wrapper for ipMatch.
-const ipMatchFunc: (...args: any[]) => boolean = (...args: any[]) => {
+function ipMatchFunc(...args: any[]): boolean {
   const ip1: string = _.toString(args[0]);
   const ip2: string = _.toString(args[1]);
 
   return ipMatch(ip1, ip2);
-};
+}
 
 // generateGFunction is the factory method of the g(_, _) function.
 const generateGFunction: (rm: rbac.RoleManager) => any = (rm: rbac.RoleManager) => {
