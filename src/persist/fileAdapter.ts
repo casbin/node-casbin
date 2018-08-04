@@ -27,8 +27,7 @@ export class FileAdapter implements Adapter {
     this.loadPolicyFile(model, Helper.loadPolicyLine);
   }
 
-  private loadPolicyFile(model: Model, handler: (line: string, model: Model) => void
-  ) {
+  private loadPolicyFile(model: Model, handler: (line: string, model: Model) => void) {
     const bodyBuf = readFileSync(this.filePath);
     const lines = bodyBuf.toString().split('\n');
     lines.forEach((n, index) => {
@@ -98,8 +97,7 @@ export class FileAdapter implements Adapter {
   /**
    * removeFilteredPolicy removes policy rules that match the filter from the storage.
    */
-  public removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]
-  ): void {
+  public removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]): void {
     throw new Error('not implemented');
   }
 }
