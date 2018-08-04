@@ -12,6 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * from './operators';
+export * from './builtinOperators';
 export * from './log';
 export * from './util';
