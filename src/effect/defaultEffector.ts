@@ -19,22 +19,13 @@ import { Effect, Effector } from './effector';
  */
 export class DefaultEffector implements Effector {
   /**
-   * DefaultEffector is the constructor for DefaultEffector.
-   */
-  constructor() {}
-
-  /**
    * mergeEffects merges all matching results collected by the enforcer into a single decision.
    * @param {string} expr
    * @param {Effect[]} effects
    * @param {number[]} results
    * @returns {boolean}
    */
-  public mergeEffects(
-    expr: string,
-    effects: Effect[],
-    results: number[]
-  ): boolean {
+  public mergeEffects(expr: string, effects: Effect[], results: number[]): boolean {
     let result = false;
 
     if (expr === 'some(where (p_eft == allow))') {
