@@ -14,7 +14,8 @@
     "object-literal-sort-keys": false,
     "no-empty": false,
     "quotemark": [true, "single"],
-    "trailing-comma": false
+    "trailing-comma": false,
+    "max-line-length": false
   },
   "rulesDirectory": []
 }

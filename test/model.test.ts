@@ -14,12 +14,16 @@
 
 import { Enforcer } from '../src/enforcer';
 
-function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: boolean): void {
+function testEnforce(e: Enforcer, sub: string, obj: any, act: string, res: boolean): void {
   expect(e.enforce(sub, obj, act)).toBe(res);
 }
 
 function testEnforceWithoutUsers(e: Enforcer, obj: string, act: string, res: boolean): void {
   expect(e.enforce(obj, act)).toBe(res);
+}
+
+function testDomainEnforce(e: Enforcer, sub: string, dom: string, obj: string, act: string, res: boolean): void {
+  expect(e.enforce(sub, dom, obj, act)).toBe(res);
 }
 
 test('TestBasicModel', () => {
@@ -111,4 +115,91 @@ test('TestRBACModel', () => {
   testEnforce(e, 'bob', 'data1', 'write', false);
   testEnforce(e, 'bob', 'data2', 'read', false);
   testEnforce(e, 'bob', 'data2', 'write', true);
+});
+
+test('TestRBACModelWithResourceRoles', () => {
+  const e = new Enforcer('examples/rbac_with_resource_roles_model.conf', 'examples/rbac_with_resource_roles_policy.csv');
+
+  testEnforce(e, 'alice', 'data1', 'read', true);
+  testEnforce(e, 'alice', 'data1', 'write', true);
+  testEnforce(e, 'alice', 'data2', 'read', false);
+  testEnforce(e, 'alice', 'data2', 'write', true);
+  testEnforce(e, 'bob', 'data1', 'read', false);
+  testEnforce(e, 'bob', 'data1', 'write', false);
+  testEnforce(e, 'bob', 'data2', 'read', false);
+  testEnforce(e, 'bob', 'data2', 'write', true);
+});
+
+test('TestRBACModelWithDomains', () => {
+  const e = new Enforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
+
+  testDomainEnforce(e, 'alice', 'domain1', 'data1', 'read', true);
+  testDomainEnforce(e, 'alice', 'domain1', 'data1', 'write', true);
+  testDomainEnforce(e, 'alice', 'domain1', 'data2', 'read', false);
+  testDomainEnforce(e, 'alice', 'domain1', 'data2', 'write', false);
+  testDomainEnforce(e, 'bob', 'domain2', 'data1', 'read', false);
+  testDomainEnforce(e, 'bob', 'domain2', 'data1', 'write', false);
+  testDomainEnforce(e, 'bob', 'domain2', 'data2', 'read', true);
+  testDomainEnforce(e, 'bob', 'domain2', 'data2', 'write', true);
+});
+
+class TestResource {
+  public Name: string;
+  public Owner: string;
+
+  constructor(name: string, owner: string) {
+    this.Name = name;
+    this.Owner = owner;
+  }
+}
+
+test('TestABACModel', () => {
+  const e = new Enforcer('examples/abac_model.conf');
+
+  const data1 = new TestResource('data1', 'alice');
+  const data2 = new TestResource('data2', 'bob');
+
+  testEnforce(e, 'alice', data1, 'read', true);
+  testEnforce(e, 'alice', data1, 'write', true);
+  testEnforce(e, 'alice', data2, 'read', false);
+  testEnforce(e, 'alice', data2, 'write', false);
+  testEnforce(e, 'bob', data1, 'read', false);
+  testEnforce(e, 'bob', data1, 'write', false);
+  testEnforce(e, 'bob', data2, 'read', true);
+  testEnforce(e, 'bob', data2, 'write', true);
+});
+
+test('TestKeyMatchModel', () => {
+  const e = new Enforcer('examples/keymatch_model.conf', 'examples/keymatch_policy.csv');
+
+  testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
+  testEnforce(e, 'alice', '/alice_data/resource1', 'POST', true);
+  testEnforce(e, 'alice', '/alice_data/resource2', 'GET', true);
+  testEnforce(e, 'alice', '/alice_data/resource2', 'POST', false);
+  testEnforce(e, 'alice', '/bob_data/resource1', 'GET', false);
+  testEnforce(e, 'alice', '/bob_data/resource1', 'POST', false);
+  testEnforce(e, 'alice', '/bob_data/resource2', 'GET', false);
+  testEnforce(e, 'alice', '/bob_data/resource2', 'POST', false);
+
+  testEnforce(e, 'bob', '/alice_data/resource1', 'GET', false);
+  testEnforce(e, 'bob', '/alice_data/resource1', 'POST', false);
+  testEnforce(e, 'bob', '/alice_data/resource2', 'GET', true);
+  testEnforce(e, 'bob', '/alice_data/resource2', 'POST', false);
+  testEnforce(e, 'bob', '/bob_data/resource1', 'GET', false);
+  testEnforce(e, 'bob', '/bob_data/resource1', 'POST', true);
+  testEnforce(e, 'bob', '/bob_data/resource2', 'GET', false);
+  testEnforce(e, 'bob', '/bob_data/resource2', 'POST', true);
+
+  testEnforce(e, 'cathy', '/cathy_data', 'GET', true);
+  testEnforce(e, 'cathy', '/cathy_data', 'POST', true);
+  testEnforce(e, 'cathy', '/cathy_data', 'DELETE', false);
+});
+
+test('TestKeyMatch2Model', () => {
+  const e = new Enforcer('examples/keymatch2_model.conf', 'examples/keymatch2_policy.csv');
+
+  testEnforce(e, 'alice', '/alice_data', 'GET', false);
+  testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
+  testEnforce(e, 'alice', '/alice_data2/myid', 'GET', false);
+  testEnforce(e, 'alice', '/alice_data2/myid/using/res_id', 'GET', true);
 });
