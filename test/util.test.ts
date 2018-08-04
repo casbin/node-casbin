@@ -68,13 +68,13 @@ test('test keyMatch3Func', () => {
   expect(util.keyMatch3Func('/baz', '/foo')).toEqual(false);
 });
 
-test('test IPMatchFunc', () => {
-  expect(util.IPMatchFunc('::1', '::0:1')).toEqual(true);
-  expect(util.IPMatchFunc('192.168.1.1', '192.168.1.1')).toEqual(true);
-  expect(util.IPMatchFunc('127.0.0.1', '::ffff:127.0.0.1')).toEqual(true);
-  expect(util.IPMatchFunc('192.168.2.123', '192.168.2.0/24')).toEqual(true);
-  expect(util.IPMatchFunc('::1', '127.0.0.2')).toEqual(false);
-  expect(() => util.IPMatchFunc('i am chaplin', '127.0.0.1')).toThrow(Error);
-  expect(() => util.IPMatchFunc('127.0.0.1', 'i am chaplin')).toThrow(/invalid/g);
-  expect(util.IPMatchFunc('192.168.2.189', '192.168.1.134/26')).toEqual(false);
+test('test ipMatchFunc', () => {
+  expect(util.ipMatchFunc('::1', '::0:1')).toEqual(true);
+  expect(util.ipMatchFunc('192.168.1.1', '192.168.1.1')).toEqual(true);
+  expect(util.ipMatchFunc('127.0.0.1', '::ffff:127.0.0.1')).toEqual(true);
+  expect(util.ipMatchFunc('192.168.2.123', '192.168.2.0/24')).toEqual(true);
+  expect(util.ipMatchFunc('::1', '127.0.0.2')).toEqual(false);
+  expect(() => util.ipMatchFunc('i am chaplin', '127.0.0.1')).toThrow(Error);
+  expect(() => util.ipMatchFunc('127.0.0.1', 'i am chaplin')).toThrow(/invalid/g);
+  expect(util.ipMatchFunc('192.168.2.189', '192.168.1.134/26')).toEqual(false);
 });

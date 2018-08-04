@@ -102,14 +102,14 @@ const regexMatchFunc: (...args: any[]) => boolean = (...args: any[]) => {
   return regexMatch(name1, name2);
 };
 
-// IPMatch determines whether IP address ip1 matches the pattern of IP address ip2,
+// ipMatch determines whether IP address ip1 matches the pattern of IP address ip2,
 // ip2 can be an IP address or a CIDR pattern.
 // For example, '192.168.2.123' matches '192.168.2.0/24'
-const IPMatch: (ip1: string, ip2: string) => boolean = (ip1: string, ip2: string) => {
+const ipMatch: (ip1: string, ip2: string) => boolean = (ip1: string, ip2: string) => {
   // check ip1
   if (!(ip.isV4Format(ip1) || ip.isV6Format(ip1))) {
     throw new Error(
-      'invalid argument: ip1 in IPMatch() function is not an IP address.'
+      'invalid argument: ip1 in ipMatch() function is not an IP address.'
     );
   }
   // check ip2
@@ -120,19 +120,19 @@ const IPMatch: (ip1: string, ip2: string) => boolean = (ip1: string, ip2: string
     if (!(ip.isV4Format(ip2) || ip.isV6Format(ip2))) {
       console.log(ip2);
       throw new Error(
-        'invalid argument: ip2 in IPMatch() function is not an IP address.'
+        'invalid argument: ip2 in ipMatch() function is not an IP address.'
       );
     }
     return ip.isEqual(ip1, ip2);
   }
 };
 
-// IPMatchFunc is the wrapper for IPMatch.
-const IPMatchFunc: (...args: any[]) => boolean = (...args: any[]) => {
+// ipMatchFunc is the wrapper for ipMatch.
+const ipMatchFunc: (...args: any[]) => boolean = (...args: any[]) => {
   const ip1: string = _.toString(args[0]);
   const ip2: string = _.toString(args[1]);
 
-  return IPMatch(ip1, ip2);
+  return ipMatch(ip1, ip2);
 };
 
 // generateGFunction is the factory method of the g(_, _) function.
@@ -158,6 +158,6 @@ export {
   keyMatch2Func,
   keyMatch3Func,
   regexMatchFunc,
-  IPMatchFunc,
+  ipMatchFunc,
   generateGFunction
 };

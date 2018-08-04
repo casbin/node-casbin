@@ -32,7 +32,7 @@ export class FunctionMap {
     fm.addFunction('keyMatch', util.keyMatchFunc);
     fm.addFunction('keyMatch2', util.keyMatch2Func);
     fm.addFunction('regexMatch', util.regexMatchFunc);
-    fm.addFunction('ipMatch', util.IPMatchFunc);
+    fm.addFunction('ipMatch', util.ipMatchFunc);
 
     return fm.getFunctions();
   }
