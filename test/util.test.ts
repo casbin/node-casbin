@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as util from '../src/util';
-import { Valuate } from '../src/util';
+import { compile } from 'expression-eval';
 
 test('test enableLog success', () => {
   util.setEnableLog(true);
@@ -40,10 +40,8 @@ test('test logPrintf', () => {
 });
 
 test('test Valuate', () => {
-  let ast = Valuate.parse('1 + 1 === 2');
-  expect(new Valuate().evaluate(ast)).toEqual(true);
-  ast = Valuate.parse('1 + 1 !== 2');
-  expect(new Valuate().evaluate(ast)).toEqual(false);
+  expect(compile('1 + 1 === 2')()).toEqual(true);
+  expect(compile('1 + 1 !== 2')()).toEqual(false);
 });
 
 test('test regexMatchFunc', () => {
