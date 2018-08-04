@@ -21,7 +21,8 @@ export class FileAdapter implements Adapter {
 
   public loadPolicy(model: Model): void {
     if (!this.filePath) {
-      throw new Error('invalid file path, file path cannot be empty');
+      return;
+      // throw new Error('invalid file path, file path cannot be empty');
     }
     this.loadPolicyFile(model, Helper.loadPolicyLine);
   }
