@@ -50,10 +50,10 @@ export class Enforcer {
   // constructor is the constructor for Enforcer.
   // It creates an enforcer via file or DB.
   // File:
-  // e := NewEnforcer("path/to/basic_model.conf", "path/to/basic_policy.csv")
+  // const e = new Enforcer('path/to/basic_model.conf', 'path/to/basic_policy.csv');
   // MySQL DB:
-  // a := mysqladapter.NewDBAdapter("mysql", "mysql_username:mysql_password@tcp(127.0.0.1:3306)/")
-  // e := casbin.NewEnforcer("path/to/basic_model.conf", a)
+  // const a = new MySQLAdapter('mysql', 'mysql_username:mysql_password@tcp(127.0.0.1:3306)/');
+  // const e = new Enforcer('path/to/basic_model.conf', a);
   constructor(...params: any[]) {
     this.rm = new DefaultRoleManager(10);
     this.eft = new DefaultEffector();
