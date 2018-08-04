@@ -38,10 +38,10 @@ export class Enforcer {
   // constructor is the constructor for Enforcer.
   // It creates an enforcer via file or DB.
   // File:
-  // e := NewEnforcer("path/to/basic_model.conf", "path/to/basic_policy.csv")
+  // const e = new Enforcer('path/to/basic_model.conf', 'path/to/basic_policy.csv');
   // MySQL DB:
-  // a := mysqladapter.NewDBAdapter("mysql", "mysql_username:mysql_password@tcp(127.0.0.1:3306)/")
-  // e := casbin.NewEnforcer("path/to/basic_model.conf", a)
+  // const a = new MySQLAdapter('mysql', 'mysql_username:mysql_password@tcp(127.0.0.1:3306)/');
+  // const e = new Enforcer('path/to/basic_model.conf', a);
   constructor(...params: any[]) {
     this.rm = new DefaultRoleManager(10);
     this.eft = new DefaultEffector();
@@ -107,7 +107,7 @@ export class Enforcer {
 
     this.initialize();
 
-    if (!this.adapter) {
+    if (this.adapter) {
       // error intentionally ignored
       this.loadPolicy();
     }
@@ -277,88 +277,75 @@ export class Enforcer {
       return true;
     }
 
-    const functions = new Map<string, any>();
+    const functions: { [key: string]: any } = {};
     this.fm.forEach((value, key) => {
-      functions.set(key, value);
+      functions[key] = value;
     });
 
     const astMap = this.model.model.get('g');
     if (astMap) {
       astMap.forEach((value, key) => {
         const rm = value.rm;
-        functions.set(key, generateGFunction(rm));
+        functions[key] = generateGFunction(rm);
       });
     }
 
-    // console.log('this.model.model: ', this.model.model);
-    const astItem = [...(this.model.model.get('m') || [])].find(
-      ([key]) => key === 'm'
-    );
-    if (!astItem) {
-      throw new Error('Ast is undefined');
+    // @ts-ignore
+    const expString = this.model.model.get('m').get('m').value;
+    if (!expString) {
+      throw new Error('model is undefined');
     }
-    const [, ast] = astItem;
 
-    const functionsForJs: { [key: string]: any } = {};
-    functions.forEach((value, key) => {
-      functionsForJs[key] = value;
-    });
+    const expression = compile(expString);
 
-    const expression = compile(ast.value);
-
-    let result: boolean = false;
-
-    let policyEffects: number[];
+    let policyEffects: Effect[];
     let matcherResults: number[];
-    const pRootValue = this.model.model.get('p');
-    const { policy }: any = pRootValue && pRootValue.get('p');
+    // @ts-ignore
+    const policyLen = this.model.model.get('p').get('p').policy.length;
+    if (policyLen !== 0) {
+      policyEffects = new Array(policyLen);
+      matcherResults = new Array(policyLen);
 
-    if (policy.length > 0) {
-      policyEffects = new Array(policy.length);
-      matcherResults = new Array(policy.length);
+      for (let i = 0; i < policyLen; i++) {
+        // @ts-ignore
+        const pvals = this.model.model.get('p').get('p').policy[i];
 
-      for (let i = 0; i < policy.length; i++) {
-        const pvals = policy[i];
-        logPrint('Policy Rule: ', pvals);
+        // logPrint('Policy Rule: ', pvals);
 
-        const rRootValue = this.model.model.get('r');
-        const rValue = rRootValue && rRootValue.get('r');
-        let tokens = rValue && rValue.tokens;
-        if (!tokens) {
-          throw new Error('tokens is undefined');
-        }
-        tokens.forEach((n, index) => {
-          functionsForJs[n] = rvals[index];
+        const parameters: { [key: string]: any } = {};
+        // @ts-ignore
+        this.model.model.get('r').get('r').tokens.forEach((token, j) => {
+          parameters[token] = rvals[j].trim();
+        });
+        // @ts-ignore
+        this.model.model.get('p').get('p').tokens.forEach((token, j) => {
+          parameters[token] = pvals[j].trim();
         });
 
-        const pValue = pRootValue && pRootValue.get('p');
-        tokens = pValue && pValue.tokens;
-        if (!tokens) {
-          throw new Error('tokens is undefined');
-        }
-        tokens.forEach((n, index) => {
-          functionsForJs[n] = rvals[index];
-        });
+        const result = expression({...parameters, ...functions});
+        // logPrint(`Result: ${result}`);
 
-        result = expression(functionsForJs);
-        logPrint(`Result: ${result}`);
-
-        if (typeof result === 'boolean') {
-          if (!result) {
-            policyEffects[i] = Effect.Indeterminate;
-          }
-        } else if (typeof result === 'number') {
-          if (result === 0) {
-            policyEffects[i] = Effect.Indeterminate;
-          } else {
-            matcherResults[i] = result;
-          }
-        } else {
-          throw new Error('matcher result should be bool, int or float');
+        switch (typeof result) {
+          case 'boolean':
+            if (!result) {
+              policyEffects[i] = Effect.Indeterminate;
+              continue;
+            }
+            break;
+          case 'number':
+            if (result === 0) {
+              policyEffects[i] = Effect.Indeterminate;
+              continue;
+            } else {
+              matcherResults[i] = result;
+            }
+            break;
+          default:
+            throw new Error('matcher result should be boolean or number');
         }
 
-        if (_.has(functionsForJs, 'p_eft')) {
-          const eft = _.get(functionsForJs, 'p_eft');
+        if (_.has(parameters, 'p_eft')) {
+          const eft = _.get(parameters, 'p_eft');
           if (eft === 'allow') {
             policyEffects[i] = Effect.Allow;
           } else if (eft === 'deny') {
@@ -369,38 +356,28 @@ export class Enforcer {
         } else {
           policyEffects[i] = Effect.Allow;
         }
-        const eRootMap = this.model.model.get('e');
-        const eValue = eRootMap && eRootMap.get('e');
-        if (eValue) {
-          if (_.indexOf(['priority(p_eft)', 'deny'], eValue.value) > -1) {
-            break;
-          }
+
+        // @ts-ignore
+        if (this.model.model.get('e').get('e').value === 'priority(p_eft) || deny') {
+          break;
         }
       }
     } else {
       policyEffects = new Array(1);
       matcherResults = new Array(1);
 
-      const rRootValue = this.model.model.get('r');
-      const rValue = rRootValue && rRootValue.get('r');
-      let tokens = rValue && rValue.tokens;
-      if (!tokens) {
-        throw new Error('tokens is undefined');
-      }
-      tokens.forEach((n, i) => {
-        functionsForJs[n] = rvals[i];
+      const parameters: { [key: string]: any } = {};
+      // @ts-ignore
+      this.model.model.get('r').get('r').tokens.forEach((token, j) => {
+        parameters[token] =  rvals[j];
+      });
+      // @ts-ignore
+      this.model.model.get('p').get('p').tokens.forEach((token) => {
+        parameters[token] = '';
       });
 
-      const pValue = pRootValue && pRootValue.get('p');
-      tokens = pValue && pValue.tokens;
-      if (!tokens) {
-        throw new Error('tokens is undefined');
-      }
-      tokens.forEach((n, i) => {
-        functionsForJs[n] = rvals[i];
-      });
-      result = expression(functionsForJs);
-      logPrint(`Result: ${result}`);
+      const result = expression({...parameters, ...functions});
+      // logPrint(`Result: ${result}`);
 
       if (result) {
         policyEffects[0] = Effect.Allow;
@@ -409,29 +386,26 @@ export class Enforcer {
       }
     }
 
-    logPrint(`Rule Results: ${policyEffects}`);
+    // logPrint(`Rule Results: ${policyEffects}`);
 
-    const eRootMapValue = this.model.model.get('e');
-    const eMap = eRootMapValue && eRootMapValue.get('e');
-    if (eMap) {
-      result = this.eft.mergeEffects(eMap.value, policyEffects, matcherResults);
-    }
+    // @ts-ignore
+    const res = this.eft.mergeEffects(this.model.model.get('e').get('e').value, policyEffects, matcherResults);
 
     // only generate the request --> result string if the message
     // is going to be logged.
     if (getEnableLog()) {
       let reqStr = 'Request: ';
       for (let i = 0; i < rvals.length; i++) {
-        if (i + 1 !== rvals.length) {
+        if (i !== rvals.length - 1) {
           reqStr += `${rvals[i]}, `;
         } else {
           reqStr += rvals[i];
         }
       }
-      reqStr += ` ---> ${result}`;
+      reqStr += ` ---> ${res}`;
       logPrint(reqStr);
     }
 
-    return result;
+    return res;
   }
 }
