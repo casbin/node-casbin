@@ -136,8 +136,8 @@ function ipMatchFunc(...args: any[]): boolean {
 }
 
 // generateGFunction is the factory method of the g(_, _) function.
-const generateGFunction: (rm: rbac.RoleManager) => any = (rm: rbac.RoleManager) => {
-  const func: (...args: any[]) => boolean = (...args: any[]) => {
+function generateGFunction(rm: rbac.RoleManager): any {
+  return function func(...args: any[]): boolean {
     const name1: string = _.toString(args[0]);
     const name2: string = _.toString(args[1]);
 
@@ -150,8 +150,7 @@ const generateGFunction: (rm: rbac.RoleManager) => any = (rm: rbac.RoleManager) 
       return rm.hasLink(name1, name2, domain);
     }
   };
-  return func;
-};
+}
 
 export {
   keyMatchFunc,
