@@ -47,33 +47,16 @@ export class Enforcer {
   private autoSave: boolean;
   private autoBuildRoleLinks: boolean;
 
-  /**
-   * constructor is the constructor for Enforcer.
-   */
-  constructor() {
-    this.modelPath = '';
-    this.model = new Model();
-    this.fm = new Map<string, any>();
-    this.eft = new DefaultEffector();
-
-    this.adapter = new DefaultFilteredAdapter('');
-    this.rm = new DefaultRoleManager(0);
-
-    this.enabled = false;
-    this.autoSave = false;
-    this.autoBuildRoleLinks = false;
-  }
-
-  // NewEnforcer creates an enforcer via file or DB.
+  // constructor is the constructor for Enforcer.
+  // It creates an enforcer via file or DB.
   // File:
-  // e := casbin.NewEnforcer("path/to/basic_model.conf", "path/to/basic_policy.csv")
+  // e := NewEnforcer("path/to/basic_model.conf", "path/to/basic_policy.csv")
   // MySQL DB:
   // a := mysqladapter.NewDBAdapter("mysql", "mysql_username:mysql_password@tcp(127.0.0.1:3306)/")
   // e := casbin.NewEnforcer("path/to/basic_model.conf", a)
-  public static newEnforcer(...params: any[]): Enforcer {
-    const e = new Enforcer();
-    e.rm = new DefaultRoleManager(10);
-    e.eft = new DefaultEffector();
+  constructor(...params: any[]) {
+    this.rm = new DefaultRoleManager(10);
+    this.eft = new DefaultEffector();
 
     let parsedParamLen = 0;
     if (params.length >= 1) {
@@ -87,30 +70,28 @@ export class Enforcer {
     if (params.length - parsedParamLen === 2) {
       if (typeof params[0] === 'string') {
         if (typeof params[1] === 'string') {
-          e.initWithFile(params[0].toString(), params[1].toString());
+          this.initWithFile(params[0].toString(), params[1].toString());
         } else {
-          e.initWithAdapter(params[0].toString(), params[1]);
+          this.initWithAdapter(params[0].toString(), params[1]);
         }
       } else {
         if (typeof params[1] === 'string') {
           throw new Error('Invalid parameters for enforcer.');
         } else {
-          e.initWithModelAndAdapter(params[0], params[1]);
+          this.initWithModelAndAdapter(params[0], params[1]);
         }
       }
     } else if (params.length - parsedParamLen === 1) {
       if (typeof params[0] === 'string') {
-        e.initWithFile(params[0].toString, '');
+        this.initWithFile(params[0].toString, '');
       } else {
-        e.initWithModelAndAdapter(params[0], new FileAdapter(''));
+        this.initWithModelAndAdapter(params[0], new FileAdapter(''));
       }
     } else if (params.length === parsedParamLen) {
-      e.initWithFile('', '');
+      this.initWithFile('', '');
     } else {
       throw new Error('Invalid parameters for enforcer.');
     }
-
-    return e;
   }
 
   // initWithFile initializes an enforcer with a model file and a policy file.
@@ -122,7 +103,6 @@ export class Enforcer {
   // initWithAdapter initializes an enforcer with a database adapter.
   public initWithAdapter(modelPath: string, adapter: Adapter): void {
     const m = Enforcer.newModel(modelPath, '');
-    // console.log('modelPath, ', modelPath);
     this.initWithModelAndAdapter(m, adapter);
 
     this.modelPath = modelPath;
@@ -131,7 +111,7 @@ export class Enforcer {
   // initWithModelAndAdapter initializes an enforcer with a model and a database adapter.
   public initWithModelAndAdapter(m: Model, adapter: Adapter): void {
     this.adapter = adapter;
-    // this.watcher = new Watcher();
+    this.watcher = null;
 
     this.model = m;
     this.model.printModel();

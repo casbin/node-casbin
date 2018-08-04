@@ -19,7 +19,7 @@ function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: bo
 }
 
 test('testBasicModel', () => {
-  const e = Enforcer.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
+  const e = new Enforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
 
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data1', 'write', false);
@@ -32,7 +32,7 @@ test('testBasicModel', () => {
 });
 
 test('testBasicModelNoPolicy', () => {
-  const e = Enforcer.newEnforcer('examples/basic_model.conf');
+  const e = new Enforcer('examples/basic_model.conf');
 
   testEnforce(e, 'alice', 'data1', 'read', false);
   testEnforce(e, 'alice', 'data1', 'write', false);
