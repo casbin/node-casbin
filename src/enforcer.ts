@@ -1,13 +1,13 @@
 // Copyright 2018 The Casbin Authors. All Rights Reserved.
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
+// Licensed under the Apache License, Version 2.0 (the 'License');
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //      http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
+// distributed under the License is distributed on an 'AS IS' BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -21,11 +21,13 @@ import * as _ from 'lodash';
 import { Adapter, FileAdapter, Filter, FilteredAdapter, Watcher } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 
+const NotImplemented = 'not implemented';
+
 // Enforcer is the main interface for authorization enforcement and policy management.
 export class Enforcer {
   public model: Model;
   private modelPath: string;
-  private fm: Map<string, any>;
+  private fm: FunctionMap;
   public eft: Effector;
 
   private adapter: FilteredAdapter | Adapter;
@@ -272,15 +274,15 @@ export class Enforcer {
     this.model.buildRoleLinks(this.rm);
   }
 
-  // Enforce decides whether a "subject" can access a "object" with the
-  // operation "action", input parameters are usually: (sub, obj, act).
+  // Enforce decides whether a 'subject' can access a 'object' with the
+  // operation 'action', input parameters are usually: (sub, obj, act).
   public enforce(...rvals: any[]): boolean {
     if (!this.enabled) {
       return true;
     }
 
     const functions: { [key: string]: any } = {};
-    this.fm.forEach((value, key) => {
+    this.fm.getFunctions().forEach((value: any, key: string) => {
       functions[key] = value;
     });
 
@@ -324,7 +326,7 @@ export class Enforcer {
           parameters[token] = pvals[j].trim();
         });
 
-        const result = expression({...parameters, ...functions});
+        const result = expression({ ...parameters, ...functions });
         // logPrint(`Result: ${result}`);
 
         switch (typeof result) {
@@ -371,14 +373,14 @@ export class Enforcer {
       const parameters: { [key: string]: any } = {};
       // @ts-ignore
       this.model.model.get('r').get('r').tokens.forEach((token, j) => {
-        parameters[token] =  rvals[j];
+        parameters[token] = rvals[j];
       });
       // @ts-ignore
       this.model.model.get('p').get('p').tokens.forEach((token) => {
         parameters[token] = '';
       });
 
-      const result = expression({...parameters, ...functions});
+      const result = expression({ ...parameters, ...functions });
       // logPrint(`Result: ${result}`);
 
       if (result) {
@@ -410,4 +412,78 @@ export class Enforcer {
 
     return res;
   }
+
+  // **************Internal API*************
+  // addPolicy adds a rule to the current policy.
+  public addPolicy(sec: string | any[], key?: string, rule?: string[]): boolean {
+    if (typeof sec === 'string' && key && rule) {
+      const ruleAdded = this.model.addPolicy(sec, key, rule);
+      if (!ruleAdded) {
+        return ruleAdded;
+      }
+
+      if (this.adapter !== null && this.autoSave) {
+        this.adapter.addPolicy(sec, key, rule);
+        if (this.watcher !== null) {
+          // error intentionally ignored
+          this.watcher.update();
+        }
+      }
+
+      return ruleAdded;
+    } else if (sec instanceof Array) {
+      return this.addNamedPolicy('p', sec);
+    } else {
+      return false;
+    }
+  }
+
+  // removePolicy removes a rule from the current policy.
+  public removePolicy(sec: string | any[], key?: string, rule?: string[]): boolean {
+    if (typeof sec === 'string' && key && rule) {
+      const ruleRemoved = this.model.removePolicy(sec, key, rule);
+      if (!ruleRemoved) {
+        return ruleRemoved;
+      }
+
+      if (this.adapter !== null && this.autoSave) {
+        this.adapter.removePolicy(sec, key, rule);
+        if (this.watcher !== null) {
+          // error intentionally ignored
+          this.watcher.update();
+        }
+      }
+
+      return ruleRemoved;
+    } else if (sec instanceof Array) {
+      return this.removeNamedPolicy('p', sec);
+    } else {
+      return false;
+    }
+  }
+
+  // removeFilteredPolicy removes rules based on field filters from the current policy.
+  public removeFilteredPolicy(sec: string | number, key: string | string[], fieldIndex?: number, fieldValues?: string[]): boolean {
+    if (typeof sec === 'string' && typeof key === 'string' && fieldIndex && fieldValues instanceof Array) {
+      const ruleRemoved = this.model.removeFilteredPolicy(sec, key, fieldIndex, ...fieldValues);
+      if (!ruleRemoved) {
+        return ruleRemoved;
+      }
+
+      if (this.adapter !== null && this.autoSave) {
+        this.adapter.removeFilteredPolicy(sec, key, fieldIndex, ...fieldValues);
+        if (this.watcher !== null) {
+          // error intentionally ignored
+          this.watcher.update();
+        }
+      }
+
+      return ruleRemoved;
+    } else if (typeof sec === 'number' && key instanceof Array) {
+      return this.removeFilteredNamedPolicy('p', sec, key);
+    } else {
+      return false;
+    }
+  }
+
 }
