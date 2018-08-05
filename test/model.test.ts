@@ -203,3 +203,29 @@ test('TestKeyMatch2Model', () => {
   testEnforce(e, 'alice', '/alice_data2/myid', 'GET', false);
   testEnforce(e, 'alice', '/alice_data2/myid/using/res_id', 'GET', true);
 });
+
+function customFunction(key1: string, key2: string): boolean {
+  if (key1 === '/alice_data2/myid/using/res_id' && key2 === '/alice_data/:resource') {
+    return true;
+  } else if (key1 === '/alice_data2/myid/using/res_id' && key2 === '/alice_data2/:id/using/:resId') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function customFunctionWrapper(...args: any[]): boolean {
+  const name1: string = _.toString(args[0]);
+  const name2: string = _.toString(args[1]);
+
+  return customFunction(name1, name2);
+}
+
+test('TestKeyMatchCustomModel', () => {
+  const e = new Enforcer('examples/keymatch_custom_model.conf', 'examples/keymatch2_policy.csv');
+
+  // e.addFunction('keyMatchCustom', customFunctionWrapper);
+
+  testEnforce(e, 'alice', '/alice_data2/myid', 'GET', false);
+  testEnforce(e, 'alice', '/alice_data2/myid/using/res_id', 'GET', true);
+});
