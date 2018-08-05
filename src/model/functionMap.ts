@@ -26,7 +26,7 @@ export class FunctionMap {
   }
 
   // loadFunctionMap loads an initial function map.
-  public static loadFunctionMap(): Map<string, any> {
+  public static loadFunctionMap(): FunctionMap {
     const fm = new FunctionMap();
 
     fm.addFunction('keyMatch', util.keyMatchFunc);
@@ -34,7 +34,7 @@ export class FunctionMap {
     fm.addFunction('regexMatch', util.regexMatchFunc);
     fm.addFunction('ipMatch', util.ipMatchFunc);
 
-    return fm.getFunctions();
+    return fm;
   }
 
   // addFunction adds an expression function.
