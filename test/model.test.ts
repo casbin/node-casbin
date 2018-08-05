@@ -253,3 +253,22 @@ test('TestIPMatchModel', () => {
   testEnforce(e, '192.168.0.1', 'data2', 'read', false);
   testEnforce(e, '192.168.0.1', 'data2', 'write', false);
 });
+
+test('TestPriorityModel', () => {
+  const e = new Enforcer('examples/priority_model.conf', 'examples/priority_policy.csv');
+
+  testEnforce(e, 'alice', 'data1', 'read', true);
+  testEnforce(e, 'alice', 'data1', 'write', false);
+  testEnforce(e, 'alice', 'data2', 'read', false);
+  testEnforce(e, 'alice', 'data2', 'write', false);
+  testEnforce(e, 'bob', 'data1', 'read', false);
+  testEnforce(e, 'bob', 'data1', 'write', false);
+  testEnforce(e, 'bob', 'data2', 'read', true);
+  testEnforce(e, 'bob', 'data2', 'write', false);
+});
+
+test('TestPriorityModelIndeterminate', () => {
+  const e = new Enforcer('examples/priority_model.conf', 'examples/priority_indeterminate_policy.csv');
+
+  testEnforce(e, 'alice', 'data1', 'read', false);
+});
