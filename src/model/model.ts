@@ -209,7 +209,7 @@ export class Model {
   }
 
   // getFilteredPolicy gets rules based on field filters from a policy.
-  public getFilteredPolicy(sec: string, key: string, fieldIndex: number, ...fieldValues: string[]): string[][] {
+  public getFilteredPolicy(sec: string, key: string, fieldIndex: number, ...fieldValues: string[]): [string[]] {
     const res = [];
 
     const astMap = _.get(this.model, sec);
@@ -229,6 +229,7 @@ export class Model {
       }
     }
 
+    // @ts-ignore
     return res;
   }
 

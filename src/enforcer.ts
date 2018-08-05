@@ -21,11 +21,13 @@ import * as _ from 'lodash';
 import { Adapter, FileAdapter, Filter, FilteredAdapter, Watcher } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 
+const NotImplemented = 'not implemented';
+
 // Enforcer is the main interface for authorization enforcement and policy management.
 export class Enforcer {
   public model: Model;
   private modelPath: string;
-  private fm: Map<string, any>;
+  private fm: FunctionMap;
   public eft: Effector;
 
   private adapter: FilteredAdapter | Adapter;
@@ -280,7 +282,7 @@ export class Enforcer {
     }
 
     const functions: { [key: string]: any } = {};
-    this.fm.forEach((value, key) => {
+    this.fm.getFunctions().forEach((value: any, key: string) => {
       functions[key] = value;
     });
 
@@ -324,7 +326,7 @@ export class Enforcer {
           parameters[token] = pvals[j].trim();
         });
 
-        const result = expression({...parameters, ...functions});
+        const result = expression({ ...parameters, ...functions });
         // logPrint(`Result: ${result}`);
 
         switch (typeof result) {
@@ -371,14 +373,14 @@ export class Enforcer {
       const parameters: { [key: string]: any } = {};
       // @ts-ignore
       this.model.model.get('r').get('r').tokens.forEach((token, j) => {
-        parameters[token] =  rvals[j];
+        parameters[token] = rvals[j];
       });
       // @ts-ignore
       this.model.model.get('p').get('p').tokens.forEach((token) => {
         parameters[token] = '';
       });
 
-      const result = expression({...parameters, ...functions});
+      const result = expression({ ...parameters, ...functions });
       // logPrint(`Result: ${result}`);
 
       if (result) {
@@ -409,5 +411,380 @@ export class Enforcer {
     }
 
     return res;
+  }
+
+  // **************Internal API*************
+  // addPolicy adds a rule to the current policy.
+  public addPolicy(sec: string | any[], key?: string, rule?: string[]): boolean {
+    if (typeof sec === 'string' && key && rule) {
+      const ruleAdded = this.model.addPolicy(sec, key, rule);
+      if (!ruleAdded) {
+        return ruleAdded;
+      }
+
+      if (this.adapter !== null && this.autoSave) {
+        this.adapter.addPolicy(sec, key, rule);
+        if (this.watcher !== null) {
+          // error intentionally ignored
+          this.watcher.update();
+        }
+      }
+
+      return ruleAdded;
+    } else if (sec instanceof Array) {
+      return this.addNamedPolicy('p', sec);
+    } else {
+      return false;
+    }
+  }
+
+  // removePolicy removes a rule from the current policy.
+  public removePolicy(sec: string | any[], key?: string, rule?: string[]): boolean {
+    if (typeof sec === 'string' && key && rule) {
+      const ruleRemoved = this.model.removePolicy(sec, key, rule);
+      if (!ruleRemoved) {
+        return ruleRemoved;
+      }
+
+      if (this.adapter !== null && this.autoSave) {
+        this.adapter.removePolicy(sec, key, rule);
+        if (this.watcher !== null) {
+          // error intentionally ignored
+          this.watcher.update();
+        }
+      }
+
+      return ruleRemoved;
+    } else if (sec instanceof Array) {
+      return this.removeNamedPolicy('p', sec);
+    } else {
+      return false;
+    }
+  }
+
+  // removeFilteredPolicy removes rules based on field filters from the current policy.
+  public removeFilteredPolicy(sec: string | number, key: string | string[], fieldIndex?: number, fieldValues?: string[]): boolean {
+    if (typeof sec === 'string' && typeof key === 'string' && fieldIndex && fieldValues instanceof Array) {
+      const ruleRemoved = this.model.removeFilteredPolicy(sec, key, fieldIndex, ...fieldValues);
+      if (!ruleRemoved) {
+        return ruleRemoved;
+      }
+
+      if (this.adapter !== null && this.autoSave) {
+        this.adapter.removeFilteredPolicy(sec, key, fieldIndex, ...fieldValues);
+        if (this.watcher !== null) {
+          // error intentionally ignored
+          this.watcher.update();
+        }
+      }
+
+      return ruleRemoved;
+    } else if (typeof sec === 'number' && key instanceof Array) {
+      return this.removeFilteredNamedPolicy('p', sec, key);
+    } else {
+      return false;
+    }
+  }
+
+  // **************Management API*************
+  // getAllSubjects gets the list of subjects that show up in the current policy.
+  public getAllSubjects(): string[] {
+    return this.getAllNamedSubjects('p');
+  }
+
+  // getAllNamedSubjects gets the list of subjects that show up in the current named policy.
+  public getAllNamedSubjects(ptype: string): string[] {
+    return this.model.getValuesForFieldInPolicy('p', ptype, 0);
+  }
+
+  // getAllObjects gets the list of objects that show up in the current policy.
+  public getAllObjects(): string[] {
+    return this.getAllNamedObjects('p');
+  }
+
+  // getAllNamedObjects gets the list of objects that show up in the current named policy.
+  public getAllNamedObjects(ptype: string): string[] {
+    return this.model.getValuesForFieldInPolicy('p', ptype, 1);
+  }
+
+  // getAllActions gets the list of actions that show up in the current policy.
+  public getAllActions(): string[] {
+    return this.getAllNamedActions('p');
+  }
+
+  // getAllNamedActions gets the list of actions that show up in the current named policy.
+  public getAllNamedActions(ptype: string): string[] {
+    return this.model.getValuesForFieldInPolicy('p', ptype, 2);
+  }
+
+  // getAllRoles gets the list of roles that show up in the current policy.
+  public getAllRoles(): string[] {
+    return this.getAllNamedRoles('g');
+  }
+
+  // getAllNamedRoles gets the list of roles that show up in the current named policy.
+  public getAllNamedRoles(ptype: string): string[] {
+    return this.model.getValuesForFieldInPolicy('g', ptype, 1);
+  }
+
+  // getPolicy gets all the authorization rules in the policy.
+  public getPolicy(): [string[]] {
+    return this.getNamedPolicy('p');
+  }
+
+  // getFilteredPolicy gets all the authorization rules in the policy, field filters can be specified.
+  public getFilteredPolicy(fieldIndex: number, ...fieldValues: string[]): [string[]] {
+    return this.getFilteredNamedPolicy('p', fieldIndex, ...fieldValues);
+  }
+
+  // getNamedPolicy gets all the authorization rules in the named policy.
+  public getNamedPolicy(ptype: string): [string[]] {
+    return this.model.getPolicy('p', ptype);
+  }
+
+  // getFilteredNamedPolicy gets all the authorization rules in the named policy, field filters can be specified.
+  public getFilteredNamedPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): [string[]] {
+    return this.model.getFilteredPolicy('p', ptype, fieldIndex, ...fieldValues);
+  }
+
+  // getGroupingPolicy gets all the role inheritance rules in the policy.
+  public getGroupingPolicy(): [string[]] {
+    return this.getNamedGroupingPolicy('g');
+  }
+
+  // getFilteredGroupingPolicy gets all the role inheritance rules in the policy, field filters can be specified.
+  public getFilteredGroupingPolicy(fieldIndex: number, ...fieldValues: string[]): [string[]] {
+    return this.getFilteredNamedGroupingPolicy('g', fieldIndex, ...fieldValues);
+  }
+
+  // getNamedGroupingPolicy gets all the role inheritance rules in the policy.
+  public getNamedGroupingPolicy(ptype: string): [string[]] {
+    return this.model.getPolicy('g', ptype);
+  }
+
+  // getFilteredNamedGroupingPolicy gets all the role inheritance rules in the policy, field filters can be specified.
+  public getFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): [string[]] {
+    return this.model.getFilteredPolicy('g', ptype, fieldIndex, ...fieldValues);
+  }
+
+  // hasPolicy determines whether an authorization rule exists.
+  public hasPolicy(...params: any[]): boolean {
+    return this.hasNamedPolicy('p', ...params);
+  }
+
+  // hasNamedPolicy determines whether a named authorization rule exists.
+  public hasNamedPolicy(ptype: string, ...params: any[]): boolean {
+    if (params.length === 1 && params[0] instanceof Array) {
+      return this.model.hasPolicy('p', ptype, params[0]);
+    }
+
+    return this.model.hasPolicy('p', ptype, params);
+  }
+
+  // addNamedPolicy adds an authorization rule to the current named policy.
+  // If the rule already exists, the function returns false and the rule will not be added.
+  // Otherwise the function returns true by adding the new rule.
+  public addNamedPolicy(ptype: string, params: any[]): boolean {
+    let ruleAdded = false;
+    if (params.length === 1 && params[0] instanceof Array) {
+      ruleAdded = this.addPolicy('p', ptype, params[0]);
+    } else {
+      ruleAdded = this.addPolicy('p', ptype, params);
+    }
+
+    return ruleAdded;
+  }
+
+  // removeNamedPolicy removes an authorization rule from the current named policy.
+  public removeNamedPolicy(ptype: string, params: any[]): boolean {
+    let ruleRemoved = false;
+    if (params.length === 1 && params[0] instanceof Array) {
+      ruleRemoved = this.removePolicy('p', ptype, params[0]);
+    } else {
+      ruleRemoved = this.removePolicy('p', ptype, params);
+    }
+
+    return ruleRemoved;
+  }
+
+  // removeFilteredNamedPolicy removes an authorization rule from the current named policy, field filters can be specified.
+  public removeFilteredNamedPolicy(ptype: string, fieldIndex: number, fieldValues: string[]): boolean {
+    return this.removeFilteredPolicy('p', ptype, fieldIndex, fieldValues);
+  }
+
+  // hasGroupingPolicy determines whether a role inheritance rule exists.
+  public hasGroupingPolicy(...params: any[]): boolean {
+    return this.hasNamedGroupingPolicy('g', params);
+  }
+
+  // hasNamedGroupingPolicy determines whether a named role inheritance rule exists.
+  public hasNamedGroupingPolicy(ptype: string, ...params: any[]): boolean {
+    if (params.length === 1 && params[0] instanceof Array) {
+      return this.model.hasPolicy('g', ptype, params[0]);
+    }
+
+    return this.model.hasPolicy('g', ptype, params);
+  }
+
+  // addGroupingPolicy adds a role inheritance rule to the current policy.
+  // If the rule already exists, the function returns false and the rule will not be added.
+  // Otherwise the function returns true by adding the new rule.
+  public addGroupingPolicy(...params: any[]): boolean {
+    return this.addNamedGroupingPolicy('g', params);
+  }
+
+  // addNamedGroupingPolicy adds a named role inheritance rule to the current policy.
+  // If the rule already exists, the function returns false and the rule will not be added.
+  // Otherwise the function returns true by adding the new rule.
+  public addNamedGroupingPolicy(ptype: string, ...params: any[]): boolean {
+    let ruleadded = false;
+    if (params.length === 1 && params[0] instanceof Array) {
+      ruleadded = this.addPolicy('g', ptype, params[0]);
+    } else {
+      ruleadded = this.addPolicy('g', ptype, params);
+    }
+
+    if (this.autoBuildRoleLinks) {
+      this.buildRoleLinks();
+    }
+
+    return ruleadded;
+  }
+
+  // removeGroupingPolicy removes a role inheritance rule from the current policy.
+  public removeGroupingPolicy(...params: any[]): boolean {
+    return this.removeNamedGroupingPolicy('g', params);
+  }
+
+  // removeFilteredGroupingPolicy removes a role inheritance rule from the current policy, field filters can be specified.
+  public removeFilteredGroupingPolicy(fieldIndex: number, ...fieldValues: string[]): boolean {
+    return this.removeFilteredNamedGroupingPolicy('g', fieldIndex, ...fieldValues);
+  }
+
+  // removeNamedGroupingPolicy removes a role inheritance rule from the current named policy.
+  public removeNamedGroupingPolicy(ptype: string, ...params: any[]): boolean {
+    let ruleRemoved = false;
+    if (params.length === 1 && params[0] instanceof Array) {
+      ruleRemoved = this.removePolicy('g', ptype, params[0]);
+    } else {
+      ruleRemoved = this.removePolicy('g', ptype, params);
+    }
+
+    if (this.autoBuildRoleLinks) {
+      this.buildRoleLinks();
+    }
+    return ruleRemoved;
+  }
+
+  // removeFilteredNamedGroupingPolicy removes a role inheritance rule from the current named policy, field filters can be specified.
+  public removeFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): boolean {
+    const ruleRemoved = this.removeFilteredPolicy('g', ptype, fieldIndex, fieldValues);
+    if (this.autoBuildRoleLinks) {
+      this.buildRoleLinks();
+    }
+    return ruleRemoved;
+  }
+
+  // addFunction adds a customized function.
+  public addFunction(name: string, func: any): void {
+    this.fm.addFunction(name, func);
+  }
+
+  // **************RBAC API*************
+  // getRolesForUser gets the roles that a user has.
+  public getRolesForUser(name: string): string[] {
+    // @ts-ignore
+    const rm = this.model.model.get('g').get('g').rm;
+    const result = rm.getRoles(name);
+    return result;
+  }
+
+  // getUsersForRole gets the users that has a role.
+  public getUsersForRole(name: string): string[] {
+    // @ts-ignore
+    const rm = this.model.model.get('g').get('g').rm;
+    const result = rm.getUsers(name);
+    return result;
+  }
+
+  // hasRoleForUser determines whether a user has a role.
+  public hasRoleForUser(name: string, role: string): boolean {
+    const roles = this.getRolesForUser(name);
+    let hasRole: boolean = false;
+    for (const r of roles) {
+      if (r === role) {
+        hasRole = true;
+        break;
+      }
+    }
+
+    return hasRole;
+  }
+
+  // addRoleForUser adds a role for a user.
+  // Returns false if the user already has the role (aka not affected).
+  public addRoleForUser(user: string, role: string): boolean {
+    return this.addGroupingPolicy(user, role);
+  }
+
+  // deleteRoleForUser deletes a role for a user.
+  // Returns false if the user does not have the role (aka not affected).
+  public deleteRoleForUser(user: string, role: string): boolean {
+    return this.removeGroupingPolicy(user, role);
+  }
+
+  // DeleteRolesForUser deletes all roles for a user.
+  // Returns false if the user does not have any roles (aka not affected).
+  public deleteRolesForUser(user: string): boolean {
+    return this.removeFilteredGroupingPolicy(0, user);
+  }
+
+  // deleteUser deletes a user.
+  // Returns false if the user does not exist (aka not affected).
+  public deleteUser(user: string): boolean {
+    return this.removeFilteredGroupingPolicy(0, user);
+  }
+
+  // deleteRole deletes a role.
+  public deleteRole(role: string) {
+    this.removeFilteredGroupingPolicy(1, role);
+    this.removeFilteredPolicy(0, role);
+  }
+
+  // deletePermission deletes a permission.
+  // Returns false if the permission does not exist (aka not affected).
+  public deletePermission(...permission: string[]): boolean {
+    return this.removeFilteredPolicy(1, permission);
+  }
+
+  // addPermissionForUser adds a permission for a user or role.
+  // Returns false if the user or role already has the permission (aka not affected).
+  public addPermissionForUser(user: string, ...permission: string[]): boolean {
+    permission.unshift(user);
+    return this.addPolicy(permission);
+  }
+
+  // deletePermissionForUser deletes a permission for a user or role.
+  // Returns false if the user or role does not have the permission (aka not affected).
+  public deletePermissionForUser(user: string, ...permission: string[]): boolean {
+    permission.unshift(user);
+    return this.removePolicy(permission);
+  }
+
+  // deletePermissionsForUser deletes permissions for a user or role.
+  // Returns false if the user or role does not have any permissions (aka not affected).
+  public deletePermissionsForUser(user: string): boolean {
+    return this.removeFilteredPolicy(0, user);
+  }
+
+  // getPermissionsForUser gets permissions for a user or role.
+  public getPermissionsForUser(user: string): [string[]] {
+    return this.getFilteredPolicy(0, user);
+  }
+
+  // hasPermissionForUser determines whether a user has a permission.
+  public hasPermissionForUser(user: string, ...permission: string[]): boolean {
+    permission.unshift(user);
+    return this.hasPolicy(permission);
   }
 }
