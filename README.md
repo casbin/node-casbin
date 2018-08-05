@@ -8,11 +8,19 @@ node-casbin
 [![Patreon](https://img.shields.io/badge/patreon-donate-yellow.svg)](http://www.patreon.com/yangluo)
 [![Sourcegraph Badge](https://sourcegraph.com/github.com/casbin/casbin/-/badge.svg)](https://sourcegraph.com/github.com/casbin/casbin?badge)
 
-**News**: still worry about how to write the correct Node-Casbin policy? ``Casbin online editor`` is coming to help! Try it at: http://casbin.org/editor/
+**News**: still worry about how to write the correct node-casbin policy? ``Casbin online editor`` is coming to help! Try it at: http://casbin.org/editor/
 
 ![casbin Logo](casbin-logo.png)
 
-node-casbin is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https://en.wikipedia.org/wiki/Computer_security_model). This project is a Node.JS port of the original Golang [Casbin](https://github.com/casbin/casbin).
+node-casbin is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https://en.wikipedia.org/wiki/Computer_security_model).
+
+## All the languages supported by Casbin:
+
+- Golang: [Casbin](https://github.com/casbin/casbin) (production-ready)
+- Java: [jCasbin](https://github.com/casbin/jcasbin) (production-ready)
+- PHP: [PHP-Casbin](https://github.com/sstutz/php-casbin) (experimental)
+- Node.js: [node-casbin](https://github.com/casbin/node-casbin) (experimental)
+- C++: xCasbin (WIP)
 
 ## Table of contents
 
@@ -97,8 +105,6 @@ What node-casbin does NOT do:
 
 ## Installation
 
-For Maven:
-
 TBD
 
 ## Documentation
@@ -120,18 +126,18 @@ You can also use the online editor (http://casbin.org/editor/) to write your nod
 
 1. New a node-casbin enforcer with a model file and a policy file:
 
-    ```java
-    Enforcer enforcer = new Enforcer("path/to/model.conf", "path/to/policy.csv");
+    ```typescript
+    const enforcer = new Enforcer('path/to/model.conf', 'path/to/policy.csv');
     ```
 
 Note: you can also initialize an enforcer with policy in DB instead of file, see [Persistence](#persistence) section for details.
 
 2. Add an enforcement hook into your code right before the access happens:
 
-    ```java
-    String sub = "alice"; // the user that wants to access a resource.
-    String obj = "data1"; // the resource that is going to be accessed.
-    String act = "read"; // the operation that the user performs on the resource.
+    ```typescript
+    const sub = 'alice'; // the user that wants to access a resource.
+    const obj = 'data1'; // the resource that is going to be accessed.
+    const act = 'read'; // the operation that the user performs on the resource.
 
     if (enforcer.enforce(sub, obj, act) == true) {
         // permit alice to read data1
@@ -142,13 +148,13 @@ Note: you can also initialize an enforcer with policy in DB instead of file, see
 
 3. Besides the static policy file, node-casbin also provides API for permission management at run-time. For example, You can get all the roles assigned to a user as below:
 
-    ```java
-    Roles roles = enforcer.getRoles("alice");
+    ```typescript
+    const roles = enforcer.getRoles('alice');
     ```
 
 See [Policy management APIs](#policy-management) for more usage.
 
-4. Please refer to the [src/test](https://github.com/casbin/node-casbin/tree/master/src/test) package for more usage.
+4. Please refer to the [src/test](https://github.com/casbin/node-casbin/tree/master/test) package for more usage.
 
 ## Policy management
 
@@ -179,9 +185,9 @@ The role manager is used to manage the RBAC role hierarchy (user-role mapping) i
 
 Role manager | Author | Description
 ----|----|----
-[Default Role Manager (built-in)](https://github.com/casbin/node-casbin/blob/master/src/main/java/org/casbin/node-casbin/rbac/DefaultRoleManager.java) | node-casbin | Supports role hierarchy stored in node-casbin policy
+[Default Role Manager (built-in)](https://github.com/casbin/node-casbin/blob/master/src/rbac/defaultRoleManager.ts) | node-casbin | Supports role hierarchy stored in node-casbin policy
 
-For developers: all role managers must implement the [RoleManager](https://github.com/casbin/node-casbin/blob/master/src/main/java/org/casbin/node-casbin/rbac/RoleManager.java) interface. [Default Role Manager](https://github.com/casbin/node-casbin/blob/master/src/main/java/org/casbin/node-casbin/rbac/DefaultRoleManager.java) can be used as a reference implementation.
+For developers: all role managers must implement the [RoleManager](https://github.com/casbin/node-casbin/blob/master/src/rbac/roleManager.ts) interface. [Default Role Manager](https://github.com/casbin/node-casbin/blob/master/src/rbac/defaultRoleManager.ts) can be used as a reference implementation.
 
 ## Examples
 
