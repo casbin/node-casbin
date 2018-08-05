@@ -229,3 +229,27 @@ test('TestKeyMatchCustomModel', () => {
   testEnforce(e, 'alice', '/alice_data2/myid', 'GET', false);
   testEnforce(e, 'alice', '/alice_data2/myid/using/res_id', 'GET', true);
 });
+
+test('TestIPMatchModel', () => {
+  const e = new Enforcer('examples/ipmatch_model.conf', 'examples/ipmatch_policy.csv');
+
+  testEnforce(e, '192.168.2.123', 'data1', 'read', true);
+  testEnforce(e, '192.168.2.123', 'data1', 'write', false);
+  testEnforce(e, '192.168.2.123', 'data2', 'read', false);
+  testEnforce(e, '192.168.2.123', 'data2', 'write', false);
+
+  testEnforce(e, '192.168.0.123', 'data1', 'read', false);
+  testEnforce(e, '192.168.0.123', 'data1', 'write', false);
+  testEnforce(e, '192.168.0.123', 'data2', 'read', false);
+  testEnforce(e, '192.168.0.123', 'data2', 'write', false);
+
+  testEnforce(e, '10.0.0.5', 'data1', 'read', false);
+  testEnforce(e, '10.0.0.5', 'data1', 'write', false);
+  testEnforce(e, '10.0.0.5', 'data2', 'read', false);
+  testEnforce(e, '10.0.0.5', 'data2', 'write', true);
+
+  testEnforce(e, '192.168.0.1', 'data1', 'read', false);
+  testEnforce(e, '192.168.0.1', 'data1', 'write', false);
+  testEnforce(e, '192.168.0.1', 'data2', 'read', false);
+  testEnforce(e, '192.168.0.1', 'data2', 'write', false);
+});
