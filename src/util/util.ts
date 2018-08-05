@@ -16,48 +16,47 @@ import * as _ from 'lodash';
 
 // escapeAssertion escapes the dots in the assertion,
 // because the expression evaluation doesn't support such variable names.
-
-const escapeAssertion: (s: string) => string = (s: string) => {
+function escapeAssertion(s: string): string {
   s = s.replace(/r\./g, 'r_');
   s = s.replace(/p\./g, 'p_');
   return s;
-};
+}
 
 // removeComments removes the comments starting with # in the text.
-const removeComments: (s: string) => string = (s: string) => {
+function removeComments(s: string): string {
   const pos = s.indexOf('#');
   return pos > -1 ? _.trim(s.slice(0, pos)) : s;
-};
+}
 
 // arrayEquals determines whether two string arrays are identical.
-const arrayEquals: (a: string[], b: string[]) => boolean = (a: string[], b: string[]) => {
+function arrayEquals(a: string[], b: string[]): boolean {
   return _.isEqual(a, b);
-};
+}
 
 // array2DEquals determines whether two 2-dimensional string arrays are identical.
-const array2DEquals: (a: [string[]], b: [string[]]) => boolean = (a: [string[]], b: [string[]]) => {
+function array2DEquals(a: [string[]], b: [string[]]): boolean {
   return _.isEqual(a, b);
-};
+}
 
 // arrayRemoveDuplicates removes any duplicated elements in a string array.
-const arrayRemoveDuplicates: (s: string[]) => string[] = (s: string[]) => {
+function arrayRemoveDuplicates(s: string[]): string[] {
   return _.uniq(s);
-};
+}
 
 // arrayToString gets a printable string for a string array.
-const arrayToString: (a: string[]) => string = (a: string[]) => {
+function arrayToString(a: string[]): string {
   return _.join(a, ', ');
-};
+}
 
 // paramsToString gets a printable string for variable number of parameters.
-const paramsToString: (...v: string[]) => string = (...v: string[]) => {
+function paramsToString(...v: string[]): string {
   return _.join(v, ', ');
-};
+}
 
 // setEquals determines whether two string sets are identical.
-const setEquals: (a: string[], b: string[]) => boolean = (a: string[], b: string[]) => {
+function setEquals(a: string[], b: string[]): boolean {
   return _.isEqual(_.sortedUniq(a), _.sortedUniq(b));
-};
+}
 
 export {
   escapeAssertion,

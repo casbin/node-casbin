@@ -203,3 +203,72 @@ test('TestKeyMatch2Model', () => {
   testEnforce(e, 'alice', '/alice_data2/myid', 'GET', false);
   testEnforce(e, 'alice', '/alice_data2/myid/using/res_id', 'GET', true);
 });
+
+function customFunction(key1: string, key2: string): boolean {
+  if (key1 === '/alice_data2/myid/using/res_id' && key2 === '/alice_data/:resource') {
+    return true;
+  } else if (key1 === '/alice_data2/myid/using/res_id' && key2 === '/alice_data2/:id/using/:resId') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function customFunctionWrapper(...args: any[]): boolean {
+  const name1: string = _.toString(args[0]);
+  const name2: string = _.toString(args[1]);
+
+  return customFunction(name1, name2);
+}
+
+test('TestKeyMatchCustomModel', () => {
+  const e = new Enforcer('examples/keymatch_custom_model.conf', 'examples/keymatch2_policy.csv');
+
+  // e.addFunction('keyMatchCustom', customFunctionWrapper);
+
+  testEnforce(e, 'alice', '/alice_data2/myid', 'GET', false);
+  testEnforce(e, 'alice', '/alice_data2/myid/using/res_id', 'GET', true);
+});
+
+test('TestIPMatchModel', () => {
+  const e = new Enforcer('examples/ipmatch_model.conf', 'examples/ipmatch_policy.csv');
+
+  testEnforce(e, '192.168.2.123', 'data1', 'read', true);
+  testEnforce(e, '192.168.2.123', 'data1', 'write', false);
+  testEnforce(e, '192.168.2.123', 'data2', 'read', false);
+  testEnforce(e, '192.168.2.123', 'data2', 'write', false);
+
+  testEnforce(e, '192.168.0.123', 'data1', 'read', false);
+  testEnforce(e, '192.168.0.123', 'data1', 'write', false);
+  testEnforce(e, '192.168.0.123', 'data2', 'read', false);
+  testEnforce(e, '192.168.0.123', 'data2', 'write', false);
+
+  testEnforce(e, '10.0.0.5', 'data1', 'read', false);
+  testEnforce(e, '10.0.0.5', 'data1', 'write', false);
+  testEnforce(e, '10.0.0.5', 'data2', 'read', false);
+  testEnforce(e, '10.0.0.5', 'data2', 'write', true);
+
+  testEnforce(e, '192.168.0.1', 'data1', 'read', false);
+  testEnforce(e, '192.168.0.1', 'data1', 'write', false);
+  testEnforce(e, '192.168.0.1', 'data2', 'read', false);
+  testEnforce(e, '192.168.0.1', 'data2', 'write', false);
+});
+
+test('TestPriorityModel', () => {
+  const e = new Enforcer('examples/priority_model.conf', 'examples/priority_policy.csv');
+
+  testEnforce(e, 'alice', 'data1', 'read', true);
+  testEnforce(e, 'alice', 'data1', 'write', false);
+  testEnforce(e, 'alice', 'data2', 'read', false);
+  testEnforce(e, 'alice', 'data2', 'write', false);
+  testEnforce(e, 'bob', 'data1', 'read', false);
+  testEnforce(e, 'bob', 'data1', 'write', false);
+  testEnforce(e, 'bob', 'data2', 'read', true);
+  testEnforce(e, 'bob', 'data2', 'write', false);
+});
+
+test('TestPriorityModelIndeterminate', () => {
+  const e = new Enforcer('examples/priority_model.conf', 'examples/priority_indeterminate_policy.csv');
+
+  testEnforce(e, 'alice', 'data1', 'read', false);
+});
