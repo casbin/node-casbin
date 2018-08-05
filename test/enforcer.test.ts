@@ -19,7 +19,7 @@ function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: bo
   expect(e.enforce(sub, obj, act)).toBe(res);
 }
 
-test('testKeyMatchModelInMemory', () => {
+test('TestKeyMatchModelInMemory', () => {
   const m = Enforcer.newModel();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
@@ -76,4 +76,18 @@ test('testKeyMatchModelInMemory', () => {
   testEnforce(e, 'cathy', '/cathy_data', 'GET', true);
   testEnforce(e, 'cathy', '/cathy_data', 'POST', true);
   testEnforce(e, 'cathy', '/cathy_data', 'DELETE', false);
+});
+
+test('TestKeyMatchModelInMemoryDeny', () => {
+  const m = Enforcer.newModel();
+  m.addDef('r', 'r', 'sub, obj, act');
+  m.addDef('p', 'p', 'sub, obj, act');
+  m.addDef('e', 'e', '!some(where (p.eft == deny))');
+  m.addDef('m', 'm', 'r.sub == p.sub && keyMatch(r.obj, p.obj) && regexMatch(r.act, p.act)');
+
+  const a = new FileAdapter('examples/keymatch_policy.csv');
+
+  const e = new Enforcer(m, a);
+
+  testEnforce(e, 'alice', '/alice_data/resource2', 'POST', true);
 });
