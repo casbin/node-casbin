@@ -690,4 +690,101 @@ export class Enforcer {
     this.fm.addFunction(name, func);
   }
 
+  // **************RBAC API*************
+  // getRolesForUser gets the roles that a user has.
+  public getRolesForUser(name: string): string[] {
+    // @ts-ignore
+    const rm = this.model.model.get('g').get('g').rm;
+    const result = rm.getRoles(name);
+    return result;
+  }
+
+  // getUsersForRole gets the users that has a role.
+  public getUsersForRole(name: string): string[] {
+    // @ts-ignore
+    const rm = this.model.model.get('g').get('g').rm;
+    const result = rm.getUsers(name);
+    return result;
+  }
+
+  // hasRoleForUser determines whether a user has a role.
+  public hasRoleForUser(name: string, role: string): boolean {
+    const roles = this.getRolesForUser(name);
+    let hasRole: boolean = false;
+    for (const r of roles) {
+      if (r === role) {
+        hasRole = true;
+        break;
+      }
+    }
+
+    return hasRole;
+  }
+
+  // addRoleForUser adds a role for a user.
+  // Returns false if the user already has the role (aka not affected).
+  public addRoleForUser(user: string, role: string): boolean {
+    return this.addGroupingPolicy(user, role);
+  }
+
+  // deleteRoleForUser deletes a role for a user.
+  // Returns false if the user does not have the role (aka not affected).
+  public deleteRoleForUser(user: string, role: string): boolean {
+    return this.removeGroupingPolicy(user, role);
+  }
+
+  // DeleteRolesForUser deletes all roles for a user.
+  // Returns false if the user does not have any roles (aka not affected).
+  public deleteRolesForUser(user: string): boolean {
+    return this.removeFilteredGroupingPolicy(0, user);
+  }
+
+  // deleteUser deletes a user.
+  // Returns false if the user does not exist (aka not affected).
+  public deleteUser(user: string): boolean {
+    return this.removeFilteredGroupingPolicy(0, user);
+  }
+
+  // deleteRole deletes a role.
+  public deleteRole(role: string) {
+    this.removeFilteredGroupingPolicy(1, role);
+    this.removeFilteredPolicy(0, role);
+  }
+
+  // deletePermission deletes a permission.
+  // Returns false if the permission does not exist (aka not affected).
+  public deletePermission(...permission: string[]): boolean {
+    return this.removeFilteredPolicy(1, permission);
+  }
+
+  // addPermissionForUser adds a permission for a user or role.
+  // Returns false if the user or role already has the permission (aka not affected).
+  public addPermissionForUser(user: string, ...permission: string[]): boolean {
+    permission.unshift(user);
+    return this.addPolicy(permission);
+  }
+
+  // deletePermissionForUser deletes a permission for a user or role.
+  // Returns false if the user or role does not have the permission (aka not affected).
+  public deletePermissionForUser(user: string, ...permission: string[]): boolean {
+    permission.unshift(user);
+    return this.removePolicy(permission);
+  }
+
+  // deletePermissionsForUser deletes permissions for a user or role.
+  // Returns false if the user or role does not have any permissions (aka not affected).
+  public deletePermissionsForUser(user: string): boolean {
+    return this.removeFilteredPolicy(0, user);
+  }
+
+  // getPermissionsForUser gets permissions for a user or role.
+  public getPermissionsForUser(user: string): [string[]] {
+    return this.getFilteredPolicy(0, user);
+  }
+
+  // hasPermissionForUser determines whether a user has a permission.
+  public hasPermissionForUser(user: string, ...permission: string[]): boolean {
+    permission.unshift(user);
+    return this.hasPolicy(permission);
+  }
 }
