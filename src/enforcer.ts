@@ -1,13 +1,13 @@
 // Copyright 2018 The Casbin Authors. All Rights Reserved.
 //
-// Licensed under the Apache License, Version 2.0 (the 'License');
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //      http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an 'AS IS' BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -274,8 +274,8 @@ export class Enforcer {
     this.model.buildRoleLinks(this.rm);
   }
 
-  // Enforce decides whether a 'subject' can access a 'object' with the
-  // operation 'action', input parameters are usually: (sub, obj, act).
+  // Enforce decides whether a "subject" can access a "object" with the
+  // operation "action", input parameters are usually: (sub, obj, act).
   public enforce(...rvals: any[]): boolean {
     if (!this.enabled) {
       return true;
