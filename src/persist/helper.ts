@@ -10,7 +10,7 @@ export class Helper {
       return;
     }
 
-    const tokens = line.split(', ');
+    const tokens = line.split(', ').map(n => n.trim());
 
     const key = tokens[0];
     const sec = key.substring(0, 1);
