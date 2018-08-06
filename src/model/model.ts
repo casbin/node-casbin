@@ -86,10 +86,14 @@ export class Model {
       ast.value = util.removeComments(util.escapeAssertion(value));
     }
 
-    const assertionMap = new Map<string, Assertion>();
-    assertionMap.set(key, ast);
-
-    this.model.set(sec, assertionMap);
+    const nodeMap = this.model.get(sec);
+    if (nodeMap) {
+      nodeMap.set(key, ast);
+    } else {
+      const assertionMap = new Map<string, Assertion>();
+      assertionMap.set(key, ast);
+      this.model.set(sec, assertionMap);
+    }
     return true;
   }
 
