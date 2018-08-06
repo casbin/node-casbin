@@ -56,7 +56,7 @@ export class Model {
   private loadSection(cfg: Config, sec: string): void {
     // console.log('loadSection: ', sec);
     let i = 1;
-    for (;;) {
+    for (; ;) {
       if (!this.loadAssertion(cfg, sec, sec + this.getKeySuffix(i))) {
         break;
       } else {
@@ -121,74 +121,61 @@ export class Model {
   // printModel prints the model to the log.
   public printModel(): void {
     util.logPrint('Model:');
-    for (const sec in this.model) {
-      if (_.has(this.model, sec)) {
-        const astMap = _.get(this.model, sec);
-        for (const key in astMap) {
-          if (astMap.hasOwnProperty(key)) {
-            const ast = _.get(astMap, key);
-            util.logPrintf(`${sec}.${key}: ${ast.value}`);
-          }
-        }
-      }
-    }
+    this.model.forEach((value, key) => {
+      value.forEach((ast, astKey) => {
+        util.logPrint(`${key}.${astKey}: ${ast.value}`);
+      });
+    });
   }
 
   // buildRoleLinks initializes the roles in RBAC.
   public buildRoleLinks(rm: rbac.RoleManager): void {
-    const astMap = _.get(this.model, 'g');
-    for (const key in astMap) {
-      if (astMap.hasOwnProperty(key)) {
-        const ast = _.get(astMap, key);
-        ast.buildRoleLinks(rm);
-      }
+    const astMap = this.model.get('g');
+    if (!astMap) {
+      return;
     }
+    astMap.forEach(value => {
+      value.buildRoleLinks(rm);
+    });
   }
 
   // clearPolicy clears all current policy.
   public clearPolicy(): void {
-    let astMap = _.get(this.model, 'p');
-    for (const key in astMap) {
-      if (astMap.hasOwnProperty(key)) {
-        const ast = _.get(astMap, key);
-        ast.policy = [];
+    this.model.forEach((value, key) => {
+      if (key === 'p' || key === 'g') {
+        value.forEach(ast => {
+          ast.policy = [];
+        });
       }
-    }
-
-    astMap = _.get(this.model, 'g');
-    for (const key in astMap) {
-      if (astMap.hasOwnProperty(key)) {
-        const ast = _.get(astMap, key);
-        ast.policy = [];
-      }
-    }
+    });
   }
 
   // getPolicy gets all rules in a policy.
-  public getPolicy(sec: string, key: string): [string[]] {
-    const astMap = _.get(this.model, sec);
-    const ast = _.get(astMap, key);
-    return ast.policy;
+  public getPolicy(sec: string, key: string): string[][] {
+    const policy: string[][] = [];
+    const ast = (this.model.get(sec) || new Map()).get(key);
+    if (ast) {
+      policy.push(...ast.policy);
+    }
+    return policy;
   }
 
   // hasPolicy determines whether a model has the specified policy rule.
   public hasPolicy(sec: string, key: string, rule: string[]): boolean {
-    const astMap = _.get(this.model, sec);
-    const ast = _.get(astMap, key);
-    for (const r of ast.policy) {
-      if (util.arrayEquals(rule, r)) {
-        return true;
-      }
+    const ast = (this.model.get(sec) || new Map()).get(key);
+    if (!ast) {
+      return false;
     }
-
-    return false;
+    return ast.policy.some((n: string[]) => n === rule);
   }
 
   // addPolicy adds a policy rule to the model.
   public addPolicy(sec: string, key: string, rule: string[]): boolean {
     if (!this.hasPolicy(sec, key, rule)) {
-      const astMap = _.get(this.model, sec);
-      const ast = _.get(astMap, key);
+      const ast = (this.model.get(sec) || new Map()).get(key);
+      if (!ast) {
+        return false;
+      }
       ast.policy.push(rule);
       return true;
     }
@@ -199,8 +186,10 @@ export class Model {
   // removePolicy removes a policy rule from the model.
   public removePolicy(sec: string, key: string, rule: string[]): boolean {
     if (this.hasPolicy(sec, key, rule)) {
-      const astMap = _.get(this.model, sec);
-      const ast = _.get(astMap, key);
+      const ast = (this.model.get(sec) || new Map()).get(key);
+      if (!ast) {
+        return true;
+      }
       ast.policy = _.filter(ast.policy, r => !util.arrayEquals(rule, r));
       return true;
     }
@@ -209,11 +198,17 @@ export class Model {
   }
 
   // getFilteredPolicy gets rules based on field filters from a policy.
-  public getFilteredPolicy(sec: string, key: string, fieldIndex: number, ...fieldValues: string[]): [string[]] {
-    const res = [];
-
-    const astMap = _.get(this.model, sec);
-    const ast = _.get(astMap, key);
+  public getFilteredPolicy(
+    sec: string,
+    key: string,
+    fieldIndex: number,
+    ...fieldValues: string[]
+  ): string[][] {
+    const res: string[][] = [];
+    const ast = (this.model.get(sec) || new Map()).get(key);
+    if (!ast) {
+      return res;
+    }
     for (const rule of ast.policy) {
       let matched = true;
       for (let i = 0; i < fieldValues.length; i++) {
@@ -229,17 +224,22 @@ export class Model {
       }
     }
 
-    // @ts-ignore
     return res;
   }
 
   // removeFilteredPolicy removes policy rules based on field filters from the model.
-  public removeFilteredPolicy(sec: string, key: string, fieldIndex: number, ...fieldValues: string[]): boolean {
+  public removeFilteredPolicy(
+    sec: string,
+    key: string,
+    fieldIndex: number,
+    ...fieldValues: string[]
+  ): boolean {
     const res = [];
     let bool = false;
-
-    const astMap = _.get(this.model, sec);
-    const ast = _.get(astMap, key);
+    const ast = (this.model.get(sec) || new Map()).get(key);
+    if (!ast) {
+      return bool;
+    }
     for (const rule of ast.policy) {
       let matched = true;
       for (let i = 0; i < fieldValues.length; i++) {
@@ -262,35 +262,28 @@ export class Model {
   }
 
   // getValuesForFieldInPolicy gets all values for a field for all rules in a policy, duplicated values are removed.
-  public getValuesForFieldInPolicy(sec: string, key: string, fieldIndex: number): string[] {
-    const values = [];
-
-    const astMap = _.get(this.model, sec);
-    const ast = _.get(astMap, key);
-    for (const rule of ast.policy) {
-      values.push(rule[fieldIndex]);
+  public getValuesForFieldInPolicy(
+    sec: string,
+    key: string,
+    fieldIndex: number
+  ): string[] {
+    const values: string[] = [];
+    const ast = (this.model.get(sec) || new Map()).get(key);
+    if (!ast) {
+      return values;
     }
-
-    return util.arrayRemoveDuplicates(values);
+    return util.arrayRemoveDuplicates(ast.policy.map((n: string[]) => n[fieldIndex]));
   }
 
   // printPolicy prints the policy to log.
   public printPolicy(): void {
     util.logPrint('Policy:');
-    let astMap = _.get(this.model, 'p');
-    for (const key in astMap) {
-      if (astMap.hasOwnProperty(key)) {
-        const ast = _.get(astMap, key);
-        util.logPrint(`key, : ${ast.value}, : , ${ast.policy}`);
+    this.model.forEach((map, key) => {
+      if (key === 'p' || key === 'g') {
+        map.forEach(ast => {
+          util.logPrint(`key, : ${ast.value}, : , ${ast.policy}`);
+        });
       }
-    }
-
-    astMap = _.get(this.model, 'g');
-    for (const key in astMap) {
-      if (astMap.hasOwnProperty(key)) {
-        const ast = _.get(astMap, key);
-        util.logPrint(`key, : ${ast.value}, : , ${ast.policy}`);
-      }
-    }
+    });
   }
 }
