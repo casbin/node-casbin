@@ -91,23 +91,13 @@ export class Config {
       } else if (line.startsWith('[') && line.endsWith(']')) {
         section = line.substring(1, line.length - 1);
       } else {
-        const [option] = line.split('=');
-
-        const optionIndex = line.indexOf(option);
-        if (optionIndex === -1) {
+        const equalIndex = line.indexOf('=');
+        if (equalIndex === -1) {
           throw new Error(`parse the content error : line ${index + 1}`);
         }
-
-        let value = line.substring(optionIndex + 1).trim();
-        if (value.startsWith('=')) {
-          value = value.substring(1);
-        }
-
-        if (option && value) {
-          this.addConfig(section, option.trim(), value.trim());
-        } else {
-          throw new Error(`parse the content error : line ${index + 1}`);
-        }
+        const key = line.substring(0, equalIndex);
+        const value = line.substring(equalIndex + 1);
+        this.addConfig(section, key.trim(), value.trim());
       }
     });
   }
