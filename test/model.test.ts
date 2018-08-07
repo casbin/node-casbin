@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Enforcer } from '../src/enforcer';
+import * as _ from 'lodash';
 
 function testEnforce(e: Enforcer, sub: string, obj: any, act: string, res: boolean): void {
   expect(e.enforce(sub, obj, act)).toBe(res);
@@ -224,7 +225,7 @@ function customFunctionWrapper(...args: any[]): boolean {
 test('TestKeyMatchCustomModel', () => {
   const e = new Enforcer('examples/keymatch_custom_model.conf', 'examples/keymatch2_policy.csv');
 
-  // e.addFunction('keyMatchCustom', customFunctionWrapper);
+  e.addFunction('keyMatchCustom', customFunctionWrapper);
 
   testEnforce(e, 'alice', '/alice_data2/myid', 'GET', false);
   testEnforce(e, 'alice', '/alice_data2/myid/using/res_id', 'GET', true);
