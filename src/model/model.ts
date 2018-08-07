@@ -202,12 +202,7 @@ export class Model {
   }
 
   // getFilteredPolicy gets rules based on field filters from a policy.
-  public getFilteredPolicy(
-    sec: string,
-    key: string,
-    fieldIndex: number,
-    ...fieldValues: string[]
-  ): string[][] {
+  public getFilteredPolicy(sec: string, key: string, fieldIndex: number, ...fieldValues: string[]): string[][] {
     const res: string[][] = [];
     const ast = (this.model.get(sec) || new Map()).get(key);
     if (!ast) {
@@ -232,12 +227,7 @@ export class Model {
   }
 
   // removeFilteredPolicy removes policy rules based on field filters from the model.
-  public removeFilteredPolicy(
-    sec: string,
-    key: string,
-    fieldIndex: number,
-    ...fieldValues: string[]
-  ): boolean {
+  public removeFilteredPolicy(sec: string, key: string, fieldIndex: number, ...fieldValues: string[]): boolean {
     const res = [];
     let bool = false;
     const ast = (this.model.get(sec) || new Map()).get(key);
@@ -266,11 +256,7 @@ export class Model {
   }
 
   // getValuesForFieldInPolicy gets all values for a field for all rules in a policy, duplicated values are removed.
-  public getValuesForFieldInPolicy(
-    sec: string,
-    key: string,
-    fieldIndex: number
-  ): string[] {
+  public getValuesForFieldInPolicy(sec: string, key: string, fieldIndex: number): string[] {
     const values: string[] = [];
     const ast = (this.model.get(sec) || new Map()).get(key);
     if (!ast) {

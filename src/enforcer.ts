@@ -195,6 +195,7 @@ export class Enforcer {
   public loadPolicy(): void {
     this.model.clearPolicy();
     this.adapter.loadPolicy(this.model);
+
     this.model.printPolicy();
     if (this.autoBuildRoleLinks) {
       this.buildRoleLinks();
