@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "esnext",
+    "module": "commonjs",
     "moduleResolution": "node",
     "declaration": true,
+    "declarationDir": "lib",
     "strict": true,
-    "outDir": "lib/es6",
+    "outDir": "lib",
     "strictPropertyInitialization": false
   },
   "include": ["src/**/*.ts"]
