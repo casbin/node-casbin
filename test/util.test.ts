@@ -34,11 +34,6 @@ test('test logPrint', () => {
   expect(util.logPrint('test log')).toBeUndefined();
 });
 
-test('test logPrintf', () => {
-  util.setEnableLog(true);
-  expect(util.logPrintf('format', 'test log')).toBeUndefined();
-});
-
 test('test Valuate', () => {
   expect(compile('1 + 1 === 2')()).toEqual(true);
   expect(compile('1 + 1 !== 2')()).toEqual(false);

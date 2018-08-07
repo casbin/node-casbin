@@ -192,17 +192,13 @@ export class Enforcer {
   }
 
   // loadPolicy reloads the policy from file/database.
-  public loadPolicy(): boolean {
+  public loadPolicy(): void {
     this.model.clearPolicy();
-    if (!this.adapter.loadPolicy(this.model)) {
-      return false;
-    }
-
+    this.adapter.loadPolicy(this.model);
     this.model.printPolicy();
     if (this.autoBuildRoleLinks) {
       this.buildRoleLinks();
     }
-    return true;
   }
 
   // loadFilteredPolicy reloads a filtered policy from file/database.
@@ -327,7 +323,6 @@ export class Enforcer {
         });
 
         const result = expression({ ...parameters, ...functions });
-        // logPrint(`Result: ${result}`);
 
         switch (typeof result) {
           case 'boolean':
@@ -528,42 +523,42 @@ export class Enforcer {
   }
 
   // getPolicy gets all the authorization rules in the policy.
-  public getPolicy(): [string[]] {
+  public getPolicy(): string[][] {
     return this.getNamedPolicy('p');
   }
 
   // getFilteredPolicy gets all the authorization rules in the policy, field filters can be specified.
-  public getFilteredPolicy(fieldIndex: number, ...fieldValues: string[]): [string[]] {
+  public getFilteredPolicy(fieldIndex: number, ...fieldValues: string[]): string[][] {
     return this.getFilteredNamedPolicy('p', fieldIndex, ...fieldValues);
   }
 
   // getNamedPolicy gets all the authorization rules in the named policy.
-  public getNamedPolicy(ptype: string): [string[]] {
+  public getNamedPolicy(ptype: string): string[][] {
     return this.model.getPolicy('p', ptype);
   }
 
   // getFilteredNamedPolicy gets all the authorization rules in the named policy, field filters can be specified.
-  public getFilteredNamedPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): [string[]] {
+  public getFilteredNamedPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): string[][] {
     return this.model.getFilteredPolicy('p', ptype, fieldIndex, ...fieldValues);
   }
 
   // getGroupingPolicy gets all the role inheritance rules in the policy.
-  public getGroupingPolicy(): [string[]] {
+  public getGroupingPolicy(): string[][] {
     return this.getNamedGroupingPolicy('g');
   }
 
   // getFilteredGroupingPolicy gets all the role inheritance rules in the policy, field filters can be specified.
-  public getFilteredGroupingPolicy(fieldIndex: number, ...fieldValues: string[]): [string[]] {
+  public getFilteredGroupingPolicy(fieldIndex: number, ...fieldValues: string[]): string[][] {
     return this.getFilteredNamedGroupingPolicy('g', fieldIndex, ...fieldValues);
   }
 
   // getNamedGroupingPolicy gets all the role inheritance rules in the policy.
-  public getNamedGroupingPolicy(ptype: string): [string[]] {
+  public getNamedGroupingPolicy(ptype: string): string[][] {
     return this.model.getPolicy('g', ptype);
   }
 
   // getFilteredNamedGroupingPolicy gets all the role inheritance rules in the policy, field filters can be specified.
-  public getFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): [string[]] {
+  public getFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): string[][] {
     return this.model.getFilteredPolicy('g', ptype, fieldIndex, ...fieldValues);
   }
 
@@ -778,7 +773,7 @@ export class Enforcer {
   }
 
   // getPermissionsForUser gets permissions for a user or role.
-  public getPermissionsForUser(user: string): [string[]] {
+  public getPermissionsForUser(user: string): string[][] {
     return this.getFilteredPolicy(0, user);
   }
 
