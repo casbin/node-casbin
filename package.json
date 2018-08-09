@@ -1,12 +1,12 @@
 {
   "name": "casbin",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "An authorization library that supports access control models like ACL, RBAC, ABAC in Node.JS",
   "main": "lib/casbin.js",
   "typings": "lib/casbin.d.ts",
   "scripts": {
     "precommit": "lint-staged",
-    "prepublish": "yarn run lint && yarn run test",
+    "prepublish": "yarn run lint && yarn run test && yarn build",
     "build": "rimraf lib && tsc",
     "lint": "tslint \"src/**/*.ts\"",
     "fix": "tslint \"src/**/*.ts\" --fix",
