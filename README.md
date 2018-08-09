@@ -106,7 +106,9 @@ What node-casbin does NOT do:
 
 ## Installation
 
-TBD
+```
+npm install casbin
+```
 
 ## Documentation
 
