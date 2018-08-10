@@ -138,7 +138,9 @@ export class Enforcer {
     this.enabled = true;
     this.autoSave = true;
     this.autoBuildRoleLinks = true;
-    await this.loadPolicy();
+    if (this.adapter) {
+      await this.loadPolicy();
+    }
   }
 
   /**
