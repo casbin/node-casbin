@@ -135,7 +135,7 @@ export class Enforcer {
 
     this.initialize();
 
-    if (this.adapter) {
+    if (this.adapter && (this.adapter instanceof FileAdapter)) {
       // error intentionally ignored
       this.loadPolicy();
     }
