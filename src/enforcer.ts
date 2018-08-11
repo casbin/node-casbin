@@ -40,8 +40,7 @@ export class Enforcer {
   private autoBuildRoleLinks: boolean;
 
   /**
-   * constructor is the constructor for Enforcer.
-   * It creates an enforcer via file or DB.
+   * newEnforcer creates an enforcer via file or DB.
    *
    * File:
    * ```js
@@ -56,9 +55,10 @@ export class Enforcer {
    *
    * @param params
    */
-  constructor(...params: any[]) {
-    this.rm = new DefaultRoleManager(10);
-    this.eft = new DefaultEffector();
+  public static async newEnforcer(...params: any[]): Promise<Enforcer> {
+    const e = new Enforcer();
+    e.rm = new DefaultRoleManager(10);
+    e.eft = new DefaultEffector();
 
     let parsedParamLen = 0;
     if (params.length >= 1) {
@@ -72,28 +72,29 @@ export class Enforcer {
     if (params.length - parsedParamLen === 2) {
       if (typeof params[0] === 'string') {
         if (typeof params[1] === 'string') {
-          this.initWithFile(params[0].toString(), params[1].toString());
+          await e.initWithFile(params[0].toString(), params[1].toString());
         } else {
-          this.initWithAdapter(params[0].toString(), params[1]);
+          await e.initWithAdapter(params[0].toString(), params[1]);
         }
       } else {
         if (typeof params[1] === 'string') {
           throw new Error('Invalid parameters for enforcer.');
         } else {
-          this.initWithModelAndAdapter(params[0], params[1]);
+          await e.initWithModelAndAdapter(params[0], params[1]);
         }
       }
     } else if (params.length - parsedParamLen === 1) {
       if (typeof params[0] === 'string') {
-        this.initWithFile(params[0], '');
+        await e.initWithFile(params[0], '');
       } else {
-        this.initWithModelAndAdapter(params[0], null);
+        await e.initWithModelAndAdapter(params[0], null);
       }
     } else if (params.length === parsedParamLen) {
-      this.initWithFile('', '');
+      await e.initWithFile('', '');
     } else {
       throw new Error('Invalid parameters for enforcer.');
     }
+    return e;
   }
 
   /**
@@ -101,9 +102,9 @@ export class Enforcer {
    * @param modelPath model file path
    * @param policyPath policy file path
    */
-  public initWithFile(modelPath: string, policyPath: string): void {
+  public async initWithFile(modelPath: string, policyPath: string): Promise<void> {
     const a = new FileAdapter(policyPath);
-    this.initWithAdapter(modelPath, a);
+    await this.initWithAdapter(modelPath, a);
   }
 
   /**
@@ -111,9 +112,9 @@ export class Enforcer {
    * @param modelPath model file path
    * @param adapter current adapter instance
    */
-  public initWithAdapter(modelPath: string, adapter: Adapter): void {
+  public async initWithAdapter(modelPath: string, adapter: Adapter): Promise<void> {
     const m = Enforcer.newModel(modelPath, '');
-    this.initWithModelAndAdapter(m, adapter);
+    await this.initWithModelAndAdapter(m, adapter);
 
     this.modelPath = modelPath;
   }
@@ -123,7 +124,7 @@ export class Enforcer {
    * @param m model instance
    * @param adapter current adapter instance
    */
-  public initWithModelAndAdapter(m: Model, adapter: Adapter | null): void {
+  public async initWithModelAndAdapter(m: Model, adapter: Adapter | null): Promise<void> {
     if (adapter) {
       this.adapter = adapter;
     }
@@ -132,15 +133,18 @@ export class Enforcer {
     this.model = m;
     this.model.printModel();
     this.fm = FunctionMap.loadFunctionMap();
+    this.initialize();
+
+    if (this.adapter) {
+      // error intentionally ignored
+      await this.loadPolicy();
+    }
   }
 
-  public async initialize(): Promise<void> {
+  public initialize(): void {
     this.enabled = true;
     this.autoSave = true;
     this.autoBuildRoleLinks = true;
-    if (this.adapter) {
-      await this.loadPolicy();
-    }
   }
 
   /**

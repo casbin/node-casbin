@@ -28,8 +28,7 @@ function testDomainEnforce(e: Enforcer, sub: string, dom: string, obj: string, a
 }
 
 test('TestBasicModel', async () => {
-  const e = new Enforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
 
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data1', 'write', false);
@@ -42,8 +41,7 @@ test('TestBasicModel', async () => {
 });
 
 test('TestBasicModelNoPolicy', async () => {
-  const e = new Enforcer('examples/basic_model.conf');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/basic_model.conf');
 
   testEnforce(e, 'alice', 'data1', 'read', false);
   testEnforce(e, 'alice', 'data1', 'write', false);
@@ -56,8 +54,7 @@ test('TestBasicModelNoPolicy', async () => {
 });
 
 test('TestBasicModelWithRoot', async () => {
-  const e = new Enforcer('examples/basic_with_root_model.conf', 'examples/basic_policy.csv');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/basic_with_root_model.conf', 'examples/basic_policy.csv');
 
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data1', 'write', false);
@@ -74,8 +71,7 @@ test('TestBasicModelWithRoot', async () => {
 });
 
 test('TestBasicModelWithRootNoPolicy', async () => {
-  const e = new Enforcer('examples/basic_with_root_model.conf');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/basic_with_root_model.conf');
 
   testEnforce(e, 'alice', 'data1', 'read', false);
   testEnforce(e, 'alice', 'data1', 'write', false);
@@ -92,8 +88,7 @@ test('TestBasicModelWithRootNoPolicy', async () => {
 });
 
 test('TestBasicModelWithoutUsers', async () => {
-  const e = new Enforcer('examples/basic_without_users_model.conf', 'examples/basic_without_users_policy.csv');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/basic_without_users_model.conf', 'examples/basic_without_users_policy.csv');
 
   testEnforceWithoutUsers(e, 'data1', 'read', true);
   testEnforceWithoutUsers(e, 'data1', 'write', false);
@@ -102,7 +97,7 @@ test('TestBasicModelWithoutUsers', async () => {
 });
 
 test('TestBasicModelWithoutResources', async () => {
-  const e = new Enforcer('examples/basic_without_resources_model.conf', 'examples/basic_without_resources_policy.csv');
+  const e = await Enforcer.newEnforcer('examples/basic_without_resources_model.conf', 'examples/basic_without_resources_policy.csv');
   await e.initialize();
 
   testEnforceWithoutUsers(e, 'alice', 'read', true);
@@ -112,8 +107,7 @@ test('TestBasicModelWithoutResources', async () => {
 });
 
 test('TestRBACModel', async () => {
-  const e = new Enforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
 
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data1', 'write', false);
@@ -126,8 +120,7 @@ test('TestRBACModel', async () => {
 });
 
 test('TestRBACModelWithResourceRoles', async () => {
-  const e = new Enforcer('examples/rbac_with_resource_roles_model.conf', 'examples/rbac_with_resource_roles_policy.csv');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/rbac_with_resource_roles_model.conf', 'examples/rbac_with_resource_roles_policy.csv');
 
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data1', 'write', true);
@@ -140,8 +133,7 @@ test('TestRBACModelWithResourceRoles', async () => {
 });
 
 test('TestRBACModelWithDomains', async () => {
-  const e = new Enforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
 
   testDomainEnforce(e, 'alice', 'domain1', 'data1', 'read', true);
   testDomainEnforce(e, 'alice', 'domain1', 'data1', 'write', true);
@@ -164,8 +156,7 @@ class TestResource {
 }
 
 test('TestABACModel', async () => {
-  const e = new Enforcer('examples/abac_model.conf');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/abac_model.conf');
 
   const data1 = new TestResource('data1', 'alice');
   const data2 = new TestResource('data2', 'bob');
@@ -181,8 +172,7 @@ test('TestABACModel', async () => {
 });
 
 test('TestKeyMatchModel', async () => {
-  const e = new Enforcer('examples/keymatch_model.conf', 'examples/keymatch_policy.csv');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/keymatch_model.conf', 'examples/keymatch_policy.csv');
 
   testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
   testEnforce(e, 'alice', '/alice_data/resource1', 'POST', true);
@@ -208,8 +198,7 @@ test('TestKeyMatchModel', async () => {
 });
 
 test('TestKeyMatch2Model', async () => {
-  const e = new Enforcer('examples/keymatch2_model.conf', 'examples/keymatch2_policy.csv');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/keymatch2_model.conf', 'examples/keymatch2_policy.csv');
 
   testEnforce(e, 'alice', '/alice_data', 'GET', false);
   testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
@@ -235,8 +224,7 @@ function customFunctionWrapper(...args: any[]): boolean {
 }
 
 test('TestKeyMatchCustomModel', async () => {
-  const e = new Enforcer('examples/keymatch_custom_model.conf', 'examples/keymatch2_policy.csv');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/keymatch_custom_model.conf', 'examples/keymatch2_policy.csv');
 
   e.addFunction('keyMatchCustom', customFunctionWrapper);
 
@@ -245,8 +233,7 @@ test('TestKeyMatchCustomModel', async () => {
 });
 
 test('TestIPMatchModel', async () => {
-  const e = new Enforcer('examples/ipmatch_model.conf', 'examples/ipmatch_policy.csv');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/ipmatch_model.conf', 'examples/ipmatch_policy.csv');
 
   testEnforce(e, '192.168.2.123', 'data1', 'read', true);
   testEnforce(e, '192.168.2.123', 'data1', 'write', false);
@@ -270,8 +257,7 @@ test('TestIPMatchModel', async () => {
 });
 
 test('TestPriorityModel', async () => {
-  const e = new Enforcer('examples/priority_model.conf', 'examples/priority_policy.csv');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/priority_model.conf', 'examples/priority_policy.csv');
 
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data1', 'write', false);
@@ -284,8 +270,7 @@ test('TestPriorityModel', async () => {
 });
 
 test('TestPriorityModelIndeterminate', async () => {
-  const e = new Enforcer('examples/priority_model.conf', 'examples/priority_indeterminate_policy.csv');
-  await e.initialize();
+  const e = await Enforcer.newEnforcer('examples/priority_model.conf', 'examples/priority_indeterminate_policy.csv');
 
   testEnforce(e, 'alice', 'data1', 'read', false);
 });
