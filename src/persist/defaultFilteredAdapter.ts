@@ -56,11 +56,12 @@ export class DefaultFilteredAdapter extends FileAdapter
     return this.filtered;
   }
 
-  public async savePolicy(model: Model): Promise<void> {
+  public async savePolicy(model: Model): Promise<boolean> {
     if (this.filtered) {
       throw new Error('cannot save a filtered policy');
     }
     await super.savePolicy(model);
+    return true;
   }
 
   private static filterLine(line: string, filter: Filter): boolean {

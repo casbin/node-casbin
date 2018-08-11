@@ -74,11 +74,11 @@ function readFile(path: string, encoding?: string): any {
 // writeFile return a promise for writeFile.
 function writeFile(path: string, file: string, encoding?: string): any {
   return new Promise((resolve, reject) => {
-    fs.writeFile(path, file, encoding || 'utf8', (error, data) => {
+    fs.writeFile(path, file, encoding || 'utf8', (error) => {
       if (error) {
         reject(error);
       }
-      resolve(data);
+      resolve(true);
     });
   });
 }
