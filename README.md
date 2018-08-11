@@ -211,6 +211,10 @@ Priority | [priority_model.conf](https://github.com/casbin/node-casbin/blob/mast
 
 ## Our adopters
 
+### Web frameworks
+
+- [Koa](https://github.com/koajs/koa): Expressive middleware for node.js using ES2017 async functions, via plugin: [koa-authz](https://github.com/node-casbin/koa-authz)
+
 ## License
 
 This project is licensed under the [Apache 2.0 license](https://github.com/casbin/node-casbin/blob/master/LICENSE).
