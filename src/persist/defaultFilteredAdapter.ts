@@ -3,7 +3,7 @@ import { Model } from '../model';
 import { FileAdapter } from './fileAdapter';
 import { Adapter } from './adapter';
 import { Helper } from './helper';
-import { readFileSync } from 'fs';
+import { readFile } from '../util';
 
 export class Filter {
   public g: string[] = [];
@@ -20,14 +20,14 @@ export class DefaultFilteredAdapter extends FileAdapter
   }
 
   // loadPolicy loads all policy rules from the storage.
-  public loadPolicy(model: Model): void {
+  public async loadPolicy(model: Model): Promise<void> {
     this.filtered = false;
-    super.loadPolicy(model);
+    await super.loadPolicy(model);
   }
 
-  public loadFilteredPolicy(model: Model, filter: Filter): void {
+  public async loadFilteredPolicy(model: Model, filter: Filter): Promise<void> {
     if (!filter) {
-      this.loadPolicy(model);
+      await this.loadPolicy(model);
       return;
     }
 
@@ -35,15 +35,15 @@ export class DefaultFilteredAdapter extends FileAdapter
       throw new Error('invalid file path, file path cannot be empty');
     }
 
-    this.loadFilteredPolicyFile(model, filter, Helper.loadPolicyLine);
+    await this.loadFilteredPolicyFile(model, filter, Helper.loadPolicyLine);
     this.filtered = true;
   }
 
-  private loadFilteredPolicyFile(model: Model, filter: Filter, handler: (line: string, model: Model) => void
-  ) {
-    const bodyBuf = readFileSync(this.filePath);
+  private async loadFilteredPolicyFile(model: Model, filter: Filter, handler: (line: string, model: Model) => void
+  ): Promise<void> {
+    const bodyBuf = await readFile(this.filePath);
     const lines = bodyBuf.toString().split('\n');
-    lines.forEach((n, index) => {
+    lines.forEach((n: string, index: number) => {
       const line = n.trim();
       if (!line || DefaultFilteredAdapter.filterLine(line, filter)) {
         return;
@@ -56,11 +56,12 @@ export class DefaultFilteredAdapter extends FileAdapter
     return this.filtered;
   }
 
-  public savePolicy(model: Model): void {
+  public async savePolicy(model: Model): Promise<boolean> {
     if (this.filtered) {
       throw new Error('cannot save a filtered policy');
     }
-    super.savePolicy(model);
+    await super.savePolicy(model);
+    return true;
   }
 
   private static filterLine(line: string, filter: Filter): boolean {

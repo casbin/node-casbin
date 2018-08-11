@@ -1,8 +1,7 @@
 import { Adapter } from './adapter';
 import { Model } from '../model';
 import { Helper } from './helper';
-import { readFileSync, writeFileSync } from 'fs';
-import { arrayToString } from '../util';
+import { readFile, writeFile, arrayToString } from '../util';
 
 /**
  * FileAdapter is the file adapter for Casbin.
@@ -19,18 +18,18 @@ export class FileAdapter implements Adapter {
     this.filePath = filePath;
   }
 
-  public loadPolicy(model: Model): void {
+  public async loadPolicy(model: Model): Promise<void> {
     if (!this.filePath) {
       // throw new Error('invalid file path, file path cannot be empty');
       return;
     }
-    this.loadPolicyFile(model, Helper.loadPolicyLine);
+    await this.loadPolicyFile(model, Helper.loadPolicyLine);
   }
 
-  private loadPolicyFile(model: Model, handler: (line: string, model: Model) => void) {
-    const bodyBuf = readFileSync(this.filePath);
+  private async loadPolicyFile(model: Model, handler: (line: string, model: Model) => void): Promise<void> {
+    const bodyBuf = await readFile(this.filePath);
     const lines = bodyBuf.toString().split('\n');
-    lines.forEach((n, index) => {
+    lines.forEach((n: string, index: number) => {
       const line = n.trim();
       if (!line) {
         return;
@@ -42,23 +41,23 @@ export class FileAdapter implements Adapter {
   /**
    * addPolicy adds a policy rule to the storage.
    */
-  public addPolicy(sec: string, ptype: string, rule: string[]): void {
+  public async addPolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
     throw new Error('not implemented');
   }
 
   /**
    * savePolicy saves all policy rules to the storage.
    */
-  public savePolicy(model: Model): void {
+  public async savePolicy(model: Model): Promise<boolean> {
     if (!this.filePath) {
       // throw new Error('invalid file path, file path cannot be empty');
-      return;
+      return false;
     }
     let result = '';
 
     const pList = model.model.get('p');
     if (!pList) {
-      return;
+      return false;
     }
     pList.forEach(n => {
       n.policy.forEach(m => {
@@ -70,7 +69,7 @@ export class FileAdapter implements Adapter {
 
     const gList = model.model.get('g');
     if (!gList) {
-      return;
+      return false;
     }
     gList.forEach(n => {
       n.policy.forEach(m => {
@@ -80,24 +79,25 @@ export class FileAdapter implements Adapter {
       });
     });
 
-    this.savePolicyFile(result.trim());
+    await this.savePolicyFile(result.trim());
+    return true;
   }
 
-  private savePolicyFile(text: string) {
-    writeFileSync(this.filePath, text);
+  private async savePolicyFile(text: string): Promise<void> {
+    await writeFile(this.filePath, text);
   }
 
   /**
    * removePolicy removes a policy rule from the storage.
    */
-  public removePolicy(sec: string, ptype: string, rule: string[]): void {
+  public async removePolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
     throw new Error('not implemented');
   }
 
   /**
    * removeFilteredPolicy removes policy rules that match the filter from the storage.
    */
-  public removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]): void {
+  public async removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<void> {
     throw new Error('not implemented');
   }
 }

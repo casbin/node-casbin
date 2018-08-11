@@ -19,7 +19,7 @@ function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: bo
   expect(e.enforce(sub, obj, act)).toBe(res);
 }
 
-test('TestKeyMatchModelInMemory', () => {
+test('TestKeyMatchModelInMemory', async () => {
   const m = Enforcer.newModel();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
@@ -29,6 +29,7 @@ test('TestKeyMatchModelInMemory', () => {
   const a = new FileAdapter('examples/keymatch_policy.csv');
 
   let e = new Enforcer(m, a);
+  await e.initialize();
 
   testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
   testEnforce(e, 'alice', '/alice_data/resource1', 'POST', true);
@@ -53,7 +54,7 @@ test('TestKeyMatchModelInMemory', () => {
   testEnforce(e, 'cathy', '/cathy_data', 'DELETE', false);
 
   e = new Enforcer(m);
-  a.loadPolicy(e.getModel());
+  await e.initialize();
 
   testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
   testEnforce(e, 'alice', '/alice_data/resource1', 'POST', true);
@@ -78,7 +79,7 @@ test('TestKeyMatchModelInMemory', () => {
   testEnforce(e, 'cathy', '/cathy_data', 'DELETE', false);
 });
 
-test('TestKeyMatchModelInMemoryDeny', () => {
+test('TestKeyMatchModelInMemoryDeny', async () => {
   const m = Enforcer.newModel();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
@@ -88,6 +89,7 @@ test('TestKeyMatchModelInMemoryDeny', () => {
   const a = new FileAdapter('examples/keymatch_policy.csv');
 
   const e = new Enforcer(m, a);
+  await e.initialize();
 
   testEnforce(e, 'alice', '/alice_data/resource2', 'POST', true);
 });
