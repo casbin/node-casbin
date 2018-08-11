@@ -28,8 +28,7 @@ test('TestKeyMatchModelInMemory', async () => {
 
   const a = new FileAdapter('examples/keymatch_policy.csv');
 
-  let e = new Enforcer(m, a);
-  await e.initialize();
+  let e = await Enforcer.newEnforcer(m, a);
 
   testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
   testEnforce(e, 'alice', '/alice_data/resource1', 'POST', true);
@@ -53,8 +52,7 @@ test('TestKeyMatchModelInMemory', async () => {
   testEnforce(e, 'cathy', '/cathy_data', 'POST', true);
   testEnforce(e, 'cathy', '/cathy_data', 'DELETE', false);
 
-  e = new Enforcer(m);
-  await e.initialize();
+  e = await Enforcer.newEnforcer(m);
 
   testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
   testEnforce(e, 'alice', '/alice_data/resource1', 'POST', true);
@@ -88,8 +86,7 @@ test('TestKeyMatchModelInMemoryDeny', async () => {
 
   const a = new FileAdapter('examples/keymatch_policy.csv');
 
-  const e = new Enforcer(m, a);
-  await e.initialize();
+  const e = await Enforcer.newEnforcer(m, a);
 
   testEnforce(e, 'alice', '/alice_data/resource2', 'POST', true);
 });
