@@ -1,19 +1,65 @@
 node-casbin
 ====
-
+[![NPM version][npm-image]][npm-url]
+[![NPM download][download-image]][download-url]
 [![codebeat badge](https://codebeat.co/badges/c17c9ee1-da42-4db3-8047-9574ad2b23b1)](https://codebeat.co/projects/github-com-casbin-node-casbin-master)
 [![Build Status](https://travis-ci.org/casbin/node-casbin.svg?branch=master)](https://travis-ci.org/casbin/node-casbin)
 [![Coverage Status](https://coveralls.io/repos/github/casbin/node-casbin/badge.svg?branch=master)](https://coveralls.io/github/casbin/node-casbin?branch=master)
 [![Release](https://img.shields.io/github/release/casbin/node-casbin.svg)](https://github.com/casbin/node-casbin/releases/latest)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/casbin/lobby)
 [![Patreon](https://img.shields.io/badge/patreon-donate-yellow.svg)](http://www.patreon.com/yangluo)
-[![Sourcegraph Badge](https://sourcegraph.com/github.com/casbin/casbin/-/badge.svg)](https://sourcegraph.com/github.com/casbin/casbin?badge)
+[![Sourcegraph Badge](https://sourcegraph.com/github.com/casbin/node-casbin/-/badge.svg)](https://sourcegraph.com/github.com/casbin/node-casbin?badge)
+
+[npm-image]: https://img.shields.io/npm/v/casbin.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/casbin
+[download-image]: https://img.shields.io/npm/dm/casbin.svg?style=flat-square
+[download-url]: https://npmjs.org/package/casbin
 
 **News**: still worry about how to write the correct node-casbin policy? ``Casbin online editor`` is coming to help! Try it at: http://casbin.org/editor/
 
 ![casbin Logo](casbin-logo.png)
 
 node-casbin is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https://en.wikipedia.org/wiki/Computer_security_model).
+
+## Installation
+
+```
+npm install casbin --save
+```
+
+## Get started
+
+1. New a node-casbin enforcer with a model file and a policy file:
+
+    ```typescript
+    const enforcer = await Enforcer.newEnforcer('path/to/model.conf', 'path/to/policy.csv');
+    ```
+
+Note: you can also initialize an enforcer with policy in DB instead of file, see [Persistence](#persistence) section for details.
+
+2. Add an enforcement hook into your code right before the access happens:
+
+    ```typescript
+    const sub = 'alice'; // the user that wants to access a resource.
+    const obj = 'data1'; // the resource that is going to be accessed.
+    const act = 'read'; // the operation that the user performs on the resource.
+
+    if (enforcer.enforce(sub, obj, act) == true) {
+        // permit alice to read data1
+    } else {
+        // deny the request, show an error
+    }
+    ```
+
+3. Besides the static policy file, node-casbin also provides API for permission management at run-time. For example, You can get all the roles assigned to a user as below:
+
+    ```typescript
+    const roles = enforcer.getRoles('alice');
+    ```
+
+See [Policy management APIs](#policy-management) for more usage.
+
+4. Please refer to the [src/test](https://github.com/casbin/node-casbin/tree/master/test) package for more usage.
 
 ## All the languages supported by Casbin:
 
@@ -28,11 +74,9 @@ node-casbin is a powerful and efficient open-source access control library for N
 - [Supported models](#supported-models)
 - [How it works?](#how-it-works)
 - [Features](#features)
-- [Installation](#installation)
 - [Documentation](#documentation)
 - [Online editor](#online-editor)
 - [Tutorials](#tutorials)
-- [Get started](#get-started)
 - [Policy management](#policy-management)
 - [Policy persistence](#policy-persistence)
 - [Role manager](#role-manager)
@@ -104,12 +148,6 @@ What node-casbin does NOT do:
 1. authentication (aka verify ``username`` and ``password`` when a user logs in)
 2. manage the list of users or roles. I believe it's more convenient for the project itself to manage these entities. Users usually have their passwords, and node-casbin is not designed as a password container. However, node-casbin stores the user-role mapping for the RBAC scenario. 
 
-## Installation
-
-```
-npm install casbin
-```
-
 ## Documentation
 
 For documentation, please see: [Our Wiki](https://github.com/casbin/casbin/wiki)
@@ -124,40 +162,6 @@ You can also use the online editor (http://casbin.org/editor/) to write your nod
 - [Using Casbin with Beego: 1. Get started and test (in Chinese)](http://blog.csdn.net/hotqin888/article/details/78460385)
 - [Using Casbin with Beego: 2. Policy storage (in Chinese)](http://blog.csdn.net/hotqin888/article/details/78571240)
 - [Using Casbin with Beego: 3. Policy query (in Chinese)](http://blog.csdn.net/hotqin888/article/details/78992250)
-
-## Get started
-
-1. New a node-casbin enforcer with a model file and a policy file:
-
-    ```typescript
-    const enforcer = new Enforcer('path/to/model.conf', 'path/to/policy.csv');
-    ```
-
-Note: you can also initialize an enforcer with policy in DB instead of file, see [Persistence](#persistence) section for details.
-
-2. Add an enforcement hook into your code right before the access happens:
-
-    ```typescript
-    const sub = 'alice'; // the user that wants to access a resource.
-    const obj = 'data1'; // the resource that is going to be accessed.
-    const act = 'read'; // the operation that the user performs on the resource.
-
-    if (enforcer.enforce(sub, obj, act) == true) {
-        // permit alice to read data1
-    } else {
-        // deny the request, show an error
-    }
-    ```
-
-3. Besides the static policy file, node-casbin also provides API for permission management at run-time. For example, You can get all the roles assigned to a user as below:
-
-    ```typescript
-    const roles = enforcer.getRoles('alice');
-    ```
-
-See [Policy management APIs](#policy-management) for more usage.
-
-4. Please refer to the [src/test](https://github.com/casbin/node-casbin/tree/master/test) package for more usage.
 
 ## Policy management
 
