@@ -217,7 +217,9 @@ Priority | [priority_model.conf](https://github.com/casbin/node-casbin/blob/mast
 
 ### Web frameworks
 
-- [Koa](https://github.com/koajs/koa): Expressive middleware for node.js using ES2017 async functions, via plugin: [koa-authz](https://github.com/node-casbin/koa-authz)
+- [koa](https://github.com/koajs/koa): Expressive middleware for node.js using ES2017 async functions, via plugin: [koa-authz](https://github.com/node-casbin/koa-authz)
+- [express](https://github.com/expressjs/express): Fast, unopinionated, minimalist web framework for node, via plugin: [express-authz](https://github.com/node-casbin/express-authz)
+- [egg](https://github.com/eggjs/egg): Born to build better enterprise frameworks and apps with Node.js & Koa , via plugin: [egg-authz](https://github.com/node-casbin/egg-authz)
 
 ## License
 
