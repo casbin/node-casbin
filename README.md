@@ -223,7 +223,7 @@ Priority | [priority_model.conf](https://github.com/casbin/node-casbin/blob/mast
 
 ## License
 
-This project is licensed under the [Apache 2.0 license](https://github.com/casbin/node-casbin/blob/master/LICENSE).
+This project is licensed under the [Apache 2.0 license](LICENSE).
 
 ## Contact
 
