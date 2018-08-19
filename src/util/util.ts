@@ -35,7 +35,7 @@ function arrayEquals(a: string[], b: string[]): boolean {
 }
 
 // array2DEquals determines whether two 2-dimensional string arrays are identical.
-function array2DEquals(a: [string[]], b: [string[]]): boolean {
+function array2DEquals(a: string[][], b: string[][]): boolean {
   return _.isEqual(a, b);
 }
 
