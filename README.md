@@ -8,7 +8,6 @@ node-casbin
 [![Release](https://img.shields.io/github/release/casbin/node-casbin.svg)](https://github.com/casbin/node-casbin/releases/latest)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/casbin/lobby)
 [![Patreon](https://img.shields.io/badge/patreon-donate-yellow.svg)](http://www.patreon.com/yangluo)
-[![Sourcegraph Badge](https://sourcegraph.com/github.com/casbin/node-casbin/-/badge.svg)](https://sourcegraph.com/github.com/casbin/node-casbin?badge)
 
 [npm-image]: https://img.shields.io/npm/v/casbin.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/casbin
@@ -61,12 +60,12 @@ See [Policy management APIs](#policy-management) for more usage.
 
 4. Please refer to the [src/test](https://github.com/casbin/node-casbin/tree/master/test) package for more usage.
 
-## All the languages supported by Casbin:
+## All the languages supported by node-casbin:
 
 - Golang: [Casbin](https://github.com/casbin/casbin) (production-ready)
 - Java: [jCasbin](https://github.com/casbin/jcasbin) (production-ready)
+- Node.js: [node-casbin](https://github.com/casbin/node-casbin) (production-ready)
 - PHP: [PHP-Casbin](https://github.com/sstutz/php-casbin) (experimental)
-- Node.js: [node-casbin](https://github.com/casbin/node-casbin) (experimental)
 - C++: xCasbin (WIP)
 
 ## Table of contents
@@ -217,9 +216,9 @@ Priority | [priority_model.conf](https://github.com/casbin/node-casbin/blob/mast
 
 ### Web frameworks
 
-- [koa](https://github.com/koajs/koa): Expressive middleware for node.js using ES2017 async functions, via plugin: [koa-authz](https://github.com/node-casbin/koa-authz)
-- [express](https://github.com/expressjs/express): Fast, unopinionated, minimalist web framework for node, via plugin: [express-authz](https://github.com/node-casbin/express-authz)
-- [egg](https://github.com/eggjs/egg): Born to build better enterprise frameworks and apps with Node.js & Koa , via plugin: [egg-authz](https://github.com/node-casbin/egg-authz)
+- [Express](https://github.com/expressjs/express): Fast, unopinionated, minimalist web framework for node, via plugin: [express-authz](https://github.com/node-casbin/express-authz)
+- [Koa](https://github.com/koajs/koa): Expressive middleware for node.js using ES2017 async functions, via plugin: [koa-authz](https://github.com/node-casbin/koa-authz)
+- [Egg](https://github.com/eggjs/egg): Born to build better enterprise frameworks and apps with Node.js & Koa , via plugin: [egg-authz](https://github.com/node-casbin/egg-authz)
 
 ## License
 
