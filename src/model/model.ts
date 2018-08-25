@@ -170,7 +170,7 @@ export class Model {
     if (!ast) {
       return false;
     }
-    return ast.policy.some((n: string[]) => n === rule);
+    return ast.policy.some((n: string[]) => util.arrayEquals(n, rule));
   }
 
   // addPolicy adds a policy rule to the model.
