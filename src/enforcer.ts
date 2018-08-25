@@ -511,8 +511,9 @@ export class Enforcer {
   /**
    * addPolicy adds a rule to the current policy.
    */
-  public async addPolicy(sec: string | any[], key?: string, rule?: string[]): Promise<boolean> {
-    if (typeof sec === 'string' && key && rule) {
+  public async addPolicy(...params: any[]): Promise<boolean> {
+    if (typeof params[0] === 'string' && params[1] && (params[2] instanceof Array)) {
+      const [sec, key, rule] = params;
       const ruleAdded = this.model.addPolicy(sec, key, rule);
       if (!ruleAdded) {
         return ruleAdded;
@@ -527,18 +528,17 @@ export class Enforcer {
       }
 
       return ruleAdded;
-    } else if (sec instanceof Array) {
-      return await this.addNamedPolicy('p', sec);
     } else {
-      return false;
+      return await this.addNamedPolicy('p', ...params);
     }
   }
 
   /**
    * removePolicy removes a rule from the current policy.
    */
-  public async removePolicy(sec: string | any[], key?: string, rule?: string[]): Promise<boolean> {
-    if (typeof sec === 'string' && key && rule) {
+  public async removePolicy(...params: any[]): Promise<boolean> {
+    if (typeof params[0] === 'string' && params[1] && (params[2] instanceof Array)) {
+      const [sec, key, rule] = params;
       const ruleRemoved = this.model.removePolicy(sec, key, rule);
       if (!ruleRemoved) {
         return ruleRemoved;
@@ -553,18 +553,18 @@ export class Enforcer {
       }
 
       return ruleRemoved;
-    } else if (sec instanceof Array) {
-      return await this.removeNamedPolicy('p', sec);
     } else {
-      return false;
+      return await this.removeNamedPolicy('p', ...params);
     }
   }
 
   /**
    * removeFilteredPolicy removes rules based on field filters from the current policy.
    */
-  public async removeFilteredPolicy(sec: string | number, key: string | string[], fieldIndex?: number, fieldValues?: string[]): Promise<boolean> {
-    if (typeof sec === 'string' && typeof key === 'string' && fieldIndex && fieldValues instanceof Array) {
+  // public async removeFilteredPolicy(sec: string | number, key: string | string[], fieldIndex?: number, fieldValues?: string[]): Promise<boolean> {
+  public async removeFilteredPolicy(...params: any[]): Promise<boolean> {
+    if (typeof params[0] === 'string' && typeof params[1] === 'string' && params[2] && params[3] instanceof Array) {
+      const [sec, key, fieldIndex, fieldValues] = params;
       const ruleRemoved = this.model.removeFilteredPolicy(sec, key, fieldIndex, ...fieldValues);
       if (!ruleRemoved) {
         return ruleRemoved;
@@ -579,8 +579,9 @@ export class Enforcer {
       }
 
       return ruleRemoved;
-    } else if (typeof sec === 'number' && key instanceof Array) {
-      return await this.removeFilteredNamedPolicy('p', sec, key);
+    } else if (typeof params[0] === 'number' && params[1] instanceof Array) {
+      const [fieldIndex, fieldValues] = params;
+      return await this.removeFilteredNamedPolicy('p', fieldIndex, fieldValues);
     } else {
       return false;
     }
@@ -807,7 +808,7 @@ export class Enforcer {
    * @param params the "p" policy rule.
    * @return succeeds or not.
    */
-  public async addNamedPolicy(ptype: string, params: any[]): Promise<boolean> {
+  public async addNamedPolicy(ptype: string, ...params: any[]): Promise<boolean> {
     let ruleAdded = false;
     if (params.length === 1 && params[0] instanceof Array) {
       ruleAdded = await this.addPolicy('p', ptype, params[0]);
@@ -825,7 +826,7 @@ export class Enforcer {
    * @param params the "p" policy rule.
    * @return succeeds or not.
    */
-  public async removeNamedPolicy(ptype: string, params: any[]): Promise<boolean> {
+  public async removeNamedPolicy(ptype: string, ...params: any[]): Promise<boolean> {
     let ruleRemoved = false;
     if (params.length === 1 && params[0] instanceof Array) {
       ruleRemoved = await this.removePolicy('p', ptype, params[0]);
