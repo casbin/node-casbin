@@ -230,7 +230,7 @@ export class CoreEnforcer {
    *
    * @param enable whether to enable Casbin's log.
    */
-  public static enableLog(enable: boolean): void {
+  public enableLog(enable: boolean): void {
     setEnableLog(enable);
   }
 
