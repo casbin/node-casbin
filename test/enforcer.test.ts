@@ -205,19 +205,6 @@ test('TestNotUsedRBACModelInMemory', async () => {
   testEnforce(e, 'bob', 'data2', 'write', true);
 });
 
-test('TestMatcherUsingInOperator', async () => {
-// From file config
-  const e = await Enforcer.newEnforcer('examples/rbac_model_matcher_using_in_op.conf');
-  await e.addPermissionForUser('alice', 'data1', 'read');
-
-  testEnforce(e, 'alice', 'data1', 'read', true);
-  testEnforce(e, 'alice', 'data2', 'read', true);
-  testEnforce(e, 'alice', 'data3', 'read', true);
-  testEnforce(e, 'anyone', 'data1', 'read', false);
-  testEnforce(e, 'anyone', 'data2', 'read', true);
-  testEnforce(e, 'anyone', 'data3', 'read', true);
-});
-
 test('TestReloadPolicy', async () => {
   const e = await Enforcer.newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
 
