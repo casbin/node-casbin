@@ -30,7 +30,7 @@ export class CoreEnforcer {
   protected fm: FunctionMap;
   private eft: Effector;
 
-  protected adapter: FilteredAdapter | Adapter;
+  protected adapter: FilteredAdapter | Adapter | null = null;
   protected watcher: Watcher | null = null;
   private rm: RoleManager;
 
