@@ -55,7 +55,7 @@ export class FileAdapter implements Adapter {
     pList.forEach(n => {
       n.policy.forEach(m => {
         result += n.key + ', ';
-        result += arrayToString([...m.values()]);
+        result += arrayToString(m);
         result += '\n';
       });
     });
@@ -67,7 +67,7 @@ export class FileAdapter implements Adapter {
     gList.forEach(n => {
       n.policy.forEach(m => {
         result += n.key + ', ';
-        result += arrayToString([...m.values()]);
+        result += arrayToString(m);
         result += '\n';
       });
     });
