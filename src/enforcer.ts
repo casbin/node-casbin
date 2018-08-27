@@ -67,6 +67,7 @@ export class Enforcer extends ManagementEnforcer {
       if (typeof params[0] === 'string') {
         await e.initWithFile(params[0], '');
       } else {
+        // @ts-ignore
         await e.initWithModelAndAdapter(params[0], null);
       }
     } else if (params.length === parsedParamLen) {

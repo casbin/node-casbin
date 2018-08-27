@@ -30,8 +30,10 @@ export class CoreEnforcer {
   protected fm: FunctionMap;
   private eft: Effector;
 
-  protected adapter: FilteredAdapter | Adapter | null = null;
-  protected watcher: Watcher | null = null;
+  // @ts-ignore
+  protected adapter: FilteredAdapter | Adapter = null;
+  // @ts-ignore
+  protected watcher: Watcher = null;
   private rm: RoleManager;
 
   private enabled: boolean;
@@ -41,6 +43,7 @@ export class CoreEnforcer {
   public initialize(): void {
     this.rm = new DefaultRoleManager(10);
     this.eft = new DefaultEffector();
+    // @ts-ignore
     this.watcher = null;
 
     this.enabled = true;
