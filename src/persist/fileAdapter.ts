@@ -39,13 +39,6 @@ export class FileAdapter implements Adapter {
   }
 
   /**
-   * addPolicy adds a policy rule to the storage.
-   */
-  public async addPolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
-    throw new Error('not implemented');
-  }
-
-  /**
    * savePolicy saves all policy rules to the storage.
    */
   public async savePolicy(model: Model): Promise<boolean> {
@@ -85,6 +78,13 @@ export class FileAdapter implements Adapter {
 
   private async savePolicyFile(text: string): Promise<void> {
     await writeFile(this.filePath, text);
+  }
+
+  /**
+   * addPolicy adds a policy rule to the storage.
+   */
+  public async addPolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
+    throw new Error('not implemented');
   }
 
   /**
