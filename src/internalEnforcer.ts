@@ -31,7 +31,7 @@ export class InternalEnforcer extends CoreEnforcer {
       try {
         await this.adapter.addPolicy(sec, ptype, rule);
       } catch (e) {
-        if (e.toString() !== 'not implemented') {
+        if (e.message !== 'not implemented') {
           throw e;
         }
       }
@@ -58,7 +58,7 @@ export class InternalEnforcer extends CoreEnforcer {
       try {
         await this.adapter.removePolicy(sec, ptype, rule);
       } catch (e) {
-        if (e.toString() !== 'not implemented') {
+        if (e.message !== 'not implemented') {
           throw e;
         }
       }
@@ -85,7 +85,7 @@ export class InternalEnforcer extends CoreEnforcer {
       try {
         await this.adapter.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
       } catch (e) {
-        if (e.toString() !== 'not implemented') {
+        if (e.message !== 'not implemented') {
           throw e;
         }
       }
