@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreEnforcer } from './coreEnforcer';
+import { InternalEnforcer } from './internalEnforcer';
 import { FunctionMap, Model } from './model';
 import { Adapter, FileAdapter } from './persist';
 import { setEnableLog } from './util';
 
-export class Enforcer extends CoreEnforcer {
+export class Enforcer extends InternalEnforcer {
   /**
    * newEnforcer creates an enforcer via file or DB.
    *
@@ -101,99 +101,20 @@ export class Enforcer extends CoreEnforcer {
    * @param m model instance
    * @param adapter current adapter instance
    */
-  public async initWithModelAndAdapter(m: Model, adapter: Adapter | null): Promise<void> {
+  public async initWithModelAndAdapter(m: Model, adapter: Adapter): Promise<void> {
     if (adapter) {
       this.adapter = adapter;
     }
-    this.watcher = null;
 
     this.model = m;
     this.model.printModel();
     this.fm = FunctionMap.loadFunctionMap();
+
     this.initialize();
 
     if (this.adapter) {
       // error intentionally ignored
       await this.loadPolicy();
-    }
-  }
-
-  // **************Internal API*************
-  /**
-   * addPolicy adds a rule to the current policy.
-   */
-  public async addPolicy(sec: string | any[], key?: string, rule?: string[]): Promise<boolean> {
-    if (typeof sec === 'string' && key && rule) {
-      const ruleAdded = this.model.addPolicy(sec, key, rule);
-      if (!ruleAdded) {
-        return ruleAdded;
-      }
-
-      if (this.adapter !== null && this.autoSave) {
-        await this.adapter.addPolicy(sec, key, rule);
-        if (this.watcher !== null) {
-          // error intentionally ignored
-          this.watcher.update();
-        }
-      }
-
-      return ruleAdded;
-    } else if (sec instanceof Array) {
-      return await this.addNamedPolicy('p', sec);
-    } else {
-      return false;
-    }
-  }
-
-  /**
-   * removePolicy removes a rule from the current policy.
-   */
-  public async removePolicy(sec: string | any[], key?: string, rule?: string[]): Promise<boolean> {
-    if (typeof sec === 'string' && key && rule) {
-      const ruleRemoved = this.model.removePolicy(sec, key, rule);
-      if (!ruleRemoved) {
-        return ruleRemoved;
-      }
-
-      if (this.adapter !== null && this.autoSave) {
-        await this.adapter.removePolicy(sec, key, rule);
-        if (this.watcher !== null) {
-          // error intentionally ignored
-          this.watcher.update();
-        }
-      }
-
-      return ruleRemoved;
-    } else if (sec instanceof Array) {
-      return await this.removeNamedPolicy('p', sec);
-    } else {
-      return false;
-    }
-  }
-
-  /**
-   * removeFilteredPolicy removes rules based on field filters from the current policy.
-   */
-  public async removeFilteredPolicy(sec: string | number, key: string | string[], fieldIndex?: number, fieldValues?: string[]): Promise<boolean> {
-    if (typeof sec === 'string' && typeof key === 'string' && fieldIndex && fieldValues instanceof Array) {
-      const ruleRemoved = this.model.removeFilteredPolicy(sec, key, fieldIndex, ...fieldValues);
-      if (!ruleRemoved) {
-        return ruleRemoved;
-      }
-
-      if (this.adapter !== null && this.autoSave) {
-        await this.adapter.removeFilteredPolicy(sec, key, fieldIndex, ...fieldValues);
-        if (this.watcher !== null) {
-          // error intentionally ignored
-          this.watcher.update();
-        }
-      }
-
-      return ruleRemoved;
-    } else if (typeof sec === 'number' && key instanceof Array) {
-      return await this.removeFilteredNamedPolicy('p', sec, key);
-    } else {
-      return false;
     }
   }
 
@@ -390,7 +311,7 @@ export class Enforcer extends CoreEnforcer {
    * @param params the "p" policy rule, ptype "p" is implicitly used.
    * @return whether the rule exists.
    */
-  public hasPolicy(...params: any[]): boolean {
+  public hasPolicy(...params: string[]): boolean {
     return this.hasNamedPolicy('p', ...params);
   }
 
@@ -401,12 +322,20 @@ export class Enforcer extends CoreEnforcer {
    * @param params the "p" policy rule.
    * @return whether the rule exists.
    */
-  public hasNamedPolicy(ptype: string, ...params: any[]): boolean {
-    if (params.length === 1 && params[0] instanceof Array) {
-      return this.model.hasPolicy('p', ptype, params[0]);
-    }
-
+  public hasNamedPolicy(ptype: string, ...params: string[]): boolean {
     return this.model.hasPolicy('p', ptype, params);
+  }
+
+  /**
+   * addPolicy adds an authorization rule to the current policy.
+   * If the rule already exists, the function returns false and the rule will not be added.
+   * Otherwise the function returns true by adding the new rule.
+   *
+   * @param params the "p" policy rule, ptype "p" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async addPolicy(...params: string[]): Promise<boolean> {
+    return this.addNamedPolicy('p', ...params);
   }
 
   /**
@@ -418,15 +347,30 @@ export class Enforcer extends CoreEnforcer {
    * @param params the "p" policy rule.
    * @return succeeds or not.
    */
-  public async addNamedPolicy(ptype: string, params: any[]): Promise<boolean> {
-    let ruleAdded = false;
-    if (params.length === 1 && params[0] instanceof Array) {
-      ruleAdded = await this.addPolicy('p', ptype, params[0]);
-    } else {
-      ruleAdded = await this.addPolicy('p', ptype, params);
-    }
+  public async addNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
+    return await this.addPolicyInternal('p', ptype, params);
+  }
 
-    return ruleAdded;
+  /**
+   * removePolicy removes an authorization rule from the current policy.
+   *
+   * @param params the "p" policy rule, ptype "p" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async removePolicy(...params: string[]): Promise<boolean> {
+    return await this.removeNamedPolicy('p', ...params);
+  }
+
+  /**
+   * removeFilteredPolicy removes an authorization rule from the current policy, field filters can be specified.
+   *
+   * @param fieldIndex the policy rule's start index to be matched.
+   * @param fieldValues the field values to be matched, value ""
+   *                    means not to match this field.
+   * @return succeeds or not.
+   */
+  public async removeFilteredPolicy(fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
+    return await this.removeFilteredNamedPolicy('p', fieldIndex, fieldValues);
   }
 
   /**
@@ -436,15 +380,8 @@ export class Enforcer extends CoreEnforcer {
    * @param params the "p" policy rule.
    * @return succeeds or not.
    */
-  public async removeNamedPolicy(ptype: string, params: any[]): Promise<boolean> {
-    let ruleRemoved = false;
-    if (params.length === 1 && params[0] instanceof Array) {
-      ruleRemoved = await this.removePolicy('p', ptype, params[0]);
-    } else {
-      ruleRemoved = await this.removePolicy('p', ptype, params);
-    }
-
-    return ruleRemoved;
+  public async removeNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
+    return await this.removePolicyInternal('p', ptype, params);
   }
 
   /**
@@ -457,7 +394,7 @@ export class Enforcer extends CoreEnforcer {
    * @return succeeds or not.
    */
   public async removeFilteredNamedPolicy(ptype: string, fieldIndex: number, fieldValues: string[]): Promise<boolean> {
-    return await this.removeFilteredPolicy('p', ptype, fieldIndex, fieldValues);
+    return await this.removeFilteredPolicyInternal('p', ptype, fieldIndex, fieldValues);
   }
 
   /**
@@ -465,8 +402,8 @@ export class Enforcer extends CoreEnforcer {
    *
    * @param params the "g" policy rule, ptype "g" is implicitly used.
    * @return whether the rule exists.
-   */  public hasGroupingPolicy(...params: any[]): boolean {
-    return this.hasNamedGroupingPolicy('g', params);
+   */  public hasGroupingPolicy(...params: string[]): boolean {
+    return this.hasNamedGroupingPolicy('g', ...params);
   }
 
   /**
@@ -476,11 +413,7 @@ export class Enforcer extends CoreEnforcer {
    * @param params the "g" policy rule.
    * @return whether the rule exists.
    */
-  public hasNamedGroupingPolicy(ptype: string, ...params: any[]): boolean {
-    if (params.length === 1 && params[0] instanceof Array) {
-      return this.model.hasPolicy('g', ptype, params[0]);
-    }
-
+  public hasNamedGroupingPolicy(ptype: string, ...params: string[]): boolean {
     return this.model.hasPolicy('g', ptype, params);
   }
 
@@ -492,8 +425,8 @@ export class Enforcer extends CoreEnforcer {
    * @param params the "g" policy rule, ptype "g" is implicitly used.
    * @return succeeds or not.
    */
-  public async addGroupingPolicy(...params: any[]): Promise<boolean> {
-    return await this.addNamedGroupingPolicy('g', params);
+  public async addGroupingPolicy(...params: string[]): Promise<boolean> {
+    return await this.addNamedGroupingPolicy('g', ...params);
   }
 
   /**
@@ -505,13 +438,8 @@ export class Enforcer extends CoreEnforcer {
    * @param params the "g" policy rule.
    * @return succeeds or not.
    */
-  public async addNamedGroupingPolicy(ptype: string, ...params: any[]): Promise<boolean> {
-    let ruleadded = false;
-    if (params.length === 1 && params[0] instanceof Array) {
-      ruleadded = await this.addPolicy('g', ptype, params[0]);
-    } else {
-      ruleadded = await this.addPolicy('g', ptype, params);
-    }
+  public async addNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
+    const ruleadded = await this.addPolicy('g', ptype, ...params);
 
     if (this.autoBuildRoleLinks) {
       this.buildRoleLinks();
@@ -526,8 +454,8 @@ export class Enforcer extends CoreEnforcer {
    * @param params the "g" policy rule, ptype "g" is implicitly used.
    * @return succeeds or not.
    */
-  public async removeGroupingPolicy(...params: any[]): Promise<boolean> {
-    return await this.removeNamedGroupingPolicy('g', params);
+  public async removeGroupingPolicy(...params: string[]): Promise<boolean> {
+    return await this.removeNamedGroupingPolicy('g', ...params);
   }
 
   /**
@@ -549,13 +477,8 @@ export class Enforcer extends CoreEnforcer {
    * @param params the "g" policy rule.
    * @return succeeds or not.
    */
-  public async removeNamedGroupingPolicy(ptype: string, ...params: any[]): Promise<boolean> {
-    let ruleRemoved = false;
-    if (params.length === 1 && params[0] instanceof Array) {
-      ruleRemoved = await this.removePolicy('g', ptype, params[0]);
-    } else {
-      ruleRemoved = await this.removePolicy('g', ptype, params);
-    }
+  public async removeNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
+    const ruleRemoved = await this.removePolicy('g', ptype, ...params);
 
     if (this.autoBuildRoleLinks) {
       this.buildRoleLinks();
@@ -573,7 +496,7 @@ export class Enforcer extends CoreEnforcer {
    * @return succeeds or not.
    */
   public async removeFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
-    const ruleRemoved = await this.removeFilteredPolicy('g', ptype, fieldIndex, fieldValues);
+    const ruleRemoved = await this.removeFilteredPolicyInternal('g', ptype, fieldIndex, fieldValues);
     if (this.autoBuildRoleLinks) {
       this.buildRoleLinks();
     }
@@ -700,7 +623,7 @@ export class Enforcer extends CoreEnforcer {
    * @return succeeds or not.
    */
   public async deletePermission(...permission: string[]): Promise<boolean> {
-    return await this.removeFilteredPolicy(1, permission);
+    return await this.removeFilteredPolicy(1, ...permission);
   }
 
   /**
@@ -713,7 +636,7 @@ export class Enforcer extends CoreEnforcer {
    */
   public async addPermissionForUser(user: string, ...permission: string[]): Promise<boolean> {
     permission.unshift(user);
-    return await this.addPolicy(permission);
+    return await this.addPolicy(...permission);
   }
 
   /**
@@ -726,7 +649,7 @@ export class Enforcer extends CoreEnforcer {
    */
   public async deletePermissionForUser(user: string, ...permission: string[]): Promise<boolean> {
     permission.unshift(user);
-    return await this.removePolicy(permission);
+    return await this.removePolicy(...permission);
   }
 
   /**
@@ -759,6 +682,6 @@ export class Enforcer extends CoreEnforcer {
    */
   public hasPermissionForUser(user: string, ...permission: string[]): boolean {
     permission.unshift(user);
-    return this.hasPolicy(permission);
+    return this.hasPolicy(...permission);
   }
 }
