@@ -61,7 +61,7 @@ test('TestKeyMatchModelInMemory', async () => {
   testEnforce(e, 'cathy', '/cathy_data', 'DELETE', false);
 
   e = await Enforcer.newEnforcer(m);
-  a.loadPolicy(e.getModel());
+  await a.loadPolicy(e.getModel());
 
   testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
   testEnforce(e, 'alice', '/alice_data/resource1', 'POST', true);
@@ -110,7 +110,7 @@ test('TestRBACModelInMemoryIndeterminate', async () => {
 
   const e = await Enforcer.newEnforcer(m);
 
-  e.addPermissionForUser('alice', 'data1', 'invalid');
+  await e.addPermissionForUser('alice', 'data1', 'invalid');
 
   testEnforce(e, 'alice', 'data1', 'read', false);
 });
@@ -125,11 +125,11 @@ test('TestRBACModelInMemory', async () => {
 
   const e = await Enforcer.newEnforcer(m);
 
-  e.addPermissionForUser('alice', 'data1', 'read');
-  e.addPermissionForUser('bob', 'data2', 'write');
-  e.addPermissionForUser('data2_admin', 'data2', 'read');
-  e.addPermissionForUser('data2_admin', 'data2', 'write');
-  e.addRoleForUser('alice', 'data2_admin');
+  await e.addPermissionForUser('alice', 'data1', 'read');
+  await e.addPermissionForUser('bob', 'data2', 'write');
+  await e.addPermissionForUser('data2_admin', 'data2', 'read');
+  await e.addPermissionForUser('data2_admin', 'data2', 'write');
+  await e.addRoleForUser('alice', 'data2_admin');
 
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data1', 'write', false);
@@ -166,11 +166,11 @@ m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
 
   const e = await Enforcer.newEnforcer(m);
 
-  e.addPermissionForUser('alice', 'data1', 'read');
-  e.addPermissionForUser('bob', 'data2', 'write');
-  e.addPermissionForUser('data2_admin', 'data2', 'read');
-  e.addPermissionForUser('data2_admin', 'data2', 'write');
-  e.addRoleForUser('alice', 'data2_admin');
+  await e.addPermissionForUser('alice', 'data1', 'read');
+  await e.addPermissionForUser('bob', 'data2', 'write');
+  await e.addPermissionForUser('data2_admin', 'data2', 'read');
+  await e.addPermissionForUser('data2_admin', 'data2', 'write');
+  await e.addRoleForUser('alice', 'data2_admin');
 
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data1', 'write', false);
@@ -192,8 +192,8 @@ test('TestNotUsedRBACModelInMemory', async () => {
 
   const e = await Enforcer.newEnforcer(m);
 
-  e.addPermissionForUser('alice', 'data1', 'read');
-  e.addPermissionForUser('bob', 'data2', 'write');
+  await e.addPermissionForUser('alice', 'data1', 'read');
+  await e.addPermissionForUser('bob', 'data2', 'write');
 
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data1', 'write', false);
@@ -208,7 +208,7 @@ test('TestNotUsedRBACModelInMemory', async () => {
 test('TestMatcherUsingInOperator', async () => {
 // From file config
   const e = await Enforcer.newEnforcer('examples/rbac_model_matcher_using_in_op.conf');
-  e.addPermissionForUser('alice', 'data1', 'read');
+  await e.addPermissionForUser('alice', 'data1', 'read');
 
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data2', 'read', true);
@@ -221,14 +221,14 @@ test('TestMatcherUsingInOperator', async () => {
 test('TestReloadPolicy', async () => {
   const e = await Enforcer.newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
 
-  e.loadPolicy();
+  await e.loadPolicy();
   testGetPolicy(e, [['alice', 'data1', 'read'], ['bob', 'data2', 'write'], ['data2_admin', 'data2', 'read'], ['data2_admin', 'data2', 'write']]);
 });
 
 test('TestSavePolicy', async () => {
   const e = await Enforcer.newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
 
-  e.savePolicy();
+  await e.savePolicy();
 });
 
 test('TestClearPolicy', async () => {
@@ -293,9 +293,9 @@ test('TestEnableAutoSave', async () => {
   e.enableAutoSave(false);
   // Because AutoSave is disabled, the policy change only affects the policy in Casbin enforcer,
   // it doesn't affect the policy in the storage.
-  e.removePolicy('alice', 'data1', 'read');
+  await e.removePolicy('alice', 'data1', 'read');
   // Reload the policy from the storage to see the effect.
-  e.loadPolicy();
+  await e.loadPolicy();
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data1', 'write', false);
   testEnforce(e, 'alice', 'data2', 'read', false);
@@ -308,12 +308,12 @@ test('TestEnableAutoSave', async () => {
   e.enableAutoSave(true);
   // Because AutoSave is enabled, the policy change not only affects the policy in Casbin enforcer,
   // but also affects the policy in the storage.
-  e.removePolicy('alice', 'data1', 'read');
+  await e.removePolicy('alice', 'data1', 'read');
 
   // However, the file adapter doesn't implement the AutoSave feature, so enabling it has no effect at all here.
 
   // Reload the policy from the storage to see the effect.
-  e.loadPolicy();
+  await e.loadPolicy();
   testEnforce(e, 'alice', 'data1', 'read', true); // Will not be false here.
   testEnforce(e, 'alice', 'data1', 'write', false);
   testEnforce(e, 'alice', 'data2', 'read', false);
@@ -365,7 +365,7 @@ test('TestGetAndSetAdapterInMem', async () => {
 
   const a2 = e2.getAdapter();
   e.setAdapter(a2);
-  e.loadPolicy();
+  await e.loadPolicy();
 
   testEnforce(e, 'alice', 'data1', 'read', false);
   testEnforce(e, 'alice', 'data1', 'write', true);
@@ -378,7 +378,7 @@ test('TestSetAdapterFromFile', async () => {
 
   const a = new FileAdapter('examples/basic_policy.csv');
   e.setAdapter(a);
-  e.loadPolicy();
+  await e.loadPolicy();
 
   testEnforce(e, 'alice', 'data1', 'read', true);
 });
@@ -396,7 +396,7 @@ test('TestInitEmpty', async () => {
 
   e.setModel(m);
   e.setAdapter(a);
-  e.loadPolicy();
+  await e.loadPolicy();
 
   testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
 });
