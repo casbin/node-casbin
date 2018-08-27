@@ -439,7 +439,7 @@ export class Enforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async addNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    const ruleadded = await this.addPolicy('g', ptype, ...params);
+    const ruleadded = await this.addPolicyInternal('g', ptype, params);
 
     if (this.autoBuildRoleLinks) {
       this.buildRoleLinks();
