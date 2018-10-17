@@ -184,6 +184,7 @@ Adapter | Type | Author | Description
 [File Adapter (built-in)](https://github.com/casbin/casbin/wiki/Policy-persistence#file-adapter) | File | node-casbin | Persistence for [.CSV (Comma-Separated Values)](https://en.wikipedia.org/wiki/Comma-separated_values) files
 [Sequelize Adapter](https://github.com/node-casbin/sequelize-adapter) | ORM | Casbin | MySQL, PostgreSQL, SQLite, Microsoft SQL Server are supported by [Sequelize](https://github.com/sequelize/sequelize)
 [Waterline Adapter](https://github.com/node-casbin/waterline-adapter) | ORM | Casbin | MySQL, MongoDB, neDB, Postgres are supported by [Waterline](https://github.com/balderdashy/waterline)
+[TypeORM Adapter](https://github.com/node-casbin/typeorm-adapter) | ORM | Casbin | MySQL, PostgreSQL, MariaDB, SQLite, MS SQL Server, Oracle, WebSQL, MongoDB are supported by [TypeORM](https://github.com/typeorm/typeorm)
 
 For details of adapters, please refer to the documentation: https://github.com/casbin/casbin/wiki/Policy-persistence
 
