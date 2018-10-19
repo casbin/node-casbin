@@ -149,7 +149,7 @@ What node-casbin does NOT do:
 
 ## Documentation
 
-For documentation, please see: [Our Wiki](https://github.com/casbin/casbin/wiki)
+https://casbin.org/docs/en/overview
 
 ## Online editor
 
