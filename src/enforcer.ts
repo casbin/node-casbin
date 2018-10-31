@@ -174,10 +174,15 @@ export class Enforcer extends ManagementEnforcer {
    *
    * @param user the user.
    * @param role the role.
+   * @param domain the domain.
    * @return succeeds or not.
    */
-  public async addRoleForUser(user: string, role: string): Promise<boolean> {
-    return await this.addGroupingPolicy(user, role);
+  public async addRoleForUser(user: string, role: string, domain?: string): Promise<boolean> {
+    if (domain == null) {
+      return await this.addGroupingPolicy(user, role);
+    } else {
+      return await this.addGroupingPolicy(user, role, domain);
+    }
   }
 
   /**
@@ -186,10 +191,15 @@ export class Enforcer extends ManagementEnforcer {
    *
    * @param user the user.
    * @param role the role.
+   * @param domain the domain.
    * @return succeeds or not.
    */
-  public async deleteRoleForUser(user: string, role: string): Promise<boolean> {
-    return await this.removeGroupingPolicy(user, role);
+  public async deleteRoleForUser(user: string, role: string, domain?: string): Promise<boolean> {
+    if (domain == null) {
+      return await this.removeGroupingPolicy(user, role);
+    } else {
+      return await this.removeGroupingPolicy(user, role, domain);
+    }
   }
 
   /**
