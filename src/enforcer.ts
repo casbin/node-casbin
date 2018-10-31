@@ -126,26 +126,34 @@ export class Enforcer extends ManagementEnforcer {
    * getRolesForUser gets the roles that a user has.
    *
    * @param name the user.
+   * @param domain the domain.
    * @return the roles that the user has.
    */
-  public getRolesForUser(name: string): string[] {
+  public getRolesForUser(name: string, domain?: string): string[] {
     // @ts-ignore
     const rm = this.model.model.get('g').get('g').rm;
-    const result = rm.getRoles(name);
-    return result;
+    if (domain == null) {
+      return rm.getRoles(name);
+    } else {
+      return rm.getRoles(name, domain);
+    }
   }
 
   /**
    * getUsersForRole gets the users that has a role.
    *
    * @param name the role.
+   * @param domain the domain.
    * @return the users that has the role.
    */
-  public getUsersForRole(name: string): string[] {
+  public getUsersForRole(name: string, domain?: string): string[] {
     // @ts-ignore
     const rm = this.model.model.get('g').get('g').rm;
-    const result = rm.getUsers(name);
-    return result;
+    if (domain == null) {
+      return rm.getUsers(name);
+    } else {
+      return rm.getUsers(name, domain);
+    }
   }
 
   /**
@@ -153,10 +161,11 @@ export class Enforcer extends ManagementEnforcer {
    *
    * @param name the user.
    * @param role the role.
+   * @param domain the domain.
    * @return whether the user has the role.
    */
-  public hasRoleForUser(name: string, role: string): boolean {
-    const roles = this.getRolesForUser(name);
+  public hasRoleForUser(name: string, role: string, domain?: string): boolean {
+    const roles = this.getRolesForUser(name, domain);
     let hasRole: boolean = false;
     for (const r of roles) {
       if (r === role) {
