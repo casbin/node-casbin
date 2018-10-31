@@ -377,7 +377,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    const ruleRemoved = await this.removePolicy('g', ptype, ...params);
+    const ruleRemoved = await this.removePolicyInternal('g', ptype, params);
 
     if (this.autoBuildRoleLinks) {
       this.buildRoleLinks();
