@@ -106,6 +106,12 @@ export class DefaultRoleManager implements RoleManager {
    * domain is an unreferenced parameter here, may be used in other implementations.
    */
   public getUsers(name: string, ...domain: string[]): string[] {
+    if (domain.length === 1) {
+      name = domain[0] + '::' + name;
+    } else if (domain.length > 1) {
+      throw new Error('error: domain should be 1 parameter');
+    }
+
     if (!this.hasRole(name)) {
       throw new Error('error: name does not exist');
     }
