@@ -116,9 +116,13 @@ export class DefaultRoleManager implements RoleManager {
       throw new Error('error: name does not exist');
     }
 
-    return [...this.allRoles.values()]
+    let users = [...this.allRoles.values()]
       .filter(n => n.hasDirectRole(name))
       .map(n => n.name);
+    if (domain.length === 1) {
+      users = users.map(n => n.substring(domain[0].length + 2, n.length));
+    }
+    return users;
   }
 
   /**
