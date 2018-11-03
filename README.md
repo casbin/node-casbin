@@ -28,13 +28,13 @@ npm install casbin --save
 
 ## Get started
 
-1. New a node-casbin enforcer with a model file and a policy file:
+1. Initialize a new node-casbin enforcer with a model file and a policy file:
 
     ```typescript
     const enforcer = await Enforcer.newEnforcer('path/to/model.conf', 'path/to/policy.csv');
     ```
-
-Note: you can also initialize an enforcer with policy in DB instead of file, see [Persistence](#persistence) section for details.
+    
+    Note: you can also initialize an enforcer with policy in DB instead of file, see [Persistence](#policy-persistence) section for details.
 
 2. Add an enforcement hook into your code right before the access happens:
 
@@ -55,8 +55,8 @@ Note: you can also initialize an enforcer with policy in DB instead of file, see
     ```typescript
     const roles = enforcer.getRoles('alice');
     ```
-
-See [Policy management APIs](#policy-management) for more usage.
+    
+    See [Policy management APIs](#policy-management) for more usage.
 
 4. Please refer to the [src/test](https://github.com/casbin/node-casbin/tree/master/test) package for more usage.
 
