@@ -20,6 +20,13 @@ node-casbin
 
 node-casbin is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https://en.wikipedia.org/wiki/Computer_security_model).
 
+## All the languages supported by Casbin:
+
+![golang](https://casbin.org/docs/assets/langs/golang.png) | ![java](https://casbin.org/docs/assets/langs/java.png) | ![nodejs](https://casbin.org/docs/assets/langs/nodejs.png) | ![php](https://casbin.org/docs/assets/langs/php.png)
+----|----|----|----
+[Casbin](https://github.com/casbin/casbin) | [jCasbin](https://github.com/casbin/jcasbin) | [node-casbin](https://github.com/casbin/node-casbin) | [PHP-Casbin](https://github.com/php-casbin/php-casbin)
+production-ready | production-ready | production-ready | experimental
+
 ## Installation
 
 ```
@@ -59,14 +66,6 @@ npm install casbin --save
     See [Policy management APIs](#policy-management) for more usage.
 
 4. Please refer to the [src/test](https://github.com/casbin/node-casbin/tree/master/test) package for more usage.
-
-## All the languages supported by node-casbin:
-
-- Golang: [Casbin](https://github.com/casbin/casbin) (production-ready)
-- Java: [jCasbin](https://github.com/casbin/jcasbin) (production-ready)
-- Node.js: [node-casbin](https://github.com/casbin/node-casbin) (production-ready)
-- PHP: [PHP-Casbin](https://github.com/php-casbin/php-casbin) (experimental)
-- C++: xCasbin (WIP)
 
 ## Table of contents
 
