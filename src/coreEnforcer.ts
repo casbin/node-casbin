@@ -213,7 +213,7 @@ export class CoreEnforcer {
       return false;
     }
     if (this.watcher) {
-      return this.watcher.update();
+      return await this.watcher.update();
     }
     return true;
   }
