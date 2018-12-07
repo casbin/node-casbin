@@ -318,11 +318,11 @@ export class CoreEnforcer {
         const parameters: { [key: string]: any } = {};
         // @ts-ignore
         this.model.model.get('r').get('r').tokens.forEach((token, j) => {
-          parameters[token] = rvals[j].trim();
+          parameters[token] = rvals[j];
         });
         // @ts-ignore
         this.model.model.get('p').get('p').tokens.forEach((token, j) => {
-          parameters[token] = pvals[j].trim();
+          parameters[token] = pvals[j];
         });
 
         const result = expression({ ...parameters, ...functions });
