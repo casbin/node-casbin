@@ -38,7 +38,8 @@ npm install casbin --save
 1. Initialize a new node-Casbin enforcer with a model file and a policy file:
 
     ```typescript
-    const enforcer = await Enforcer.newEnforcer('path/to/model.conf', 'path/to/policy.csv');
+    import casbin from 'casbin';
+    const enforcer = await casbin.newEnforcer('path/to/model.conf', 'path/to/policy.csv');
     ```
     
     Note: you can also initialize an enforcer with policy in DB instead of file, see [Persistence](#policy-persistence) section for details.

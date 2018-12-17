@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Enforcer } from '../src/enforcer';
-import { FileAdapter } from '../src/persist';
-import { Util } from '../src/casbin';
+import casbin, { Enforcer, FileAdapter, Util } from '../src/casbin';
 
 function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: boolean): void {
   expect(e.enforce(sub, obj, act)).toBe(res);
@@ -28,7 +26,7 @@ function testGetPolicy(e: Enforcer, res: string[][]) {
 }
 
 test('TestKeyMatchModelInMemory', async () => {
-  const m = Enforcer.newModel();
+  const m = casbin.newModel();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('e', 'e', 'some(where (p.eft == allow))');
@@ -36,7 +34,7 @@ test('TestKeyMatchModelInMemory', async () => {
 
   const a = new FileAdapter('examples/keymatch_policy.csv');
 
-  let e = await Enforcer.newEnforcer(m, a);
+  let e = await casbin.newEnforcer(m, a);
 
   testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
   testEnforce(e, 'alice', '/alice_data/resource1', 'POST', true);
@@ -60,7 +58,7 @@ test('TestKeyMatchModelInMemory', async () => {
   testEnforce(e, 'cathy', '/cathy_data', 'POST', true);
   testEnforce(e, 'cathy', '/cathy_data', 'DELETE', false);
 
-  e = await Enforcer.newEnforcer(m);
+  e = await casbin.newEnforcer(m);
   await a.loadPolicy(e.getModel());
 
   testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
@@ -87,7 +85,7 @@ test('TestKeyMatchModelInMemory', async () => {
 });
 
 test('TestKeyMatchModelInMemoryDeny', async () => {
-  const m = Enforcer.newModel();
+  const m = casbin.newModel();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('e', 'e', '!some(where (p.eft == deny))');
@@ -95,20 +93,20 @@ test('TestKeyMatchModelInMemoryDeny', async () => {
 
   const a = new FileAdapter('examples/keymatch_policy.csv');
 
-  const e = await Enforcer.newEnforcer(m, a);
+  const e = await casbin.newEnforcer(m, a);
 
   testEnforce(e, 'alice', '/alice_data/resource2', 'POST', true);
 });
 
 test('TestRBACModelInMemoryIndeterminate', async () => {
-  const m = Enforcer.newModel();
+  const m = casbin.newModel();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('g', 'g', '_, _');
   m.addDef('e', 'e', 'some(where (p.eft == allow))');
   m.addDef('m', 'm', 'g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act');
 
-  const e = await Enforcer.newEnforcer(m);
+  const e = await casbin.newEnforcer(m);
 
   await e.addPermissionForUser('alice', 'data1', 'invalid');
 
@@ -116,14 +114,14 @@ test('TestRBACModelInMemoryIndeterminate', async () => {
 });
 
 test('TestRBACModelInMemory', async () => {
-  const m = Enforcer.newModel();
+  const m = casbin.newModel();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('g', 'g', '_, _');
   m.addDef('e', 'e', 'some(where (p.eft == allow))');
   m.addDef('m', 'm', 'g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act');
 
-  const e = await Enforcer.newEnforcer(m);
+  const e = await casbin.newEnforcer(m);
 
   await e.addPermissionForUser('alice', 'data1', 'read');
   await e.addPermissionForUser('bob', 'data2', 'write');
@@ -159,12 +157,12 @@ e = some(where (p.eft == allow))
 [matchers]
 m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
 `;
-  const m = Enforcer.newModel(text);
+  const m = casbin.newModel(text);
   // The above is the same as:
-  // const m = Enforcer.newModel();
+  // const m = casbin.newModel();
   // m.loadModelFromText(text);
 
-  const e = await Enforcer.newEnforcer(m);
+  const e = await casbin.newEnforcer(m);
 
   await e.addPermissionForUser('alice', 'data1', 'read');
   await e.addPermissionForUser('bob', 'data2', 'write');
@@ -183,14 +181,14 @@ m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
 });
 
 test('TestNotUsedRBACModelInMemory', async () => {
-  const m = Enforcer.newModel();
+  const m = casbin.newModel();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('g', 'g', '_, _');
   m.addDef('e', 'e', 'some(where (p.eft == allow))');
   m.addDef('m', 'm', 'g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act');
 
-  const e = await Enforcer.newEnforcer(m);
+  const e = await casbin.newEnforcer(m);
 
   await e.addPermissionForUser('alice', 'data1', 'read');
   await e.addPermissionForUser('bob', 'data2', 'write');
@@ -206,26 +204,26 @@ test('TestNotUsedRBACModelInMemory', async () => {
 });
 
 test('TestReloadPolicy', async () => {
-  const e = await Enforcer.newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
+  const e = await casbin.newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
 
   await e.loadPolicy();
   testGetPolicy(e, [['alice', 'data1', 'read'], ['bob', 'data2', 'write'], ['data2_admin', 'data2', 'read'], ['data2_admin', 'data2', 'write']]);
 });
 
 test('TestSavePolicy', async () => {
-  const e = await Enforcer.newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
+  const e = await casbin.newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
 
   await e.savePolicy();
 });
 
 test('TestClearPolicy', async () => {
-  const e = await Enforcer.newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
+  const e = await casbin.newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
 
   e.clearPolicy();
 });
 
 test('TestEnableEnforce', async () => {
-  const e = await Enforcer.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
+  const e = await casbin.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
 
   e.enableEnforce(false);
   testEnforce(e, 'alice', 'data1', 'read', true);
@@ -249,9 +247,9 @@ test('TestEnableEnforce', async () => {
 });
 
 test('TestEnableLog', async () => {
-  const e = await Enforcer.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv', true);
+  const e = await casbin.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv', true);
   // The log is enabled by default, so the above is the same with:
-  // const e = await Enforcer.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
+  // const e = await casbin.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
 
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data1', 'write', false);
@@ -275,7 +273,7 @@ test('TestEnableLog', async () => {
 });
 
 test('TestEnableAutoSave', async () => {
-  const e = await Enforcer.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
+  const e = await casbin.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
 
   e.enableAutoSave(false);
   // Because AutoSave is disabled, the policy change only affects the policy in Casbin enforcer,
@@ -313,7 +311,7 @@ test('TestEnableAutoSave', async () => {
 
 test('TestInitWithAdapter', async () => {
   const adapter = new FileAdapter('examples/basic_policy.csv');
-  const e = await Enforcer.newEnforcer('examples/basic_model.conf', adapter);
+  const e = await casbin.newEnforcer('examples/basic_model.conf', adapter);
 
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data1', 'write', false);
@@ -326,15 +324,15 @@ test('TestInitWithAdapter', async () => {
 });
 
 test('TestRoleLinks', async () => {
-  const e = await Enforcer.newEnforcer('examples/rbac_model.conf');
+  const e = await casbin.newEnforcer('examples/rbac_model.conf');
   e.enableAutoBuildRoleLinks(false);
   e.buildRoleLinks();
   e.enforce('user501', 'data9', 'read');
 });
 
 test('TestGetAndSetModel', async () => {
-  const e = await Enforcer.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
-  const e2 = await Enforcer.newEnforcer('examples/basic_with_root_model.conf', 'examples/basic_policy.csv');
+  const e = await casbin.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
+  const e2 = await casbin.newEnforcer('examples/basic_with_root_model.conf', 'examples/basic_policy.csv');
 
   testEnforce(e, 'root', 'data1', 'read', false);
 
@@ -344,8 +342,8 @@ test('TestGetAndSetModel', async () => {
 });
 
 test('TestGetAndSetAdapterInMem', async () => {
-  const e = await Enforcer.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
-  const e2 = await Enforcer.newEnforcer('examples/basic_model.conf', 'examples/basic_inverse_policy.csv');
+  const e = await casbin.newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
+  const e2 = await casbin.newEnforcer('examples/basic_model.conf', 'examples/basic_inverse_policy.csv');
 
   testEnforce(e, 'alice', 'data1', 'read', true);
   testEnforce(e, 'alice', 'data1', 'write', false);
@@ -359,7 +357,7 @@ test('TestGetAndSetAdapterInMem', async () => {
 });
 
 test('TestSetAdapterFromFile', async () => {
-  const e = await Enforcer.newEnforcer('examples/basic_model.conf');
+  const e = await casbin.newEnforcer('examples/basic_model.conf');
 
   testEnforce(e, 'alice', 'data1', 'read', false);
 
@@ -371,9 +369,9 @@ test('TestSetAdapterFromFile', async () => {
 });
 
 test('TestInitEmpty', async () => {
-  const e = await Enforcer.newEnforcer();
+  const e = await casbin.newEnforcer();
 
-  const m = Enforcer.newModel();
+  const m = casbin.newModel();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('e', 'e', 'some(where (p.eft == allow))');

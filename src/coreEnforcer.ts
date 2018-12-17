@@ -20,6 +20,7 @@ import { FunctionMap, Model } from './model';
 import { Adapter, Filter, FilteredAdapter, Watcher } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 import { generateGFunction, getEnableLog, logPrint, setEnableLog } from './util';
+import casbin from '../src/casbin';
 
 /**
  * CoreEnforcer defines the core functionality of an enforcer.
@@ -53,21 +54,14 @@ export class CoreEnforcer {
 
   /**
    * newModel creates a model.
+   *
+   * @deprecated since version 1.1.8, will be deleted in version 1.2.0.
    */
   public static newModel(...text: string[]): Model {
-    const m = new Model();
-
-    if (text.length === 2) {
-      if (text[0] !== '') {
-        m.loadModel(text[0]);
-      }
-    } else if (text.length === 1) {
-      m.loadModelFromText(text[0]);
-    } else if (text.length !== 0) {
-      throw new Error('Invalid parameters for model.');
-    }
-
-    return m;
+    console.warn(
+      '[node-casbin] Enforce.newModel() is deprecated, please use casbin.newModel().'
+    );
+    return casbin.newModel(...text);
   }
 
   /**

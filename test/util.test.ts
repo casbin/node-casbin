@@ -35,7 +35,9 @@ test('test logPrint', () => {
 });
 
 test('test Valuate', () => {
+  // @ts-ignore
   expect(compile('1 + 1 === 2')()).toEqual(true);
+  // @ts-ignore
   expect(compile('1 + 1 !== 2')()).toEqual(false);
 });
 
