@@ -15,7 +15,7 @@
 import { ManagementEnforcer } from './managementEnforcer';
 import { FunctionMap, Model } from './model';
 import { Adapter, FileAdapter } from './persist';
-import casbin from '../src/casbin';
+import { newEnforcer, newModel } from './casbin';
 
 /**
  * Enforcer = ManagementEnforcer + RBAC API.
@@ -42,7 +42,7 @@ export class Enforcer extends ManagementEnforcer {
     console.warn(
       '[node-casbin] Enforce.newEnforcer() is deprecated, please use casbin.newEnforcer().'
     );
-    return casbin.newEnforcer(...params);
+    return newEnforcer(...params);
   }
 
   /**
@@ -61,7 +61,7 @@ export class Enforcer extends ManagementEnforcer {
    * @param adapter current adapter instance
    */
   public async initWithAdapter(modelPath: string, adapter: Adapter): Promise<void> {
-    const m = casbin.newModel(modelPath, '');
+    const m = newModel(modelPath, '');
     await this.initWithModelAndAdapter(m, adapter);
 
     this.modelPath = modelPath;

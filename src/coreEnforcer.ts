@@ -20,7 +20,7 @@ import { FunctionMap, Model } from './model';
 import { Adapter, Filter, FilteredAdapter, Watcher } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 import { generateGFunction, getEnableLog, logPrint, setEnableLog } from './util';
-import casbin from '../src/casbin';
+import { newModel } from './casbin';
 
 /**
  * CoreEnforcer defines the core functionality of an enforcer.
@@ -61,7 +61,7 @@ export class CoreEnforcer {
     console.warn(
       '[node-casbin] Enforce.newModel() is deprecated, please use casbin.newModel().'
     );
-    return casbin.newModel(...text);
+    return newModel(...text);
   }
 
   /**
