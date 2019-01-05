@@ -1,7 +1,6 @@
 import { FilteredAdapter } from './filteredAdapter';
 import { Model } from '../model';
 import { FileAdapter } from './fileAdapter';
-import { Adapter } from './adapter';
 import { Helper } from './helper';
 import { readFile } from '../util';
 

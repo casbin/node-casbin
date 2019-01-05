@@ -14,7 +14,7 @@
 
 import * as rbac from '../rbac';
 import * as _ from 'lodash';
-import { logPrint } from '../util';
+import { logPrint } from '../log';
 
 // Assertion represents an expression in a section of the model.
 // For example: r = sub, obj, act

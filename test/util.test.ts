@@ -12,26 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as util from '../src/util';
+import { getLogger, logPrint, Util as util } from '../src';
 import { compile } from 'expression-eval';
 
 test('test enableLog success', () => {
-  util.setEnableLog(true);
-  expect(util.getEnableLog()).toEqual(true);
-  util.setEnableLog(false);
-  expect(util.getEnableLog()).toEqual(false);
+  getLogger().enableLog(true);
+  expect(getLogger().isEnable()).toEqual(true);
+  getLogger().enableLog(false);
+  expect(getLogger().isEnable()).toEqual(false);
 });
 
 test('test enableLog failed', () => {
-  util.setEnableLog(true);
-  expect(util.getEnableLog()).not.toEqual(false);
-  util.setEnableLog(false);
-  expect(util.getEnableLog()).not.toEqual(true);
+  getLogger().enableLog(true);
+  expect(getLogger().isEnable()).not.toEqual(false);
+  getLogger().enableLog(false);
+  expect(getLogger().isEnable()).not.toEqual(true);
 });
 
 test('test logPrint', () => {
-  util.setEnableLog(true);
-  expect(util.logPrint('test log')).toBeUndefined();
+  getLogger().enableLog(true);
+  expect(logPrint('test log')).toBeUndefined();
 });
 
 test('test Valuate', () => {

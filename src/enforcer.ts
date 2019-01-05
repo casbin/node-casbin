@@ -15,36 +15,12 @@
 import { ManagementEnforcer } from './managementEnforcer';
 import { FunctionMap, Model } from './model';
 import { Adapter, FileAdapter } from './persist';
-import { newEnforcer, newModel } from './casbin';
+import { newModel } from './casbin';
 
 /**
  * Enforcer = ManagementEnforcer + RBAC API.
  */
 export class Enforcer extends ManagementEnforcer {
-  /**
-   * newEnforcer creates an enforcer via file or DB.
-   *
-   * File:
-   * ```js
-   * const e = new Enforcer('path/to/basic_model.conf', 'path/to/basic_policy.csv');
-   * ```
-   *
-   * MySQL DB:
-   * ```js
-   * const a = new MySQLAdapter('mysql', 'mysql_username:mysql_password@tcp(127.0.0.1:3306)/');
-   * const e = new Enforcer('path/to/basic_model.conf', a);
-   * ```
-   *
-   * @deprecated since version 1.1.8, will be deleted in version 1.2.0.
-   * @param params
-   */
-  public static async newEnforcer(...params: any[]): Promise<Enforcer> {
-    console.warn(
-      '[node-casbin] Enforce.newEnforcer() is deprecated, please use casbin.newEnforcer().'
-    );
-    return newEnforcer(...params);
-  }
-
   /**
    * initWithFile initializes an enforcer with a model file and a policy file.
    * @param modelPath model file path

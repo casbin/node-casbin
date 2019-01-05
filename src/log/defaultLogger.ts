@@ -12,13 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as Util from './util';
+import { Logger } from './logger';
 
-export * from './enforcer';
-export * from './effect';
-export * from './model';
-export * from './persist';
-export * from './rbac';
-export * from './casbin';
-export * from './log';
-export { Util };
+// DefaultLogger is the implementation for a Logger
+export class DefaultLogger implements Logger {
+  private enable: boolean = false;
+
+  public enableLog(enable: boolean): void {
+    this.enable = enable;
+  }
+
+  public isEnable(): boolean {
+    return this.enable;
+  }
+
+  public print(...v: any[]): void {
+    if (this.enable) {
+      console.log(...v);
+    }
+  }
+
+  public printf(format: string, ...v: any[]): void {
+    if (this.enable) {
+      console.log(format, ...v);
+    }
+  }
+}

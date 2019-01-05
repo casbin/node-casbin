@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { RoleManager } from './roleManager';
-import { logPrint } from '../util';
+import { logPrint } from '../log';
 
 // RoleManager provides a default implementation for the RoleManager interface
 export class DefaultRoleManager implements RoleManager {

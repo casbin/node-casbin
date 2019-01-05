@@ -1,4 +1,4 @@
-// Copyright 2017 The casbin Authors. All Rights Reserved.
+// Copyright 2019 The Casbin Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// enableLog controls whether to print log to console.
-let enableLog = false;
+// Logger is the logging interface implementation.
+export interface Logger {
+  // enableLog controls whether print the message.
+  enableLog(enable: boolean): void;
 
-// logPrint prints the log.
-function logPrint(v: any): void {
-  if (enableLog) {
-    console.log(v);
-  }
+  // isEnable returns if logger is enabled.
+  isEnable(): boolean;
+
+  // print formats using the default formats for its operands and logs the message.
+  print(...v: any[]): void;
+
+  // printf formats according to a format specifier and logs the message.
+  printf(format: string, ...v: any[]): void;
 }
-
-function getEnableLog(): boolean {
-  return enableLog;
-}
-
-function setEnableLog(val: boolean) {
-  enableLog = val;
-}
-
-export { logPrint, getEnableLog, setEnableLog };
