@@ -17,6 +17,7 @@ import * as rbac from '../rbac';
 import * as util from '../util';
 import { Config } from '../config';
 import { Assertion } from './assertion';
+import { logPrint } from '../log';
 
 const sectionNameMap: { [index: string]: string } = {
   r: 'request_definition',
@@ -124,10 +125,10 @@ export class Model {
 
   // printModel prints the model to the log.
   public printModel(): void {
-    util.logPrint('Model:');
+    logPrint('Model:');
     this.model.forEach((value, key) => {
       value.forEach((ast, astKey) => {
-        util.logPrint(`${key}.${astKey}: ${ast.value}`);
+        logPrint(`${key}.${astKey}: ${ast.value}`);
       });
     });
   }
@@ -267,11 +268,11 @@ export class Model {
 
   // printPolicy prints the policy to log.
   public printPolicy(): void {
-    util.logPrint('Policy:');
+    logPrint('Policy:');
     this.model.forEach((map, key) => {
       if (key === 'p' || key === 'g') {
         map.forEach(ast => {
-          util.logPrint(`key, : ${ast.value}, : , ${ast.policy}`);
+          logPrint(`key, : ${ast.value}, : , ${ast.policy}`);
         });
       }
     });

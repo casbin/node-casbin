@@ -19,8 +19,9 @@ import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model } from './model';
 import { Adapter, Filter, FilteredAdapter, Watcher } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
-import { generateGFunction, getEnableLog, logPrint, setEnableLog } from './util';
+import { generateGFunction } from './util';
 import { newModel } from './casbin';
+import { getLogger, logPrint } from './log';
 
 /**
  * CoreEnforcer defines the core functionality of an enforcer.
@@ -53,24 +54,12 @@ export class CoreEnforcer {
   }
 
   /**
-   * newModel creates a model.
-   *
-   * @deprecated since version 1.1.8, will be deleted in version 1.2.0.
-   */
-  public static newModel(...text: string[]): Model {
-    console.warn(
-      '[node-casbin] Enforce.newModel() is deprecated, please use casbin.newModel().'
-    );
-    return newModel(...text);
-  }
-
-  /**
    * loadModel reloads the model from the model CONF file.
    * Because the policy is attached to a model,
    * so the policy is invalidated and needs to be reloaded by calling LoadPolicy().
    */
   public loadModel(): void {
-    this.model = CoreEnforcer.newModel();
+    this.model = newModel();
     this.model.loadModel(this.modelPath);
     this.model.printModel();
     this.fm = FunctionMap.loadFunctionMap();
@@ -228,7 +217,7 @@ export class CoreEnforcer {
    * @param enable whether to enable Casbin's log.
    */
   public enableLog(enable: boolean): void {
-    setEnableLog(enable);
+    getLogger().enableLog(enable);
   }
 
   /**
@@ -389,7 +378,7 @@ export class CoreEnforcer {
 
     // only generate the request --> result string if the message
     // is going to be logged.
-    if (getEnableLog()) {
+    if (getLogger().isEnable()) {
       let reqStr = 'Request: ';
       for (let i = 0; i < rvals.length; i++) {
         if (i !== rvals.length - 1) {

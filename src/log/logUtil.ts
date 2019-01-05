@@ -12,13 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as Util from './util';
+import { DefaultLogger } from './defaultLogger';
+import { Logger } from './logger';
 
-export * from './enforcer';
-export * from './effect';
-export * from './model';
-export * from './persist';
-export * from './rbac';
-export * from './casbin';
-export * from './log';
-export { Util };
+let logger: Logger = new DefaultLogger();
+
+// setLogger sets the current logger.
+function setLogger(l: Logger) {
+  logger = l;
+}
+
+// getLogger returns the current logger.
+function getLogger() {
+  return logger;
+}
+
+// logPrint prints the log.
+function logPrint(...v: any[]) {
+  logger.print(...v);
+}
+
+// logPrintf prints the log with the format.
+function logPrintf(format: string, ...v: any[]) {
+  logger.printf(format, ...v);
+}
+
+export {
+  setLogger,
+  getLogger,
+  logPrint,
+  logPrintf
+};
