@@ -178,10 +178,10 @@ In node-Casbin, the policy storage is implemented as an adapter (aka middleware 
 
 Adapter | Type | Author | Description
 ----|------|----|----
-[File Adapter (built-in)](https://github.com/casbin/casbin/wiki/Policy-persistence#file-adapter) | File | node-Casbin | Persistence for [.CSV (Comma-Separated Values)](https://en.wikipedia.org/wiki/Comma-separated_values) files
-[Sequelize Adapter](https://github.com/node-casbin/sequelize-adapter) | ORM | node-Casbin | MySQL, PostgreSQL, SQLite, Microsoft SQL Server are supported by [Sequelize](https://github.com/sequelize/sequelize)
-[Waterline Adapter](https://github.com/node-casbin/waterline-adapter) | ORM | node-Casbin | MySQL, MongoDB, neDB, Postgres are supported by [Waterline](https://github.com/balderdashy/waterline)
-[TypeORM Adapter](https://github.com/node-casbin/typeorm-adapter) | ORM | node-Casbin | MySQL, PostgreSQL, MariaDB, SQLite, MS SQL Server, Oracle, WebSQL, MongoDB are supported by [TypeORM](https://github.com/typeorm/typeorm)
+[File Adapter (built-in)](https://github.com/casbin/casbin/wiki/Policy-persistence#file-adapter) | File | Casbin | Persistence for [.CSV (Comma-Separated Values)](https://en.wikipedia.org/wiki/Comma-separated_values) files
+[Sequelize Adapter](https://github.com/node-casbin/sequelize-adapter) | ORM | Casbin | MySQL, PostgreSQL, SQLite, Microsoft SQL Server are supported by [Sequelize](https://github.com/sequelize/sequelize)
+[Waterline Adapter](https://github.com/node-casbin/waterline-adapter) | ORM | Casbin | MySQL, MongoDB, neDB, Postgres are supported by [Waterline](https://github.com/balderdashy/waterline)
+[TypeORM Adapter](https://github.com/node-casbin/typeorm-adapter) | ORM | Casbin | MySQL, PostgreSQL, MariaDB, SQLite, MS SQL Server, Oracle, WebSQL, MongoDB are supported by [TypeORM](https://github.com/typeorm/typeorm)
 [Mongoose Adapter](https://github.com/elasticio/casbin-mongoose-adapter) | ORM | [elastic.io](https://github.com/elasticio) | MongoDB is supported by [Mongoose](https://mongoosejs.com/)
 
 For details of adapters, please refer to the documentation: https://github.com/casbin/casbin/wiki/Policy-persistence
@@ -192,7 +192,7 @@ The role manager is used to manage the RBAC role hierarchy (user-role mapping) i
 
 Role manager | Author | Description
 ----|----|----
-[Default Role Manager (built-in)](https://github.com/casbin/node-casbin/blob/master/src/rbac/defaultRoleManager.ts) | node-Casbin | Supports role hierarchy stored in node-Casbin policy
+[Default Role Manager (built-in)](https://github.com/casbin/node-casbin/blob/master/src/rbac/defaultRoleManager.ts) | Casbin | Supports role hierarchy stored in node-Casbin policy
 
 For developers: all role managers must implement the [RoleManager](https://github.com/casbin/node-casbin/blob/master/src/rbac/roleManager.ts) interface. [Default Role Manager](https://github.com/casbin/node-casbin/blob/master/src/rbac/defaultRoleManager.ts) can be used as a reference implementation.
 
