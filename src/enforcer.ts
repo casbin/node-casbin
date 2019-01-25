@@ -159,10 +159,15 @@ export class Enforcer extends ManagementEnforcer {
    * Returns false if the user does not have any roles (aka not affected).
    *
    * @param user the user.
+   * @param domain the domain.
    * @return succeeds or not.
    */
-  public async deleteRolesForUser(user: string): Promise<boolean> {
-    return await this.removeFilteredGroupingPolicy(0, user);
+  public async deleteRolesForUser(user: string, domain?: string): Promise<boolean> {
+    if (domain == null) {
+      return await this.removeFilteredGroupingPolicy(0, user);
+    } else {
+      return await this.removeFilteredGroupingPolicy(0, user, '', domain);
+    }
   }
 
   /**
