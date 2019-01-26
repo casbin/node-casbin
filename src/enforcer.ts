@@ -185,10 +185,12 @@ export class Enforcer extends ManagementEnforcer {
    * deleteRole deletes a role.
    *
    * @param role the role.
+   * @return succeeds or not.
    */
-  public async deleteRole(role: string): Promise<void> {
-    await this.removeFilteredGroupingPolicy(1, role);
-    await this.removeFilteredPolicy(0, role);
+  public async deleteRole(role: string): Promise<boolean> {
+    const res1 = await this.removeFilteredGroupingPolicy(1, role);
+    const res2 = await this.removeFilteredPolicy(0, role);
+    return res1 || res2;
   }
 
   /**
