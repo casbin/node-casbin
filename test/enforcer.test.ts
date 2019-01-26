@@ -326,7 +326,7 @@ test('TestInitWithAdapter', async () => {
 test('TestRoleLinks', async () => {
   const e = await newEnforcer('examples/rbac_model.conf');
   e.enableAutoBuildRoleLinks(false);
-  e.buildRoleLinks();
+  await e.buildRoleLinks();
   e.enforce('user501', 'data9', 'read');
 });
 

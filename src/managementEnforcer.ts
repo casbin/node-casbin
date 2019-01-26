@@ -341,7 +341,7 @@ export class ManagementEnforcer extends InternalEnforcer {
     const ruleadded = await this.addPolicyInternal('g', ptype, params);
 
     if (this.autoBuildRoleLinks) {
-      this.buildRoleLinks();
+      await this.buildRoleLinks();
     }
 
     return ruleadded;
@@ -380,7 +380,7 @@ export class ManagementEnforcer extends InternalEnforcer {
     const ruleRemoved = await this.removePolicyInternal('g', ptype, params);
 
     if (this.autoBuildRoleLinks) {
-      this.buildRoleLinks();
+      await this.buildRoleLinks();
     }
     return ruleRemoved;
   }
@@ -397,7 +397,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   public async removeFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
     const ruleRemoved = await this.removeFilteredPolicyInternal('g', ptype, fieldIndex, fieldValues);
     if (this.autoBuildRoleLinks) {
-      this.buildRoleLinks();
+      await this.buildRoleLinks();
     }
     return ruleRemoved;
   }

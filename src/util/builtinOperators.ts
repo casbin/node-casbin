@@ -137,17 +137,17 @@ function ipMatchFunc(...args: any[]): boolean {
 
 // generateGFunction is the factory method of the g(_, _) function.
 function generateGFunction(rm: rbac.RoleManager): any {
-  return function func(...args: any[]): boolean {
+  return async function func(...args: any[]): Promise<boolean> {
     const name1: string = _.toString(args[0]);
     const name2: string = _.toString(args[1]);
 
     if (!rm) {
       return name1 === name2;
     } else if (args.length === 2) {
-      return rm.hasLink(name1, name2);
+      return await rm.hasLink(name1, name2);
     } else {
       const domain: string = _.toString(args[2]);
-      return rm.hasLink(name1, name2, domain);
+      return await rm.hasLink(name1, name2, domain);
     }
   };
 }

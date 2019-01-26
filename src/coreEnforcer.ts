@@ -146,7 +146,7 @@ export class CoreEnforcer {
 
     this.model.printPolicy();
     if (this.autoBuildRoleLinks) {
-      this.buildRoleLinks();
+      await this.buildRoleLinks();
     }
   }
 
@@ -166,7 +166,7 @@ export class CoreEnforcer {
 
     this.model.printPolicy();
     if (this.autoBuildRoleLinks) {
-      this.buildRoleLinks();
+      await this.buildRoleLinks();
     }
     return true;
   }
@@ -244,10 +244,10 @@ export class CoreEnforcer {
    * buildRoleLinks manually rebuild the
    * role inheritance relations.
    */
-  public buildRoleLinks() {
+  public async buildRoleLinks(): Promise<void> {
     // error intentionally ignored
     this.rm.clear();
-    this.model.buildRoleLinks(this.rm);
+    await this.model.buildRoleLinks(this.rm);
   }
 
   /**
