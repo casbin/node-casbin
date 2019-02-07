@@ -51,10 +51,10 @@ function keyMatch2(key1: string, key2: string): boolean {
     if (!_.includes(key2, '/:')) {
       break;
     }
-    key2 = '^' + key2.replace(regexp, '$1[^/]+$2') + '$';
+    key2 = key2.replace(regexp, '$1[^/]+$2');
   }
 
-  return regexMatch(key1, key2);
+  return regexMatch(key1, '^' + key2 + '$');
 }
 
 // keyMatch2Func is the wrapper for keyMatch2.
