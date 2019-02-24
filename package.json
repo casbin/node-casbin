@@ -6,7 +6,7 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "precommit": "lint-staged",
-    "prepublish": "yarn run lint && yarn run test && yarn build",
+    "prepublishOnly": "yarn run lint && yarn run test && yarn build",
     "build": "rimraf lib && tsc",
     "lint": "tslint \"src/**/*.ts\"",
     "fix": "tslint \"src/**/*.ts\" --fix",

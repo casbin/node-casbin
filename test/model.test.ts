@@ -173,7 +173,11 @@ test('TestABACModel', async () => {
 
 test('TestKeyMatchModel', async () => {
   const e = await newEnforcer('examples/keymatch_model.conf', 'examples/keymatch_policy.csv');
+  const sub = 'alice'; // the user that wants to access a resource.
+  const obj = '/alice_data/'; // the resource that is going to be accessed.
+  const act = 'GET'; // the operation that the user performs on the resource.
 
+  testEnforce(e, sub, obj, act, true);
   testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
   testEnforce(e, 'alice', '/alice_data/resource1', 'POST', true);
   testEnforce(e, 'alice', '/alice_data/resource2', 'GET', true);
