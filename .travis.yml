@@ -7,6 +7,10 @@ node_js:
   - '8'
   - '6'
 
+install: yarn install
+cache:
+  yarn: true
+
 script: echo "Running tests against $(node -v)..."
 
 jobs:
