@@ -14,15 +14,15 @@
   },
   "devDependencies": {
     "@types/ip": "^0.0.31",
-    "@types/jest": "^23.3.1",
+    "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.113",
     "@types/node": "^10.5.3",
     "coveralls": "^3.0.2",
     "husky": "^0.14.3",
-    "jest": "^24.1.0",
+    "jest": "^24.3.1",
     "lint-staged": "^7.2.0",
     "rimraf": "^2.6.2",
-    "ts-jest": "22.4.6",
+    "ts-jest": "^24.0.0",
     "tslint": "^5.11.0",
     "typescript": "^3.3.3333"
   },
