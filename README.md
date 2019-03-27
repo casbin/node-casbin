@@ -179,17 +179,7 @@ We also provide a web-based UI for model management and policy management:
 
 ## Policy persistence
 
-In node-Casbin, the policy storage is implemented as an adapter (aka middleware for node-Casbin). To keep light-weight, we don't put adapter code in the main library (except the default file adapter). A complete list of node-Casbin adapters is provided as below. Any 3rd-party contribution on a new adapter is welcomed, please inform us and I will put it in this list:)
-
-Adapter | Type | Author | Description
-----|------|----|----
-[File Adapter (built-in)](https://github.com/casbin/casbin/wiki/Policy-persistence#file-adapter) | File | Casbin | Persistence for [.CSV (Comma-Separated Values)](https://en.wikipedia.org/wiki/Comma-separated_values) files
-[Sequelize Adapter](https://github.com/node-casbin/sequelize-adapter) | ORM | Casbin | MySQL, PostgreSQL, SQLite, Microsoft SQL Server are supported by [Sequelize](https://github.com/sequelize/sequelize)
-[Waterline Adapter](https://github.com/node-casbin/waterline-adapter) | ORM | Casbin | MySQL, MongoDB, neDB, Postgres are supported by [Waterline](https://github.com/balderdashy/waterline)
-[TypeORM Adapter](https://github.com/node-casbin/typeorm-adapter) | ORM | Casbin | MySQL, PostgreSQL, MariaDB, SQLite, MS SQL Server, Oracle, WebSQL, MongoDB are supported by [TypeORM](https://github.com/typeorm/typeorm)
-[Mongoose Adapter](https://github.com/elasticio/casbin-mongoose-adapter) | ORM | [elastic.io](https://github.com/elasticio) | MongoDB is supported by [Mongoose](https://mongoosejs.com/)
-
-For details of adapters, please refer to the documentation: https://github.com/casbin/casbin/wiki/Policy-persistence
+https://casbin.org/docs/en/adapters
 
 ## Role manager
 
