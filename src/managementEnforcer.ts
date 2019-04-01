@@ -269,7 +269,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeFilteredPolicy(fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
-    return await this.removeFilteredNamedPolicy('p', fieldIndex, fieldValues);
+    return await this.removeFilteredNamedPolicy('p', fieldIndex, ...fieldValues);
   }
 
   /**
@@ -292,7 +292,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *                    means not to match this field.
    * @return succeeds or not.
    */
-  public async removeFilteredNamedPolicy(ptype: string, fieldIndex: number, fieldValues: string[]): Promise<boolean> {
+  public async removeFilteredNamedPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
     return await this.removeFilteredPolicyInternal('p', ptype, fieldIndex, fieldValues);
   }
 
@@ -301,7 +301,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    *
    * @param params the "g" policy rule, ptype "g" is implicitly used.
    * @return whether the rule exists.
-   */  public hasGroupingPolicy(...params: string[]): boolean {
+   */
+  public hasGroupingPolicy(...params: string[]): boolean {
     return this.hasNamedGroupingPolicy('g', ...params);
   }
 
