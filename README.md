@@ -85,6 +85,7 @@ npm install casbin --save
 - [Policy persistence](#policy-persistence)
 - [Role manager](#role-manager)
 - [Examples](#examples)
+- [Middlewares](#middlewares)
 - [Our adopters](#our-adopters)
 
 ## Supported models
@@ -201,17 +202,13 @@ RESTful | [keymatch_model.conf](https://github.com/casbin/node-casbin/blob/maste
 Deny-override | [rbac_model_with_deny.conf](https://github.com/casbin/node-casbin/blob/master/examples/rbac_with_deny_model.conf)  | [rbac_policy_with_deny.csv](https://github.com/casbin/node-casbin/blob/master/examples/rbac_with_deny_policy.csv)
 Priority | [priority_model.conf](https://github.com/casbin/node-casbin/blob/master/examples/priority_model.conf)  | [priority_policy.csv](https://github.com/casbin/node-casbin/blob/master/examples/priority_policy.csv)
 
+## Middlewares
+
+Authz middlewares for web frameworks: https://casbin.org/docs/en/middlewares
+
 ## Our adopters
 
-### Web frameworks
-
-- [Express](https://github.com/expressjs/express): Fast, unopinionated, minimalist web framework for node, via plugin: [express-authz](https://github.com/node-casbin/express-authz)
-- [Koa](https://github.com/koajs/koa): Expressive middleware for node.js using ES2017 async functions, via plugin: [koa-authz](https://github.com/node-casbin/koa-authz)
-- [Egg](https://github.com/eggjs/egg): Born to build better enterprise frameworks and apps with Node.js & Koa, via plugin: [egg-authz](https://github.com/node-casbin/egg-authz)
-- [Nest](https://nestjs.com/): Progressive Node.js framework for building efficient and scalable server-side applications on top of TypeScript & JavaScript. via plugin: [nt-casbin](https://github.com/notadd/nt-casbin) or [nest-casbin](https://github.com/pardjs/nest-casbin)
-- [Casbin JWT Express](https://github.com/tiagostutz/casbin-jwt-express): Authorization middleware that uses stateless JWT token to validate ACL rules using Casbin
-
-
+https://casbin.org/docs/en/adopters
 
 ## License
 
