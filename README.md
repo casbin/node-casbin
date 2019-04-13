@@ -169,8 +169,8 @@ https://casbin.org/docs/en/tutorials
 
 node-Casbin provides two sets of APIs to manage permissions:
 
-- [Management API](https://github.com/casbin/node-casbin/blob/master/src/managementEnforcer.ts): the primitive API that provides full support for node-Casbin policy management. See [here](https://github.com/casbin/node-casbin/blob/master/src/test/java/org/casbin/node-casbin/main/ManagementAPIUnitTest.java) for examples.
-- [RBAC API](https://github.com/casbin/node-casbin/blob/master/src/enforcer.ts): a more friendly API for RBAC. This API is a subset of Management API. The RBAC users could use this API to simplify the code. See [here](https://github.com/casbin/node-casbin/blob/master/src/test/java/org/casbin/node-casbin/main/RbacAPIUnitTest.java) for examples.
+- [Management API](https://casbin.org/docs/en/management-api): the primitive API that provides full support for node-Casbin policy management.
+- [RBAC API](https://casbin.org/docs/en/management-api): a more friendly API for RBAC. This API is a subset of Management API. The RBAC users could use this API to simplify the code.
 
 We also provide a web-based UI for model management and policy management:
 
