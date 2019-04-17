@@ -17,10 +17,11 @@ export class Config {
   private static DEFAULT_SECTION = 'default';
   private static DEFAULT_COMMENT = '#';
   private static DEFAULT_COMMENT_SEM = ';';
+  private static DEFAULT_MULTI_LINE_SEPARATOR = '\\';
 
   private data: Map<string, Map<string, string>>;
 
-  constructor() {
+  private constructor() {
     this.data = new Map<string, Map<string, string>>();
   }
 
@@ -75,31 +76,54 @@ export class Config {
   }
 
   private parseBuffer(buf: Buffer): void {
-    let section = '';
     const lines = buf.toString().split('\n');
+    const linesCount = lines.length;
+    let section = '';
+    let currentLine = '';
 
     lines.forEach((n, index) => {
       const line = n.trim();
+      const lineNumber = index + 1;
       if (!line) {
         return;
       }
 
-      if (line.startsWith(Config.DEFAULT_COMMENT)) {
-        return;
-      } else if (line.startsWith(Config.DEFAULT_COMMENT_SEM)) {
+      if (line.startsWith(Config.DEFAULT_COMMENT) || line.startsWith(Config.DEFAULT_COMMENT_SEM)) {
         return;
       } else if (line.startsWith('[') && line.endsWith(']')) {
+        if (currentLine.length !== 0) {
+          this.write(section, lineNumber - 1, currentLine);
+          currentLine = '';
+        }
         section = line.substring(1, line.length - 1);
       } else {
-        const equalIndex = line.indexOf('=');
-        if (equalIndex === -1) {
-          throw new Error(`parse the content error : line ${index + 1}`);
+        let shouldWrite = false;
+        if (line.includes(Config.DEFAULT_MULTI_LINE_SEPARATOR)) {
+          currentLine += line.substring(0, line.length - 1).trim();
+          // when the last line has a "\" string
+          if (lineNumber + 1 === linesCount) {
+            shouldWrite = true;
+          }
+        } else {
+          currentLine += line;
+          shouldWrite = true;
         }
-        const key = line.substring(0, equalIndex);
-        const value = line.substring(equalIndex + 1);
-        this.addConfig(section, key.trim(), value.trim());
+        if (shouldWrite) {
+          this.write(section, lineNumber, currentLine);
+          currentLine = '';
+        }
       }
     });
+  }
+
+  private write(section: string, lineNum: number, line: string) {
+    const equalIndex = line.indexOf('=');
+    if (equalIndex === -1) {
+      throw new Error(`parse the content error : line ${lineNum}`);
+    }
+    const key = line.substring(0, equalIndex);
+    const value = line.substring(equalIndex + 1);
+    this.addConfig(section, key.trim(), value.trim());
   }
 
   public getBool(key: string): boolean {
