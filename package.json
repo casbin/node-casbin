@@ -9,7 +9,6 @@
     "prepublishOnly": "yarn run lint && yarn run test && yarn build",
     "build": "rimraf lib && tsc",
     "lint": "tslint \"src/**/*.ts\"",
-    "fix": "tslint \"src/**/*.ts\" --fix",
     "test": "jest"
   },
   "devDependencies": {
@@ -48,7 +47,7 @@
   ],
   "lint-staged": {
     "*.{ts,js}": [
-      "tslint --fix",
+      "yarn lint",
       "git add"
     ]
   },
@@ -58,7 +57,7 @@
       "^.+\\.(ts|tsx)$": "ts-jest"
     },
     "testMatch": [
-      "**/test/*.+(ts|tsx)"
+      "**/test/**/*.+(ts|tsx)"
     ],
     "moduleFileExtensions": [
       "ts",

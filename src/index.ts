@@ -14,6 +14,7 @@
 
 import * as Util from './util';
 
+export * from './config';
 export * from './enforcer';
 export * from './effect';
 export * from './model';
