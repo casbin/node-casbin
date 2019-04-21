@@ -70,7 +70,7 @@ export class DefaultRoleManager implements RoleManager {
     }
 
     if (!this.hasRole(name1) || !this.hasRole(name2)) {
-      throw new Error('error: name1 or name2 does not exist');
+      return;
     }
 
     const role1 = this.createRole(name1);
@@ -90,7 +90,7 @@ export class DefaultRoleManager implements RoleManager {
     }
 
     if (!this.hasRole(name)) {
-      throw new Error('error: name does not exist');
+      return [];
     }
 
     let roles = this.createRole(name).getRoles();
@@ -113,7 +113,7 @@ export class DefaultRoleManager implements RoleManager {
     }
 
     if (!this.hasRole(name)) {
-      throw new Error('error: name does not exist');
+      return [];
     }
 
     let users = [...this.allRoles.values()]
