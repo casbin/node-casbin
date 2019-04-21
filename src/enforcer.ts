@@ -262,4 +262,44 @@ export class Enforcer extends ManagementEnforcer {
     permission.unshift(user);
     return this.hasPolicy(...permission);
   }
+
+  /**
+   * getImplicitRolesForUser gets implicit roles that a user has.
+   * Compared to getRolesForUser(), this function retrieves indirect roles besides direct roles.
+   * For example:
+   * g, alice, role:admin
+   * g, role:admin, role:user
+   *
+   * getRolesForUser("alice") can only get: ["role:admin"].
+   * But getImplicitRolesForUser("alice") will get: ["role:admin", "role:user"].
+   */
+  public getImplicitRolesForUser(name: string, ...domain: string[]) {
+    const res: string[] = [];
+    const roles = this.rm.getRoles(name, ...domain);
+    res.push(...roles);
+    roles.forEach(n => {
+      res.push(...this.getImplicitRolesForUser(n, ...domain));
+    });
+    return res;
+  }
+
+  /**
+   * getImplicitPermissionsForUser gets implicit permissions for a user or role.
+   * Compared to getPermissionsForUser(), this function retrieves permissions for inherited roles.
+   * For example:
+   * p, admin, data1, read
+   * p, alice, data2, read
+   * g, alice, admin
+   *
+   * getPermissionsForUser("alice") can only get: [["alice", "data2", "read"]].
+   * But getImplicitPermissionsForUser("alice") will get: [["admin", "data1", "read"], ["alice", "data2", "read"]].
+   */
+  public getImplicitPermissionsForUser(user: string) {
+    const roles = [user, ...this.getImplicitRolesForUser(user)];
+    const res: string[][] = [];
+    roles.forEach(n => {
+      res.push(...this.getPermissionsForUser(n));
+    });
+    return res;
+  }
 }

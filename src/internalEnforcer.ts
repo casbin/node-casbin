@@ -27,7 +27,7 @@ export class InternalEnforcer extends CoreEnforcer {
       return ruleAdded;
     }
 
-    if (this.adapter !== null && this.autoSave) {
+    if (this.adapter && this.autoSave) {
       try {
         await this.adapter.addPolicy(sec, ptype, rule);
       } catch (e) {
@@ -36,7 +36,7 @@ export class InternalEnforcer extends CoreEnforcer {
         }
       }
 
-      if (this.watcher !== null) {
+      if (this.watcher) {
         // error intentionally ignored
         this.watcher.update();
       }
@@ -54,7 +54,7 @@ export class InternalEnforcer extends CoreEnforcer {
       return ruleRemoved;
     }
 
-    if (this.adapter !== null && this.autoSave) {
+    if (this.adapter && this.autoSave) {
       try {
         await this.adapter.removePolicy(sec, ptype, rule);
       } catch (e) {
@@ -63,7 +63,7 @@ export class InternalEnforcer extends CoreEnforcer {
         }
       }
 
-      if (this.watcher !== null) {
+      if (this.watcher) {
         // error intentionally ignored
         this.watcher.update();
       }
@@ -81,7 +81,7 @@ export class InternalEnforcer extends CoreEnforcer {
       return ruleRemoved;
     }
 
-    if (this.adapter !== null && this.autoSave) {
+    if (this.adapter && this.autoSave) {
       try {
         await this.adapter.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
       } catch (e) {
@@ -90,7 +90,7 @@ export class InternalEnforcer extends CoreEnforcer {
         }
       }
 
-      if (this.watcher !== null) {
+      if (this.watcher) {
         // error intentionally ignored
         this.watcher.update();
       }
