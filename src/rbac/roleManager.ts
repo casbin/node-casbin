@@ -18,19 +18,19 @@ export interface RoleManager {
   clear(): void;
   // AddLink adds the inheritance link between two roles. role: name1 and role: name2.
   // domain is a prefix to the roles (can be used for other purposes).
-  addLink(name1: string, name2: string, ...domain: string[]): void;
+  addLink(name1: string, name2: string, ...domain: string[]): Promise<void>;
   // DeleteLink deletes the inheritance link between two roles. role: name1 and role: name2.
   // domain is a prefix to the roles (can be used for other purposes).
-  deleteLink(name1: string, name2: string, ...domain: string[]): void;
+  deleteLink(name1: string, name2: string, ...domain: string[]): Promise<void>;
   // HasLink determines whether a link exists between two roles. role: name1 inherits role: name2.
   // domain is a prefix to the roles (can be used for other purposes).
-  hasLink(name1: string, name2: string, ...domain: string[]): boolean;
+  hasLink(name1: string, name2: string, ...domain: string[]): Promise<boolean>;
   // GetRoles gets the roles that a user inherits.
   // domain is a prefix to the roles (can be used for other purposes).
-  getRoles(name: string, ...domain: string[]): string[];
+  getRoles(name: string, ...domain: string[]): Promise<string[]>;
   // GetUsers gets the users that inherits a role.
   // domain is a prefix to the users (can be used for other purposes).
-  getUsers(name: string, ...domain: string[]): string[];
+  getUsers(name: string, ...domain: string[]): Promise<string[]>;
   // PrintRoles prints all the roles to log.
   printRoles(): void;
 }

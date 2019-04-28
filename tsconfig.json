@@ -3,11 +3,8 @@
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    "declaration": true,
-    "declarationDir": "lib",
     "strict": true,
     "outDir": "lib",
     "strictPropertyInitialization": false
-  },
-  "include": ["src/**/*.ts"]
+  }
 }

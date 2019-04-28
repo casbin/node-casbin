@@ -36,7 +36,7 @@ export class Assertion {
     this.rm = new rbac.DefaultRoleManager(0);
   }
 
-  public buildRoleLinks(rm: rbac.RoleManager): void {
+  public async buildRoleLinks(rm: rbac.RoleManager): Promise<void> {
     this.rm = rm;
     const count = _.words(this.value, /_/g).length;
     for (const rule of this.policy) {
@@ -52,13 +52,13 @@ export class Assertion {
 
       if (count === 2) {
         // error intentionally ignored
-        this.rm.addLink(rule[0], rule[1]);
+        await this.rm.addLink(rule[0], rule[1]);
       } else if (count === 3) {
         // error intentionally ignored
-        this.rm.addLink(rule[0], rule[1], rule[2]);
+        await this.rm.addLink(rule[0], rule[1], rule[2]);
       } else if (count === 4) {
         // error intentionally ignored
-        this.rm.addLink(rule[0], rule[1], rule[2], rule[3]);
+        await this.rm.addLink(rule[0], rule[1], rule[2], rule[3]);
       }
     }
 
