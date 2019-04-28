@@ -134,13 +134,13 @@ export class Model {
   }
 
   // buildRoleLinks initializes the roles in RBAC.
-  public buildRoleLinks(rm: rbac.RoleManager): void {
+  public async buildRoleLinks(rm: rbac.RoleManager): Promise<void> {
     const astMap = this.model.get('g');
     if (!astMap) {
       return;
     }
-    astMap.forEach(value => {
-      value.buildRoleLinks(rm);
+    astMap.forEach(async (value) => {
+      await value.buildRoleLinks(rm);
     });
   }
 

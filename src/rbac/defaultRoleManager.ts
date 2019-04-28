@@ -36,7 +36,7 @@ export class DefaultRoleManager implements RoleManager {
    * aka role: name1 inherits role: name2.
    * domain is a prefix to the roles.
    */
-  public addLink(name1: string, name2: string, ...domain: string[]): void {
+  public async addLink(name1: string, name2: string, ...domain: string[]): Promise<void> {
     if (domain.length === 1) {
       name1 = domain[0] + '::' + name1;
       name2 = domain[0] + '::' + name2;
@@ -61,7 +61,7 @@ export class DefaultRoleManager implements RoleManager {
    * aka role: name1 does not inherit role: name2 any more.
    * domain is a prefix to the roles.
    */
-  public deleteLink(name1: string, name2: string, ...domain: string[]): void {
+  public async deleteLink(name1: string, name2: string, ...domain: string[]): Promise<void> {
     if (domain.length === 1) {
       name1 = domain[0] + '::' + name1;
       name2 = domain[0] + '::' + name2;
@@ -82,7 +82,7 @@ export class DefaultRoleManager implements RoleManager {
    * getRoles gets the roles that a subject inherits.
    * domain is a prefix to the roles.
    */
-  public getRoles(name: string, ...domain: string[]): string[] {
+  public async getRoles(name: string, ...domain: string[]): Promise<string[]> {
     if (domain.length === 1) {
       name = domain[0] + '::' + name;
     } else if (domain.length > 1) {
@@ -105,7 +105,7 @@ export class DefaultRoleManager implements RoleManager {
    * getUsers gets the users that inherits a subject.
    * domain is an unreferenced parameter here, may be used in other implementations.
    */
-  public getUsers(name: string, ...domain: string[]): string[] {
+  public async getUsers(name: string, ...domain: string[]): Promise<string[]> {
     if (domain.length === 1) {
       name = domain[0] + '::' + name;
     } else if (domain.length > 1) {
@@ -129,7 +129,7 @@ export class DefaultRoleManager implements RoleManager {
    * hasLink determines whether role: name1 inherits role: name2.
    * domain is a prefix to the roles.
    */
-  public hasLink(name1: string, name2: string, ...domain: string[]): boolean {
+  public async hasLink(name1: string, name2: string, ...domain: string[]): Promise<boolean> {
     if (domain.length === 1) {
       name1 = domain[0] + '::' + name1;
       name2 = domain[0] + '::' + name2;

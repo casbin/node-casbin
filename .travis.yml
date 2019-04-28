@@ -3,9 +3,11 @@ language: node_js
 sudo: false
 
 node_js:
-  - 'stable'
   - '8'
-  - '6'
+  - '10'
+  - '11'
+  - '12'
+  - 'stable'
 
 install: yarn install
 

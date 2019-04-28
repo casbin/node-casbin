@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { compile } from 'expression-eval';
+import { compileAsync } from 'expression-eval';
 import * as _ from 'lodash';
 
 import { DefaultEffector, Effect, Effector } from './effect';
@@ -143,7 +143,7 @@ export class CoreEnforcer {
 
     this.model.printPolicy();
     if (this.autoBuildRoleLinks) {
-      this.buildRoleLinks();
+      await this.buildRoleLinks();
     }
   }
 
@@ -163,7 +163,7 @@ export class CoreEnforcer {
 
     this.model.printPolicy();
     if (this.autoBuildRoleLinks) {
-      this.buildRoleLinks();
+      await this.buildRoleLinks();
     }
     return true;
   }
@@ -241,10 +241,10 @@ export class CoreEnforcer {
    * buildRoleLinks manually rebuild the
    * role inheritance relations.
    */
-  public buildRoleLinks() {
+  public async buildRoleLinks(): Promise<void> {
     // error intentionally ignored
     this.rm.clear();
-    this.model.buildRoleLinks(this.rm);
+    await this.model.buildRoleLinks(this.rm);
   }
 
   /**
@@ -255,45 +255,98 @@ export class CoreEnforcer {
    *              of strings, can be class instances if ABAC is used.
    * @return whether to allow the request.
    */
-  public enforce(...rvals: any[]): boolean {
-    if (!this.enabled) {
-      return true;
-    }
+  public async enforce(...rvals: any[]): Promise<boolean> {
+      if (!this.enabled) {
+        return true;
+      }
 
-    const functions: { [key: string]: any } = {};
-    this.fm.getFunctions().forEach((value: any, key: string) => {
-      functions[key] = value;
-    });
-
-    const astMap = this.model.model.get('g');
-    if (astMap) {
-      astMap.forEach((value, key) => {
-        const rm = value.rm;
-        functions[key] = generateGFunction(rm);
+      const functions: { [key: string]: any } = {};
+      this.fm.getFunctions().forEach((value: any, key: string) => {
+        functions[key] = value;
       });
-    }
 
-    // @ts-ignore
-    const expString = this.model.model.get('m').get('m').value;
-    if (!expString) {
-      throw new Error('model is undefined');
-    }
+      const astMap = this.model.model.get('g');
+      if (astMap) {
+        astMap.forEach((value, key) => {
+          const rm = value.rm;
+          functions[key] = generateGFunction(rm);
+        });
+      }
 
-    const expression = compile(expString);
+      // @ts-ignore
+      const expString = this.model.model.get('m').get('m').value;
+      if (!expString) {
+        throw new Error('model is undefined');
+      }
 
-    let policyEffects: Effect[];
-    let matcherResults: number[];
-    // @ts-ignore
-    const policyLen = this.model.model.get('p').get('p').policy.length;
-    if (policyLen !== 0) {
-      policyEffects = new Array(policyLen);
-      matcherResults = new Array(policyLen);
+      const expression = compileAsync(expString);
 
-      for (let i = 0; i < policyLen; i++) {
-        // @ts-ignore
-        const pvals = this.model.model.get('p').get('p').policy[i];
+      let policyEffects: Effect[];
+      let matcherResults: number[];
+      // @ts-ignore
+      const policyLen = this.model.model.get('p').get('p').policy.length;
+      if (policyLen !== 0) {
+        policyEffects = new Array(policyLen);
+        matcherResults = new Array(policyLen);
 
-        // logPrint('Policy Rule: ', pvals);
+        for (let i = 0; i < policyLen; i++) {
+          // @ts-ignore
+          const pvals = this.model.model.get('p').get('p').policy[i];
+
+          // logPrint('Policy Rule: ', pvals);
+
+          const parameters: { [key: string]: any } = {};
+          // @ts-ignore
+          this.model.model.get('r').get('r').tokens.forEach((token, j) => {
+            parameters[token] = rvals[j];
+          });
+          // @ts-ignore
+          this.model.model.get('p').get('p').tokens.forEach((token, j) => {
+            parameters[token] = pvals[j];
+          });
+
+          const result = await expression({ ...parameters, ...functions });
+
+          switch (typeof result) {
+            case 'boolean':
+              if (!result) {
+                policyEffects[i] = Effect.Indeterminate;
+                continue;
+              }
+              break;
+            case 'number':
+              if (result === 0) {
+                policyEffects[i] = Effect.Indeterminate;
+                continue;
+              } else {
+                matcherResults[i] = result;
+              }
+              break;
+            default:
+              throw new Error('matcher result should be boolean or number');
+          }
+
+          if (_.has(parameters, 'p_eft')) {
+            const eft = _.get(parameters, 'p_eft');
+            if (eft === 'allow') {
+              policyEffects[i] = Effect.Allow;
+            } else if (eft === 'deny') {
+              policyEffects[i] = Effect.Deny;
+            } else {
+              policyEffects[i] = Effect.Indeterminate;
+            }
+          } else {
+            policyEffects[i] = Effect.Allow;
+          }
+
+          // @ts-ignore
+          if (this.model.model.get('e').get('e').value === 'priority(p_eft) || deny') {
+            break;
+          }
+        }
+      } else {
+        policyEffects = new Array(1);
+        matcherResults = new Array(1);
 
         const parameters: { [key: string]: any } = {};
         // @ts-ignore
@@ -301,93 +354,40 @@ export class CoreEnforcer {
           parameters[token] = rvals[j];
         });
         // @ts-ignore
-        this.model.model.get('p').get('p').tokens.forEach((token, j) => {
-          parameters[token] = pvals[j];
+        this.model.model.get('p').get('p').tokens.forEach((token) => {
+          parameters[token] = '';
         });
 
-        const result = expression({ ...parameters, ...functions });
+        const result = await expression({ ...parameters, ...functions });
+        // logPrint(`Result: ${result}`);
 
-        switch (typeof result) {
-          case 'boolean':
-            if (!result) {
-              policyEffects[i] = Effect.Indeterminate;
-              continue;
-            }
-            break;
-          case 'number':
-            if (result === 0) {
-              policyEffects[i] = Effect.Indeterminate;
-              continue;
-            } else {
-              matcherResults[i] = result;
-            }
-            break;
-          default:
-            throw new Error('matcher result should be boolean or number');
+        if (result) {
+          policyEffects[0] = Effect.Allow;
+        } else {
+          policyEffects[0] = Effect.Indeterminate;
         }
+      }
 
-        if (_.has(parameters, 'p_eft')) {
-          const eft = _.get(parameters, 'p_eft');
-          if (eft === 'allow') {
-            policyEffects[i] = Effect.Allow;
-          } else if (eft === 'deny') {
-            policyEffects[i] = Effect.Deny;
+      // logPrint(`Rule Results: ${policyEffects}`);
+
+      // @ts-ignore
+      const res = this.eft.mergeEffects(this.model.model.get('e').get('e').value, policyEffects, matcherResults);
+
+      // only generate the request --> result string if the message
+      // is going to be logged.
+      if (getLogger().isEnable()) {
+        let reqStr = 'Request: ';
+        for (let i = 0; i < rvals.length; i++) {
+          if (i !== rvals.length - 1) {
+            reqStr += `${rvals[i]}, `;
           } else {
-            policyEffects[i] = Effect.Indeterminate;
+            reqStr += rvals[i];
           }
-        } else {
-          policyEffects[i] = Effect.Allow;
         }
-
-        // @ts-ignore
-        if (this.model.model.get('e').get('e').value === 'priority(p_eft) || deny') {
-          break;
-        }
+        reqStr += ` ---> ${res}`;
+        logPrint(reqStr);
       }
-    } else {
-      policyEffects = new Array(1);
-      matcherResults = new Array(1);
 
-      const parameters: { [key: string]: any } = {};
-      // @ts-ignore
-      this.model.model.get('r').get('r').tokens.forEach((token, j) => {
-        parameters[token] = rvals[j];
-      });
-      // @ts-ignore
-      this.model.model.get('p').get('p').tokens.forEach((token) => {
-        parameters[token] = '';
-      });
-
-      const result = expression({ ...parameters, ...functions });
-      // logPrint(`Result: ${result}`);
-
-      if (result) {
-        policyEffects[0] = Effect.Allow;
-      } else {
-        policyEffects[0] = Effect.Indeterminate;
-      }
-    }
-
-    // logPrint(`Rule Results: ${policyEffects}`);
-
-    // @ts-ignore
-    const res = this.eft.mergeEffects(this.model.model.get('e').get('e').value, policyEffects, matcherResults);
-
-    // only generate the request --> result string if the message
-    // is going to be logged.
-    if (getLogger().isEnable()) {
-      let reqStr = 'Request: ';
-      for (let i = 0; i < rvals.length; i++) {
-        if (i !== rvals.length - 1) {
-          reqStr += `${rvals[i]}, `;
-        } else {
-          reqStr += rvals[i];
-        }
-      }
-      reqStr += ` ---> ${res}`;
-      logPrint(reqStr);
-    }
-
-    return res;
+      return res;
   }
 }

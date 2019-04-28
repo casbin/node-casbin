@@ -38,7 +38,7 @@ export class InternalEnforcer extends CoreEnforcer {
 
       if (this.watcher) {
         // error intentionally ignored
-        this.watcher.update();
+        await this.watcher.update();
       }
     }
 
@@ -65,7 +65,7 @@ export class InternalEnforcer extends CoreEnforcer {
 
       if (this.watcher) {
         // error intentionally ignored
-        this.watcher.update();
+        await this.watcher.update();
       }
     }
 
@@ -92,7 +92,7 @@ export class InternalEnforcer extends CoreEnforcer {
 
       if (this.watcher) {
         // error intentionally ignored
-        this.watcher.update();
+        await this.watcher.update();
       }
     }
 
