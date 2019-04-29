@@ -16,11 +16,10 @@ import { compileAsync } from 'expression-eval';
 import * as _ from 'lodash';
 
 import { DefaultEffector, Effect, Effector } from './effect';
-import { FunctionMap, Model } from './model';
+import { FunctionMap, Model, newModel } from './model';
 import { Adapter, Filter, FilteredAdapter, Watcher } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 import { generateGFunction } from './util';
-import { newModel } from './casbin';
 import { getLogger, logPrint } from './log';
 
 /**
@@ -242,8 +241,7 @@ export class CoreEnforcer {
    * role inheritance relations.
    */
   public async buildRoleLinks(): Promise<void> {
-    // error intentionally ignored
-    this.rm.clear();
+    await this.rm.clear();
     await this.model.buildRoleLinks(this.rm);
   }
 

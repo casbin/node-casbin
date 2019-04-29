@@ -63,6 +63,6 @@ export class Assertion {
     }
 
     logPrint(`Role links for: ${this.key}`);
-    this.rm.printRoles();
+    await this.rm.printRoles();
   }
 }

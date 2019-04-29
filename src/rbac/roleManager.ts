@@ -15,7 +15,7 @@
 // RoleManager provides interface to define the operations for managing roles.
 export interface RoleManager {
   // Clear clears all stored data and resets the role manager to the initial state.
-  clear(): void;
+  clear(): Promise<void>;
   // AddLink adds the inheritance link between two roles. role: name1 and role: name2.
   // domain is a prefix to the roles (can be used for other purposes).
   addLink(name1: string, name2: string, ...domain: string[]): Promise<void>;
@@ -32,5 +32,5 @@ export interface RoleManager {
   // domain is a prefix to the users (can be used for other purposes).
   getUsers(name: string, ...domain: string[]): Promise<string[]>;
   // PrintRoles prints all the roles to log.
-  printRoles(): void;
+  printRoles(): Promise<void>;
 }
