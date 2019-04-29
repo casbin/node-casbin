@@ -20,6 +20,5 @@ export * from './effect';
 export * from './model';
 export * from './persist';
 export * from './rbac';
-export * from './casbin';
 export * from './log';
 export { Util };

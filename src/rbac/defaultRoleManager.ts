@@ -52,7 +52,7 @@ export class DefaultRoleManager implements RoleManager {
   /**
    * clear clears all stored data and resets the role manager to the initial state.
    */
-  public clear(): void {
+  public async clear() {
     this.allRoles = new Map<string, Role>();
   }
 
@@ -153,7 +153,7 @@ export class DefaultRoleManager implements RoleManager {
   /**
    * printRoles prints all the roles to log.
    */
-  public printRoles(): void {
+  public async printRoles() {
     [...this.allRoles.values()].map(n => {
       logPrint(n.toString());
     });

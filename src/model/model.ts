@@ -278,3 +278,22 @@ export class Model {
     });
   }
 }
+
+/**
+ * newModel creates a model.
+ */
+export function newModel(...text: string[]): Model {
+  const m = new Model();
+
+  if (text.length === 2) {
+    if (text[0] !== '') {
+      m.loadModel(text[0]);
+    }
+  } else if (text.length === 1) {
+    m.loadModelFromText(text[0]);
+  } else if (text.length !== 0) {
+    throw new Error('Invalid parameters for model.');
+  }
+
+  return m;
+}
