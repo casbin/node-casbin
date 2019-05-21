@@ -11,7 +11,9 @@ node_js:
 
 install: yarn install
 
-script: echo "Running tests against $(node -v)..."
+script:
+  - yarn run lint
+  - yarn run test
 
 jobs:
   include:
