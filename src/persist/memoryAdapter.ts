@@ -8,13 +8,13 @@ import { arrayToString } from '../util';
  * It can load policy from memory or save policy to memory.
  */
 export class MemoryAdapter implements Adapter {
-  private data: Array<string>;
+  private data: string[];
 
   /**
    * MemoryAdapter is the constructor for MemoryAdapter.
    * @param {Array<string>} data filePath the path of the policy file.
    */
-  constructor(data: Array<string>) {
+  constructor(data: string[]) {
     this.data = data;
   }
 
@@ -44,7 +44,7 @@ export class MemoryAdapter implements Adapter {
       return false;
     }
 
-    let result: Array<string> = [];
+    const result: string[] = [];
 
     const pList = model.model.get('p');
 
