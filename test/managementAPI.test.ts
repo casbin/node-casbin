@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { newEnforcer, Enforcer, Util } from '../src';
+import { newEnforcer, Enforcer, Util, newRBACOperator } from '../src';
 
 let e = {} as Enforcer;
 
@@ -63,14 +63,14 @@ it('getAllNamedActions', async () => {
 });
 
 it('getAllRoles', async () => {
-  const allRoles = e.getAllRoles();
+  const allRoles = newRBACOperator(e).getAllRoles();
   testArrayEquals(allRoles, ['data2_admin']);
 });
 
 it('getAllNamedRoles', async () => {
-  let allNamedRoles = e.getAllNamedRoles('g');
+  let allNamedRoles = newRBACOperator(e).getAllNamedRoles('g');
   testArrayEquals(allNamedRoles, ['data2_admin']);
-  allNamedRoles = e.getAllNamedRoles('g1');
+  allNamedRoles = newRBACOperator(e).getAllNamedRoles('g1');
   testArrayEquals(allNamedRoles, []);
 });
 
@@ -183,13 +183,13 @@ it('removeNamedPolicy', async () => {
 
 it('removeFilteredNamedPolicy', async () => {
   const p = ['alice', 'data1', 'read'];
-  const removed =  await e.removeFilteredNamedPolicy('p', 0, ...p);
+  const removed = await e.removeFilteredNamedPolicy('p', 0, ...p);
   expect(removed).toBe(true);
   expect(e.hasPolicy(...p)).toBe(false);
 });
 
 it('hasGroupingPolicy', async () => {
-  const has =  e.hasGroupingPolicy('alice', 'data2_admin');
+  const has = e.hasGroupingPolicy('alice', 'data2_admin');
   expect(has).toBe(true);
 });
 

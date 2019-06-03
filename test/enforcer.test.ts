@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { newModel, newEnforcer, Enforcer, FileAdapter, Util } from '../src';
+import { newModel, newEnforcer, Enforcer, FileAdapter, Util, newRBACOperator } from '../src';
 
 async function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: boolean) {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
@@ -108,7 +108,7 @@ test('TestRBACModelInMemoryIndeterminate', async () => {
 
   const e = await newEnforcer(m);
 
-  await e.addPermissionForUser('alice', 'data1', 'invalid');
+  await newRBACOperator(e).addPermissionForUser('alice', 'data1', 'invalid');
 
   await testEnforce(e, 'alice', 'data1', 'read', false);
 });
@@ -122,12 +122,13 @@ test('TestRBACModelInMemory', async () => {
   m.addDef('m', 'm', 'g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act');
 
   const e = await newEnforcer(m);
+  const operator = newRBACOperator(e);
 
-  await e.addPermissionForUser('alice', 'data1', 'read');
-  await e.addPermissionForUser('bob', 'data2', 'write');
-  await e.addPermissionForUser('data2_admin', 'data2', 'read');
-  await e.addPermissionForUser('data2_admin', 'data2', 'write');
-  await e.addRoleForUser('alice', 'data2_admin');
+  await operator.addPermissionForUser('alice', 'data1', 'read');
+  await operator.addPermissionForUser('bob', 'data2', 'write');
+  await operator.addPermissionForUser('data2_admin', 'data2', 'read');
+  await operator.addPermissionForUser('data2_admin', 'data2', 'write');
+  await operator.addRoleForUser('alice', 'data2_admin');
 
   await testEnforce(e, 'alice', 'data1', 'read', true);
   await testEnforce(e, 'alice', 'data1', 'write', false);
@@ -163,12 +164,13 @@ m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
   // m.loadModelFromText(text);
 
   const e = await newEnforcer(m);
+  const operator = newRBACOperator(e);
 
-  await e.addPermissionForUser('alice', 'data1', 'read');
-  await e.addPermissionForUser('bob', 'data2', 'write');
-  await e.addPermissionForUser('data2_admin', 'data2', 'read');
-  await e.addPermissionForUser('data2_admin', 'data2', 'write');
-  await e.addRoleForUser('alice', 'data2_admin');
+  await operator.addPermissionForUser('alice', 'data1', 'read');
+  await operator.addPermissionForUser('bob', 'data2', 'write');
+  await operator.addPermissionForUser('data2_admin', 'data2', 'read');
+  await operator.addPermissionForUser('data2_admin', 'data2', 'write');
+  await operator.addRoleForUser('alice', 'data2_admin');
 
   await testEnforce(e, 'alice', 'data1', 'read', true);
   await testEnforce(e, 'alice', 'data1', 'write', false);
@@ -189,9 +191,10 @@ test('TestNotUsedRBACModelInMemory', async () => {
   m.addDef('m', 'm', 'g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act');
 
   const e = await newEnforcer(m);
+  const operator = newRBACOperator(e);
 
-  await e.addPermissionForUser('alice', 'data1', 'read');
-  await e.addPermissionForUser('bob', 'data2', 'write');
+  await operator.addPermissionForUser('alice', 'data1', 'read');
+  await operator.addPermissionForUser('bob', 'data2', 'write');
 
   await testEnforce(e, 'alice', 'data1', 'read', true);
   await testEnforce(e, 'alice', 'data1', 'write', false);
@@ -294,7 +297,7 @@ test('TestEnableAutoSave', async () => {
   // TODO debug
   // Because AutoSave is enabled, the policy change not only affects the policy in Casbin enforcer,
   // but also affects the policy in the storage.
- // await e.removePolicy('alice', 'data1', 'read');
+  // await e.removePolicy('alice', 'data1', 'read');
 
   // However, the file adapter doesn't implement the AutoSave feature, so enabling it has no effect at all here.
 

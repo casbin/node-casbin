@@ -93,31 +93,6 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * getAllRoles gets the list of roles that show up in the current policy.
-   *
-   * @return all the roles in "g" policy rules. It actually collects
-   *         the 1-index elements of "g" policy rules. So make sure your
-   *         role is the 1-index element, like (sub, role).
-   *         Duplicates are removed.
-   */
-  public getAllRoles(): string[] {
-    return this.getAllNamedRoles('g');
-  }
-
-  /**
-   * getAllNamedRoles gets the list of roles that show up in the current named policy.
-   *
-   * @param ptype the policy type, can be "g", "g2", "g3", ..
-   * @return all the subjects in policy rules of the ptype type. It actually
-   *         collects the 0-index elements of the policy rules. So make
-   *         sure your subject is the 0-index element, like (sub, obj, act).
-   *         Duplicates are removed.
-   */
-  public getAllNamedRoles(ptype: string): string[] {
-    return this.model.getValuesForFieldInPolicy('g', ptype, 1);
-  }
-
-  /**
    * getPolicy gets all the authorization rules in the policy.
    *
    * @return all the "p" policy rules.

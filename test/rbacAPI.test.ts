@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { newEnforcer } from '../src';
+import { newEnforcer, newRBACOperator } from '../src';
 
 it('test getImplicitRolesForUser', async () => {
   const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
-  expect(await e.getImplicitRolesForUser('bob')).toEqual([]);
-  expect(await e.getImplicitRolesForUser('alice')).toEqual(['admin', 'data1_admin', 'data2_admin']);
+  expect(await newRBACOperator(e).getImplicitRolesForUser('bob')).toEqual([]);
+  expect(await newRBACOperator(e).getImplicitRolesForUser('alice')).toEqual(['admin', 'data1_admin', 'data2_admin']);
 });
 
 it('test getImplicitRolesForUser with domain', async () => {
   const e = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_hierarchy_with_domains_policy.csv');
-  expect(await e.getImplicitRolesForUser('alice', 'domain1')).toEqual(['role:global_admin', 'role:reader', 'role:writer']);
+  expect(await newRBACOperator(e).getImplicitRolesForUser('alice', 'domain1')).toEqual(['role:global_admin', 'role:reader', 'role:writer']);
 });
 
 it('test getImplicitPermissionsForUser', async () => {
   const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
-  expect(await e.getImplicitPermissionsForUser('bob')).toEqual([['bob', 'data2', 'write']]);
-  expect(await e.getImplicitPermissionsForUser('alice')).toEqual([['alice', 'data1', 'read'], ['data1_admin', 'data1', 'read'], ['data1_admin', 'data1', 'write'], ['data2_admin', 'data2', 'read'], ['data2_admin', 'data2', 'write']]);
+  expect(await newRBACOperator(e).getImplicitPermissionsForUser('bob')).toEqual([['bob', 'data2', 'write']]);
+  expect(await newRBACOperator(e).getImplicitPermissionsForUser('alice')).toEqual([['alice', 'data1', 'read'], ['data1_admin', 'data1', 'read'], ['data1_admin', 'data1', 'write'], ['data2_admin', 'data2', 'read'], ['data2_admin', 'data2', 'write']]);
 });
