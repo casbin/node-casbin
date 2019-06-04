@@ -5,5 +5,5 @@
     "declarationDir": "lib",
     "outDir": "lib"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*"]
 }
