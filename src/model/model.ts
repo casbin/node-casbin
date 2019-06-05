@@ -57,7 +57,7 @@ export class Model {
   private loadSection(cfg: Config, sec: string): void {
     // console.log('loadSection: ', sec);
     let i = 1;
-    for (; ;) {
+    for (;;) {
       if (!this.loadAssertion(cfg, sec, sec + this.getKeySuffix(i))) {
         break;
       } else {
@@ -139,7 +139,7 @@ export class Model {
     if (!astMap) {
       return;
     }
-    astMap.forEach(async (value) => {
+    astMap.forEach(async value => {
       await value.buildRoleLinks(rm);
     });
   }
@@ -158,7 +158,7 @@ export class Model {
   // getPolicy gets all rules in a policy.
   public getPolicy(sec: string, key: string): string[][] {
     const policy: string[][] = [];
-    const ast = (this.model.get(sec) || new Map()).get(key);
+    const ast = this.model.get(sec)!.get(key);
     if (ast) {
       policy.push(...ast.policy);
     }
@@ -167,7 +167,7 @@ export class Model {
 
   // hasPolicy determines whether a model has the specified policy rule.
   public hasPolicy(sec: string, key: string, rule: string[]): boolean {
-    const ast = (this.model.get(sec) || new Map()).get(key);
+    const ast = this.model.get(sec)!.get(key);
     if (!ast) {
       return false;
     }
@@ -177,7 +177,7 @@ export class Model {
   // addPolicy adds a policy rule to the model.
   public addPolicy(sec: string, key: string, rule: string[]): boolean {
     if (!this.hasPolicy(sec, key, rule)) {
-      const ast = (this.model.get(sec) || new Map()).get(key);
+      const ast = this.model.get(sec)!.get(key);
       if (!ast) {
         return false;
       }
@@ -191,7 +191,7 @@ export class Model {
   // removePolicy removes a policy rule from the model.
   public removePolicy(sec: string, key: string, rule: string[]): boolean {
     if (this.hasPolicy(sec, key, rule)) {
-      const ast = (this.model.get(sec) || new Map()).get(key);
+      const ast = this.model.get(sec)!.get(key);
       if (!ast) {
         return true;
       }
@@ -205,7 +205,7 @@ export class Model {
   // getFilteredPolicy gets rules based on field filters from a policy.
   public getFilteredPolicy(sec: string, key: string, fieldIndex: number, ...fieldValues: string[]): string[][] {
     const res: string[][] = [];
-    const ast = (this.model.get(sec) || new Map()).get(key);
+    const ast = this.model.get(sec)!.get(key);
     if (!ast) {
       return res;
     }
@@ -231,7 +231,7 @@ export class Model {
   public removeFilteredPolicy(sec: string, key: string, fieldIndex: number, ...fieldValues: string[]): boolean {
     const res = [];
     let bool = false;
-    const ast = (this.model.get(sec) || new Map()).get(key);
+    const ast = this.model.get(sec)!.get(key);
     if (!ast) {
       return bool;
     }
@@ -259,7 +259,7 @@ export class Model {
   // getValuesForFieldInPolicy gets all values for a field for all rules in a policy, duplicated values are removed.
   public getValuesForFieldInPolicy(sec: string, key: string, fieldIndex: number): string[] {
     const values: string[] = [];
-    const ast = (this.model.get(sec) || new Map()).get(key);
+    const ast = this.model.get(sec)!.get(key);
     if (!ast) {
       return values;
     }

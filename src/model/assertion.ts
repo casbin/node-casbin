@@ -41,9 +41,7 @@ export class Assertion {
     const count = _.words(this.value, /_/g).length;
     for (const rule of this.policy) {
       if (count < 2) {
-        throw new Error(
-          'the number of "_" in role definition should be at least 2'
-        );
+        throw new Error('the number of "_" in role definition should be at least 2');
       }
 
       if (rule.length < count) {

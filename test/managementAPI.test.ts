@@ -97,8 +97,8 @@ it('getNamedPolicy', async () => {
     ['alice', 'data1', 'read'],
     ['bob', 'data2', 'write'],
     ['data2_admin', 'data2', 'read'],
-    ['data2_admin', 'data2', 'write']]
-  );
+    ['data2_admin', 'data2', 'write']
+  ]);
   namedPolicy = e.getNamedPolicy('p1');
   testArray2DEquals(namedPolicy, []);
 });
@@ -110,30 +110,22 @@ it('getFilteredNamedPolicy', async () => {
 
 it('getGroupingPolicy', async () => {
   const groupingPolicy = e.getGroupingPolicy();
-  testArray2DEquals(groupingPolicy, [[
-    'alice', 'data2_admin'
-  ]]);
+  testArray2DEquals(groupingPolicy, [['alice', 'data2_admin']]);
 });
 
 it('getFilteredGroupingPolicy', async () => {
   const filteredGroupingPolicy = e.getFilteredGroupingPolicy(0, 'alice');
-  testArray2DEquals(filteredGroupingPolicy, [[
-    'alice', 'data2_admin'
-  ]]);
+  testArray2DEquals(filteredGroupingPolicy, [['alice', 'data2_admin']]);
 });
 
 it('getNamedGroupingPolicy', async () => {
   const namedGroupingPolicy = e.getNamedGroupingPolicy('g');
-  testArray2DEquals(namedGroupingPolicy, [[
-    'alice', 'data2_admin'
-  ]]);
+  testArray2DEquals(namedGroupingPolicy, [['alice', 'data2_admin']]);
 });
 
 it('getFilteredNamedGroupingPolicy', async () => {
   const namedGroupingPolicy = e.getFilteredNamedGroupingPolicy('g', 0, 'alice');
-  testArray2DEquals(namedGroupingPolicy, [[
-    'alice', 'data2_admin'
-  ]]);
+  testArray2DEquals(namedGroupingPolicy, [['alice', 'data2_admin']]);
 });
 
 it('hasPolicy', async () => {
@@ -183,13 +175,13 @@ it('removeNamedPolicy', async () => {
 
 it('removeFilteredNamedPolicy', async () => {
   const p = ['alice', 'data1', 'read'];
-  const removed =  await e.removeFilteredNamedPolicy('p', 0, ...p);
+  const removed = await e.removeFilteredNamedPolicy('p', 0, ...p);
   expect(removed).toBe(true);
   expect(e.hasPolicy(...p)).toBe(false);
 });
 
 it('hasGroupingPolicy', async () => {
-  const has =  e.hasGroupingPolicy('alice', 'data2_admin');
+  const has = e.hasGroupingPolicy('alice', 'data2_admin');
   expect(has).toBe(true);
 });
 

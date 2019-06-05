@@ -28,5 +28,11 @@ it('test getImplicitRolesForUser with domain', async () => {
 it('test getImplicitPermissionsForUser', async () => {
   const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
   expect(await e.getImplicitPermissionsForUser('bob')).toEqual([['bob', 'data2', 'write']]);
-  expect(await e.getImplicitPermissionsForUser('alice')).toEqual([['alice', 'data1', 'read'], ['data1_admin', 'data1', 'read'], ['data1_admin', 'data1', 'write'], ['data2_admin', 'data2', 'read'], ['data2_admin', 'data2', 'write']]);
+  expect(await e.getImplicitPermissionsForUser('alice')).toEqual([
+    ['alice', 'data1', 'read'],
+    ['data1_admin', 'data1', 'read'],
+    ['data1_admin', 'data1', 'write'],
+    ['data2_admin', 'data2', 'read'],
+    ['data2_admin', 'data2', 'write']
+  ]);
 });

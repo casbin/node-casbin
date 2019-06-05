@@ -7,7 +7,7 @@
   "scripts": {
     "prepack": "yarn run lint && yarn run test && yarn build",
     "postpack": "rimraf lib",
-    "prettier": "prettier --write",
+    "prettier": "prettier --write **/*.{ts,js}",
     "build": "rimraf lib && tsc -p tsconfig.release.json",
     "lint": "tslint -p . -c tslint.json",
     "test": "jest"

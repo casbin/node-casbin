@@ -32,9 +32,7 @@ export class DefaultEffector implements Effector {
       result = effects.some(n => n === Effect.Allow);
     } else if (expr === '!some(where (p_eft == deny))') {
       result = !effects.some(n => n === Effect.Deny);
-    } else if (
-      expr === 'some(where (p_eft == allow)) && !some(where (p_eft == deny))'
-    ) {
+    } else if (expr === 'some(where (p_eft == allow)) && !some(where (p_eft == deny))') {
       result = false;
       for (const eft of effects) {
         if (eft === Effect.Allow) {
@@ -45,9 +43,7 @@ export class DefaultEffector implements Effector {
         }
       }
     } else if (expr === 'priority(p_eft) || deny') {
-      result = effects.some(
-        n => n !== Effect.Indeterminate && n === Effect.Allow
-      );
+      result = effects.some(n => n !== Effect.Indeterminate && n === Effect.Allow);
     } else {
       throw new Error('unsupported effect');
     }
