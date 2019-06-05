@@ -48,7 +48,7 @@ export class Enforcer extends ManagementEnforcer {
    * @param m model instance
    * @param adapter current adapter instance
    */
-  public async initWithModelAndAdapter(m: Model, adapter: Adapter): Promise<void> {
+  public async initWithModelAndAdapter(m: Model, adapter?: Adapter): Promise<void> {
     if (adapter) {
       this.adapter = adapter;
     }
@@ -73,8 +73,7 @@ export class Enforcer extends ManagementEnforcer {
    * @return the roles that the user has.
    */
   public async getRolesForUser(name: string, domain?: string): Promise<string[]> {
-    // @ts-ignore
-    const rm = this.model.model.get('g').get('g').rm;
+    const rm = this.model.model.get('g')!.get('g')!.rm;
     if (domain == null) {
       return await rm.getRoles(name);
     } else {
@@ -90,8 +89,7 @@ export class Enforcer extends ManagementEnforcer {
    * @return the users that has the role.
    */
   public async getUsersForRole(name: string, domain?: string): Promise<string[]> {
-    // @ts-ignore
-    const rm = this.model.model.get('g').get('g').rm;
+    const rm = this.model.model.get('g')!.get('g')!.rm;
     if (domain == null) {
       return await rm.getUsers(name);
     } else {
@@ -277,9 +275,11 @@ export class Enforcer extends ManagementEnforcer {
     const res: string[] = [];
     const roles = await this.rm.getRoles(name, ...domain);
     res.push(...roles);
-    await Promise.all(roles.map(async n => {
-      res.push(...await this.getImplicitRolesForUser(n, ...domain));
-    }));
+    await Promise.all(
+      roles.map(async n => {
+        res.push(...(await this.getImplicitRolesForUser(n, ...domain)));
+      })
+    );
     return res;
   }
 
@@ -295,7 +295,7 @@ export class Enforcer extends ManagementEnforcer {
    * But getImplicitPermissionsForUser("alice") will get: [["admin", "data1", "read"], ["alice", "data2", "read"]].
    */
   public async getImplicitPermissionsForUser(user: string) {
-    const roles = [user, ...await this.getImplicitRolesForUser(user)];
+    const roles = [user, ...(await this.getImplicitRolesForUser(user))];
     const res: string[][] = [];
     roles.forEach(n => {
       res.push(...this.getPermissionsForUser(n));
@@ -350,8 +350,7 @@ export async function newEnforcer(...params: any[]): Promise<Enforcer> {
     if (typeof params[0] === 'string') {
       await e.initWithFile(params[0], '');
     } else {
-      // @ts-ignore
-      await e.initWithModelAndAdapter(params[0], null);
+      await e.initWithModelAndAdapter(params[0]);
     }
   } else if (params.length === parsedParamLen) {
     await e.initWithFile('', '');

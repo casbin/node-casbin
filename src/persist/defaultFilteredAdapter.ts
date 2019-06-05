@@ -9,8 +9,7 @@ export class Filter {
   public p: string[] = [];
 }
 
-export class DefaultFilteredAdapter extends FileAdapter
-  implements FilteredAdapter {
+export class DefaultFilteredAdapter extends FileAdapter implements FilteredAdapter {
   private filtered: boolean;
 
   constructor(filePath: string) {
@@ -38,8 +37,7 @@ export class DefaultFilteredAdapter extends FileAdapter
     this.filtered = true;
   }
 
-  private async loadFilteredPolicyFile(model: Model, filter: Filter, handler: (line: string, model: Model) => void
-  ): Promise<void> {
+  private async loadFilteredPolicyFile(model: Model, filter: Filter, handler: (line: string, model: Model) => void): Promise<void> {
     const bodyBuf = await readFile(this.filePath);
     const lines = bodyBuf.toString().split('\n');
     lines.forEach((n: string, index: number) => {

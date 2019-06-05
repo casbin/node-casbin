@@ -108,9 +108,7 @@ function regexMatchFunc(...args: any[]): boolean {
 function ipMatch(ip1: string, ip2: string): boolean {
   // check ip1
   if (!(ip.isV4Format(ip1) || ip.isV6Format(ip1))) {
-    throw new Error(
-      'invalid argument: ip1 in ipMatch() function is not an IP address.'
-    );
+    throw new Error('invalid argument: ip1 in ipMatch() function is not an IP address.');
   }
   // check ip2
   const cidrParts: string[] = ip2.split('/');
@@ -119,9 +117,7 @@ function ipMatch(ip1: string, ip2: string): boolean {
   } else {
     if (!(ip.isV4Format(ip2) || ip.isV6Format(ip2))) {
       console.log(ip2);
-      throw new Error(
-        'invalid argument: ip2 in ipMatch() function is not an IP address.'
-      );
+      throw new Error('invalid argument: ip2 in ipMatch() function is not an IP address.');
     }
     return ip.isEqual(ip1, ip2);
   }
@@ -152,11 +148,4 @@ function generateGFunction(rm: rbac.RoleManager): any {
   };
 }
 
-export {
-  keyMatchFunc,
-  keyMatch2Func,
-  keyMatch3Func,
-  regexMatchFunc,
-  ipMatchFunc,
-  generateGFunction
-};
+export { keyMatchFunc, keyMatch2Func, keyMatch3Func, regexMatchFunc, ipMatchFunc, generateGFunction };

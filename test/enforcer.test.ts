@@ -140,8 +140,7 @@ test('TestRBACModelInMemory', async () => {
 });
 
 test('TestRBACModelInMemory2', async () => {
-  const text =
-    `
+  const text = `
 [request_definition]
 r = sub, obj, act
 
@@ -207,7 +206,12 @@ test('TestReloadPolicy', async () => {
   const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
 
   await e.loadPolicy();
-  testGetPolicy(e, [['alice', 'data1', 'read'], ['bob', 'data2', 'write'], ['data2_admin', 'data2', 'read'], ['data2_admin', 'data2', 'write']]);
+  testGetPolicy(e, [
+    ['alice', 'data1', 'read'],
+    ['bob', 'data2', 'write'],
+    ['data2_admin', 'data2', 'read'],
+    ['data2_admin', 'data2', 'write']
+  ]);
 });
 
 test('TestSavePolicy', async () => {
@@ -294,7 +298,7 @@ test('TestEnableAutoSave', async () => {
   // TODO debug
   // Because AutoSave is enabled, the policy change not only affects the policy in Casbin enforcer,
   // but also affects the policy in the storage.
- // await e.removePolicy('alice', 'data1', 'read');
+  // await e.removePolicy('alice', 'data1', 'read');
 
   // However, the file adapter doesn't implement the AutoSave feature, so enabling it has no effect at all here.
 

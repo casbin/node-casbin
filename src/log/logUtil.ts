@@ -37,9 +37,4 @@ function logPrintf(format: string, ...v: any[]) {
   logger.printf(format, ...v);
 }
 
-export {
-  setLogger,
-  getLogger,
-  logPrint,
-  logPrintf
-};
+export { setLogger, getLogger, logPrint, logPrintf };
