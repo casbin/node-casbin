@@ -1,6 +1,6 @@
 {
   "name": "casbin",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "An authorization library that supports access control models like ACL, RBAC, ABAC in Node.JS",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
