@@ -440,6 +440,28 @@ test('TestInitEmpty with String Adapter', async () => {
   await testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
 });
 
+describe('Unimplemented File Adapter methods', () => {
+  let e = {} as Enforcer;
+  let a = {} as FileAdapter;
+
+  beforeEach(async () => {
+    a = new FileAdapter('examples/basic_policy.csv');
+    e = await newEnforcer('examples/basic_model.conf', a);
+  });
+
+  test('addPolicy', async () => {
+    await expect(a.addPolicy('', '', [''])).rejects.toThrow('not implemented');
+  });
+
+  test('removePolicy', async () => {
+    await expect(a.removePolicy('', '', [''])).rejects.toThrow('not implemented');
+  });
+
+  test('removeFilteredPolicy', async () => {
+    await expect(a.removeFilteredPolicy('', '', 0, '')).rejects.toThrow('not implemented');
+  });
+});
+
 describe('Unimplemented String Adapter methods', () => {
   let e = {} as Enforcer;
   let a = {} as StringAdapter;
@@ -456,6 +478,10 @@ describe('Unimplemented String Adapter methods', () => {
 
   test('addPolicy', async () => {
     await expect(a.addPolicy('', '', [''])).rejects.toThrow('not implemented');
+  });
+
+  test('removePolicy', async () => {
+    await expect(a.removePolicy('', '', [''])).rejects.toThrow('not implemented');
   });
 
   test('removeFilteredPolicy', async () => {
