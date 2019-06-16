@@ -439,3 +439,32 @@ test('TestInitEmpty with String Adapter', async () => {
 
   await testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
 });
+
+describe('Unimplemented String Adapter methods', () => {
+  let e = {} as Enforcer;
+
+  beforeEach(async () => {
+    const policy = readFileSync('examples/basic_policy.csv').toString();
+    const adapter = new StringAdapter(policy);
+    e = await newEnforcer('examples/basic_model.conf', adapter);
+  });
+
+  test('savePolicy', async () => {
+    await expect(e.savePolicy()).rejects.toThrow('not implemented');
+  });
+});
+
+// test('StringAdapter.savePolicy', async () => {
+
+//   await expect(e.savePolicy())
+//     .rejects
+//     .toThrow('not implemented');
+
+//   // await expect(e.addPolicy())
+//   //   .rejects
+//   //   .toThrow('not implemented');
+
+//   await expect(e.removePolicy())
+//     .rejects
+//     .toThrow('not implemented');
+// })
