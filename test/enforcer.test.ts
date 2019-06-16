@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { newModel, newEnforcer, Enforcer, FileAdapter, Util } from '../src';
+import { readFileSync } from 'fs';
+
+import { newModel, newEnforcer, Enforcer, FileAdapter, StringAdapter, Util } from '../src';
 
 async function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: boolean) {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
@@ -316,6 +318,21 @@ test('TestEnableAutoSave', async () => {
 
 test('TestInitWithAdapter', async () => {
   const adapter = new FileAdapter('examples/basic_policy.csv');
+  const e = await newEnforcer('examples/basic_model.conf', adapter);
+
+  await testEnforce(e, 'alice', 'data1', 'read', true);
+  await testEnforce(e, 'alice', 'data1', 'write', false);
+  await testEnforce(e, 'alice', 'data2', 'read', false);
+  await testEnforce(e, 'alice', 'data2', 'write', false);
+  await testEnforce(e, 'bob', 'data1', 'read', false);
+  await testEnforce(e, 'bob', 'data1', 'write', false);
+  await testEnforce(e, 'bob', 'data2', 'read', false);
+  await testEnforce(e, 'bob', 'data2', 'write', true);
+});
+
+test('TestInitWithStringAdapter', async () => {
+  const policy = await readFileSync('examples/basic_policy.csv').toString();
+  const adapter = new StringAdapter(policy);
   const e = await newEnforcer('examples/basic_model.conf', adapter);
 
   await testEnforce(e, 'alice', 'data1', 'read', true);
