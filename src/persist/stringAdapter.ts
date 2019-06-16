@@ -6,7 +6,7 @@ import { Helper } from './helper';
  * FileAdapter is the file adapter for Casbin.
  * It can load policy from file or save policy to file.
  */
-export class FileAdapter implements Adapter {
+export class StringAdapter implements Adapter {
   public readonly policy: string;
 
   /**

@@ -14,7 +14,7 @@
 
 import { ManagementEnforcer } from './managementEnforcer';
 import { FunctionMap, Model, newModel } from './model';
-import { Adapter, FileAdapter } from './persist';
+import { Adapter, FileAdapter, StringAdapter } from './persist';
 import { getLogger } from './log';
 
 /**
@@ -28,6 +28,16 @@ export class Enforcer extends ManagementEnforcer {
    */
   public async initWithFile(modelPath: string, policyPath: string): Promise<void> {
     const a = new FileAdapter(policyPath);
+    await this.initWithAdapter(modelPath, a);
+  }
+
+  /**
+   * initWithFile initializes an enforcer with a model file and a policy file.
+   * @param modelPath model file path
+   * @param policyString policy CSV string
+   */
+  public async initWithString(modelPath: string, policyString: string): Promise<void> {
+    const a = new StringAdapter(policyString);
     await this.initWithAdapter(modelPath, a);
   }
 
