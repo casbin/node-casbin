@@ -389,6 +389,20 @@ test('TestSetAdapterFromFile', async () => {
   await testEnforce(e, 'alice', 'data1', 'read', true);
 });
 
+test('TestSetAdapterFromString', async () => {
+  const e = await newEnforcer('examples/basic_model.conf');
+
+  await testEnforce(e, 'alice', 'data1', 'read', false);
+
+  const policy = readFileSync('examples/basic_policy.csv').toString();
+
+  const a = new StringAdapter(policy);
+  e.setAdapter(a);
+  await e.loadPolicy();
+
+  await testEnforce(e, 'alice', 'data1', 'read', true);
+});
+
 test('TestInitEmpty', async () => {
   const e = await newEnforcer();
 
