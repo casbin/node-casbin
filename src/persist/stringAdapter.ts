@@ -14,18 +14,18 @@ export class StringAdapter implements Adapter {
    * @param {string} policy policy formatted as a CSV string.
    */
 
-  constructor (policy: string) {
-    this.policy = policy
+  constructor(policy: string) {
+    this.policy = policy;
   }
 
   public async loadPolicy(model: Model): Promise<void> {
     if (!this.policy) {
-      throw new Error('Invalid policy, policy document cannot be false-y')
+      throw new Error('Invalid policy, policy document cannot be false-y');
     }
-    await this.loadRules(model, Helper.loadPolicyLine)
+    await this.loadRules(model, Helper.loadPolicyLine);
   }
 
-  async loadRules(model: Model, handler: (line: string, model: Model) => void): Promise<void> {
+  private async loadRules(model: Model, handler: (line: string, model: Model) => void): Promise<void> {
     const rules = this.policy.split('\n');
     rules.forEach((n: string, index: number) => {
       const line = n.trim();

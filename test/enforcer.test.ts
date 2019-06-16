@@ -331,7 +331,7 @@ test('TestInitWithAdapter', async () => {
 });
 
 test('TestInitWithStringAdapter', async () => {
-  const policy = await readFileSync('examples/basic_policy.csv').toString();
+  const policy = readFileSync('examples/basic_policy.csv').toString();
   const adapter = new StringAdapter(policy);
   const e = await newEnforcer('examples/basic_model.conf', adapter);
 
