@@ -442,29 +442,23 @@ test('TestInitEmpty with String Adapter', async () => {
 
 describe('Unimplemented String Adapter methods', () => {
   let e = {} as Enforcer;
+  let a = {} as StringAdapter;
 
   beforeEach(async () => {
     const policy = readFileSync('examples/basic_policy.csv').toString();
-    const adapter = new StringAdapter(policy);
-    e = await newEnforcer('examples/basic_model.conf', adapter);
+    a = new StringAdapter(policy);
+    e = await newEnforcer('examples/basic_model.conf', a);
   });
 
   test('savePolicy', async () => {
-    await expect(e.savePolicy()).rejects.toThrow('not implemented');
+    await expect(a.savePolicy(e.getModel())).rejects.toThrow('not implemented');
+  });
+
+  test('addPolicy', async () => {
+    await expect(a.addPolicy('', '', [''])).rejects.toThrow('not implemented');
+  });
+
+  test('removeFilteredPolicy', async () => {
+    await expect(a.removeFilteredPolicy('', '', 0, '')).rejects.toThrow('not implemented');
   });
 });
-
-// test('StringAdapter.savePolicy', async () => {
-
-//   await expect(e.savePolicy())
-//     .rejects
-//     .toThrow('not implemented');
-
-//   // await expect(e.addPolicy())
-//   //   .rejects
-//   //   .toThrow('not implemented');
-
-//   await expect(e.removePolicy())
-//     .rejects
-//     .toThrow('not implemented');
-// })
