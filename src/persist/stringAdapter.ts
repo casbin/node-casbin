@@ -56,11 +56,4 @@ export class StringAdapter implements Adapter {
   public async removePolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
     throw new Error('not implemented');
   }
-
-  /**
-   * removeFilteredPolicy removes policy rules that match the filter from the storage.
-   */
-  public async removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<void> {
-    throw new Error('not implemented');
-  }
 }
