@@ -403,7 +403,7 @@ test('TestSetAdapterFromString', async () => {
   await testEnforce(e, 'alice', 'data1', 'read', true);
 });
 
-test('TestInitEmpty', async () => {
+test('TestInitEmpty with File Adapter', async () => {
   const e = await newEnforcer();
 
   const m = newModel();
@@ -413,6 +413,25 @@ test('TestInitEmpty', async () => {
   m.addDef('m', 'm', 'r.sub == p.sub && keyMatch(r.obj, p.obj) && regexMatch(r.act, p.act)');
 
   const a = new FileAdapter('examples/keymatch_policy.csv');
+
+  e.setModel(m);
+  e.setAdapter(a);
+  await e.loadPolicy();
+
+  await testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
+});
+
+test('TestInitEmpty with String Adapter', async () => {
+  const e = await newEnforcer();
+
+  const m = newModel();
+  m.addDef('r', 'r', 'sub, obj, act');
+  m.addDef('p', 'p', 'sub, obj, act');
+  m.addDef('e', 'e', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm', 'r.sub == p.sub && keyMatch(r.obj, p.obj) && regexMatch(r.act, p.act)');
+
+  const policy = readFileSync('examples/keymatch_policy.csv').toString();
+  const a = new StringAdapter(policy);
 
   e.setModel(m);
   e.setAdapter(a);
