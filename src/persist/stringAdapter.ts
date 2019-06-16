@@ -3,14 +3,14 @@ import { Model } from '../model';
 import { Helper } from './helper';
 
 /**
- * FileAdapter is the file adapter for Casbin.
- * It can load policy from file or save policy to file.
+ * StringAdapter is the string adapter for Casbin.
+ * It can load policy from a string.
  */
 export class StringAdapter implements Adapter {
   public readonly policy: string;
 
   /**
-   * FileAdapter is the constructor for FileAdapter.
+   * StringAdapter is the constructor for StringAdapter.
    * @param {string} policy policy formatted as a CSV string.
    */
 
@@ -54,6 +54,13 @@ export class StringAdapter implements Adapter {
    * removePolicy removes a policy rule from the storage.
    */
   public async removePolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
+    throw new Error('not implemented');
+  }
+
+  /**
+   * removeFilteredPolicy removes policy rules that match the filter from the storage.
+   */
+  public async removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<void> {
     throw new Error('not implemented');
   }
 }
