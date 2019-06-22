@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { newModel, newEnforcer, Enforcer, FileAdapter, Util } from '../src';
+import { readFileSync } from 'fs';
+
+import { newModel, newEnforcer, Enforcer, FileAdapter, StringAdapter, Util } from '../src';
 
 async function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: boolean) {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
@@ -328,6 +330,21 @@ test('TestInitWithAdapter', async () => {
   await testEnforce(e, 'bob', 'data2', 'write', true);
 });
 
+test('TestInitWithStringAdapter', async () => {
+  const policy = readFileSync('examples/basic_policy.csv').toString();
+  const adapter = new StringAdapter(policy);
+  const e = await newEnforcer('examples/basic_model.conf', adapter);
+
+  await testEnforce(e, 'alice', 'data1', 'read', true);
+  await testEnforce(e, 'alice', 'data1', 'write', false);
+  await testEnforce(e, 'alice', 'data2', 'read', false);
+  await testEnforce(e, 'alice', 'data2', 'write', false);
+  await testEnforce(e, 'bob', 'data1', 'read', false);
+  await testEnforce(e, 'bob', 'data1', 'write', false);
+  await testEnforce(e, 'bob', 'data2', 'read', false);
+  await testEnforce(e, 'bob', 'data2', 'write', true);
+});
+
 test('TestRoleLinks', async () => {
   const e = await newEnforcer('examples/rbac_model.conf');
   e.enableAutoBuildRoleLinks(false);
@@ -372,7 +389,21 @@ test('TestSetAdapterFromFile', async () => {
   await testEnforce(e, 'alice', 'data1', 'read', true);
 });
 
-test('TestInitEmpty', async () => {
+test('TestSetAdapterFromString', async () => {
+  const e = await newEnforcer('examples/basic_model.conf');
+
+  await testEnforce(e, 'alice', 'data1', 'read', false);
+
+  const policy = readFileSync('examples/basic_policy.csv').toString();
+
+  const a = new StringAdapter(policy);
+  e.setAdapter(a);
+  await e.loadPolicy();
+
+  await testEnforce(e, 'alice', 'data1', 'read', true);
+});
+
+test('TestInitEmpty with File Adapter', async () => {
   const e = await newEnforcer();
 
   const m = newModel();
@@ -388,4 +419,72 @@ test('TestInitEmpty', async () => {
   await e.loadPolicy();
 
   await testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
+});
+
+test('TestInitEmpty with String Adapter', async () => {
+  const e = await newEnforcer();
+
+  const m = newModel();
+  m.addDef('r', 'r', 'sub, obj, act');
+  m.addDef('p', 'p', 'sub, obj, act');
+  m.addDef('e', 'e', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm', 'r.sub == p.sub && keyMatch(r.obj, p.obj) && regexMatch(r.act, p.act)');
+
+  const policy = readFileSync('examples/keymatch_policy.csv').toString();
+  const a = new StringAdapter(policy);
+
+  e.setModel(m);
+  e.setAdapter(a);
+  await e.loadPolicy();
+
+  await testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
+});
+
+describe('Unimplemented File Adapter methods', () => {
+  let e = {} as Enforcer;
+  let a = {} as FileAdapter;
+
+  beforeEach(async () => {
+    a = new FileAdapter('examples/basic_policy.csv');
+    e = await newEnforcer('examples/basic_model.conf', a);
+  });
+
+  test('addPolicy', async () => {
+    await expect(a.addPolicy('', '', [''])).rejects.toThrow('not implemented');
+  });
+
+  test('removePolicy', async () => {
+    await expect(a.removePolicy('', '', [''])).rejects.toThrow('not implemented');
+  });
+
+  test('removeFilteredPolicy', async () => {
+    await expect(a.removeFilteredPolicy('', '', 0, '')).rejects.toThrow('not implemented');
+  });
+});
+
+describe('Unimplemented String Adapter methods', () => {
+  let e = {} as Enforcer;
+  let a = {} as StringAdapter;
+
+  beforeEach(async () => {
+    const policy = readFileSync('examples/basic_policy.csv').toString();
+    a = new StringAdapter(policy);
+    e = await newEnforcer('examples/basic_model.conf', a);
+  });
+
+  test('savePolicy', async () => {
+    await expect(a.savePolicy(e.getModel())).rejects.toThrow('not implemented');
+  });
+
+  test('addPolicy', async () => {
+    await expect(a.addPolicy('', '', [''])).rejects.toThrow('not implemented');
+  });
+
+  test('removePolicy', async () => {
+    await expect(a.removePolicy('', '', [''])).rejects.toThrow('not implemented');
+  });
+
+  test('removeFilteredPolicy', async () => {
+    await expect(a.removeFilteredPolicy('', '', 0, '')).rejects.toThrow('not implemented');
+  });
 });
