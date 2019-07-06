@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as _ from 'lodash';
-import { newEnforcer, Enforcer } from '../src';
+import { newEnforcer, Enforcer, newModel } from '../src';
 
 async function testEnforce(e: Enforcer, sub: string, obj: any, act: string, res: boolean) {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
@@ -273,4 +273,12 @@ test('TestPriorityModelIndeterminate', async () => {
   const e = await newEnforcer('examples/priority_model.conf', 'examples/priority_indeterminate_policy.csv');
 
   await testEnforce(e, 'alice', 'data1', 'read', false);
+});
+
+test('TestMatcher', async () => {
+  const m = newModel();
+
+  m.addDef('m', 'm', 'keyMatch(r.obj, ".*get$") || regexMatch(r.act, ".user.")');
+
+  expect(m.model.get('m')!.get('m')!.value).toEqual(`keyMatch(r_obj, ".*get$") || regexMatch(r_act, ".user.")`);
 });
