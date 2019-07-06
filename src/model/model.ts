@@ -79,15 +79,32 @@ export class Model {
 
     if (sec === 'r' || sec === 'p') {
       const tokens = value.split(', ');
+
       for (let i = 0; i < tokens.length; i++) {
         tokens[i] = key + '_' + tokens[i];
       }
+
       ast.tokens = tokens;
+    } else if (sec === 'm') {
+      const stringArguments = value.match(/\"(.*?)\"/g) || [];
+
+      stringArguments.forEach((n, index) => {
+        value = value.replace(n, `$<${index}>`);
+      });
+
+      value = util.removeComments(util.escapeAssertion(value));
+
+      stringArguments.forEach((n, index) => {
+        value = value.replace(`$<${index}>`, n);
+      });
+
+      ast.value = value;
     } else {
       ast.value = util.removeComments(util.escapeAssertion(value));
     }
 
     const nodeMap = this.model.get(sec);
+
     if (nodeMap) {
       nodeMap.set(key, ast);
     } else {
@@ -95,6 +112,7 @@ export class Model {
       assertionMap.set(key, ast);
       this.model.set(sec, assertionMap);
     }
+
     return true;
   }
 
