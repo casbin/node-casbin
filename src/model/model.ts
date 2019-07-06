@@ -15,7 +15,6 @@
 import * as _ from 'lodash';
 import * as rbac from '../rbac';
 import * as util from '../util';
-import * as j from 'jscodeshift';
 import { Config } from '../config';
 import { Assertion } from './assertion';
 import { logPrint } from '../log';
@@ -84,21 +83,6 @@ export class Model {
         tokens[i] = key + '_' + tokens[i];
       }
       ast.tokens = tokens;
-    } else if (sec === 'm') {
-      const mAST = j(util.removeComments(value));
-      let hasEscape = false;
-
-      mAST.find(j.Literal).forEach(path => {
-        let n = path.value.value;
-        if (typeof n === 'string' && n.includes('.')) {
-          hasEscape = true;
-          n = n.replace(/\./g, '\\.');
-          j(path).replaceWith(j.literal(n));
-        }
-      });
-
-      value = util.escapeAssertion(mAST.toSource());
-      ast.value = hasEscape ? value.replace(/\\\\./g, '.') : value;
     } else {
       ast.value = util.removeComments(util.escapeAssertion(value));
     }

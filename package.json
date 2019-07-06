@@ -15,7 +15,6 @@
   "devDependencies": {
     "@types/ip": "^0.0.31",
     "@types/jest": "^24.0.11",
-    "@types/jscodeshift": "^0.6.0",
     "@types/lodash": "^4.14.113",
     "@types/node": "^10.5.3",
     "coveralls": "^3.0.2",
@@ -31,7 +30,6 @@
   "dependencies": {
     "expression-eval": "^2.0.0",
     "ip": "^1.1.5",
-    "jscodeshift": "^0.6.4",
     "lodash": "^4.17.10"
   },
   "files": [
