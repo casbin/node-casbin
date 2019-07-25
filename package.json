@@ -30,7 +30,7 @@
   "dependencies": {
     "expression-eval": "^2.0.0",
     "ip": "^1.1.5",
-    "lodash": "^4.17.10"
+    "lodash": "^4.17.15"
   },
   "files": [
     "lib",
