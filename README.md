@@ -74,6 +74,19 @@ npm install casbin --save
 
 4. Please refer to the [src/test](https://github.com/casbin/node-casbin/tree/master/test) package for more usage.
 
+## Policy management
+
+Casbin provides two sets of APIs to manage permissions:
+
+- [Management API](https://casbin.org/docs/en/management-api): the primitive API that provides full support for Casbin policy management.
+- [RBAC API](https://casbin.org/docs/en/rbac-api): a more friendly API for RBAC. This API is a subset of Management API. The RBAC users could use this API to simplify the code.
+
+We also provide a [web-based UI](https://casbin.org/docs/en/admin-portal) for model management and policy management:
+
+![model editor](https://hsluoyz.github.io/casbin/ui_model_editor.png)
+
+![policy editor](https://hsluoyz.github.io/casbin/ui_policy_editor.png)
+
 ## Documentation
 
 https://casbin.org/docs/en/overview
