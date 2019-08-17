@@ -87,6 +87,10 @@ We also provide a [web-based UI](https://casbin.org/docs/en/admin-portal) for mo
 
 ![policy editor](https://hsluoyz.github.io/casbin/ui_policy_editor.png)
 
+## Policy persistence
+
+https://casbin.org/docs/en/adapters
+
 ## Documentation
 
 https://casbin.org/docs/en/overview
