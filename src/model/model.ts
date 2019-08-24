@@ -157,9 +157,9 @@ export class Model {
     if (!astMap) {
       return;
     }
-    astMap.forEach(async value => {
+    for (const value of astMap.values()) {
       await value.buildRoleLinks(rm);
-    });
+    }
   }
 
   // clearPolicy clears all current policy.
