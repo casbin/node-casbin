@@ -30,6 +30,7 @@ export class CoreEnforcer {
   protected model: Model;
   protected fm: FunctionMap;
   private eft: Effector;
+  private matcherMap: Map<string, (context: object) => Promise<any>>;
 
   protected adapter: FilteredAdapter | Adapter;
   protected watcher: Watcher | null = null;
@@ -42,6 +43,7 @@ export class CoreEnforcer {
   public initialize(): void {
     this.rm = new DefaultRoleManager(10);
     this.eft = new DefaultEffector();
+    this.matcherMap = new Map();
     this.watcher = null;
 
     this.enabled = true;
@@ -278,7 +280,13 @@ export class CoreEnforcer {
       throw new Error('model is undefined');
     }
 
-    const expression = compileAsync(expString);
+    let expression;
+    if (this.matcherMap.has(expString)) {
+      expression = await this.matcherMap.get(expString);
+    } else {
+      expression = await compileAsync(expString);
+      await this.matcherMap.set(expString, expression);
+    }
 
     let policyEffects: Effect[];
     let matcherResults: number[];
@@ -304,6 +312,7 @@ export class CoreEnforcer {
           parameters[token] = pvals[j];
         });
 
+        // @ts-ignore
         const result = await expression({ ...parameters, ...functions });
 
         switch (typeof result) {
@@ -358,6 +367,7 @@ export class CoreEnforcer {
         parameters[token] = '';
       });
 
+      // @ts-ignore
       const result = await expression({ ...parameters, ...functions });
 
       if (result) {
