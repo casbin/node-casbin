@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { compileAsync } from 'expression-eval';
+import { compileAsync, compile } from 'expression-eval';
 import * as _ from 'lodash';
 
 import { DefaultEffector, Effect, Effector } from './effect';
@@ -30,7 +30,7 @@ export class CoreEnforcer {
   protected model: Model;
   protected fm: FunctionMap;
   private eft: Effector;
-  private matcherMap: Map<string, (context: object) => Promise<any>>;
+  private matcherMap: Map<string, ((context: object) => Promise<any>) | ((context: object) => any)>;
 
   protected adapter: FilteredAdapter | Adapter;
   protected watcher: Watcher | null = null;
@@ -43,7 +43,7 @@ export class CoreEnforcer {
   public initialize(): void {
     this.rm = new DefaultRoleManager(10);
     this.eft = new DefaultEffector();
-    this.matcherMap = new Map<string, (context: object) => Promise<any>>();
+    this.matcherMap = new Map();
     this.watcher = null;
 
     this.enabled = true;
@@ -247,15 +247,7 @@ export class CoreEnforcer {
     await this.model.buildRoleLinks(this.rm);
   }
 
-  /**
-   * enforce decides whether a "subject" can access a "object" with
-   * the operation "action", input parameters are usually: (sub, obj, act).
-   *
-   * @param rvals the request needs to be mediated, usually an array
-   *              of strings, can be class instances if ABAC is used.
-   * @return whether to allow the request.
-   */
-  public async enforce(...rvals: any[]): Promise<boolean> {
+  private async privateEnforce(asyncCompile: boolean = true, ...rvals: any[]) {
     if (!this.enabled) {
       return true;
     }
@@ -280,10 +272,12 @@ export class CoreEnforcer {
       throw new Error('model is undefined');
     }
 
-    let expression = this.matcherMap.get(expString);
+    const matcherKey = `${asyncCompile ? 'ASYNC[' : 'SYNC['}${expString}]`;
+
+    let expression = this.matcherMap.get(matcherKey);
     if (!expression) {
-      expression = compileAsync(expString);
-      this.matcherMap.set(expString, expression);
+      expression = asyncCompile ? compileAsync(expString) : compile(expString);
+      this.matcherMap.set(matcherKey, expression);
     }
 
     let policyEffects: Effect[];
@@ -310,7 +304,8 @@ export class CoreEnforcer {
           parameters[token] = pvals[j];
         });
 
-        const result = await expression({ ...parameters, ...functions });
+        const context = { ...parameters, ...functions };
+        const result = asyncCompile ? await expression(context) : expression(context);
 
         switch (typeof result) {
           case 'boolean':
@@ -364,7 +359,8 @@ export class CoreEnforcer {
         parameters[token] = '';
       });
 
-      const result = await expression({ ...parameters, ...functions });
+      const context = { ...parameters, ...functions };
+      const result = asyncCompile ? await expression(context) : expression(context);
 
       if (result) {
         policyEffects[0] = Effect.Allow;
@@ -391,5 +387,31 @@ export class CoreEnforcer {
     }
 
     return res;
+  }
+
+  /**
+   * If the matchers does not contain an asynchronous method, call it faster.
+   *
+   * enforceWithSyncCompile decides whether a "subject" can access a "object" with
+   * the operation "action", input parameters are usually: (sub, obj, act).
+   *
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request.
+   */
+  public async enforceWithSyncCompile(...rvals: any[]) {
+    return this.privateEnforce(false, ...rvals);
+  }
+
+  /**
+   * enforce decides whether a "subject" can access a "object" with
+   * the operation "action", input parameters are usually: (sub, obj, act).
+   *
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request.
+   */
+  public async enforce(...rvals: any[]): Promise<boolean> {
+    return this.privateEnforce(true, ...rvals);
   }
 }
