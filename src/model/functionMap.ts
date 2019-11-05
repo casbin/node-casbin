@@ -31,6 +31,8 @@ export class FunctionMap {
 
     fm.addFunction('keyMatch', util.keyMatchFunc);
     fm.addFunction('keyMatch2', util.keyMatch2Func);
+    fm.addFunction('keyMatch3', util.keyMatch3Func);
+    fm.addFunction('keyMatch4', util.keyMatch4Func);
     fm.addFunction('regexMatch', util.regexMatchFunc);
     fm.addFunction('ipMatch', util.ipMatchFunc);
 

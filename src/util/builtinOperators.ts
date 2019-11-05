@@ -89,6 +89,83 @@ function keyMatch3Func(...args: any[]): boolean {
   return keyMatch3(name1, name2);
 }
 
+// keyMatch4 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
+// Besides what keyMatch3 does, keyMatch4 can also match repeated patterns:
+// "/parent/123/child/123" matches "/parent/{id}/child/{id}"
+// "/parent/123/child/456" does not match "/parent/{id}/child/{id}"
+// But keyMatch3 will match both.
+function keyMatch4(key1: string, key2: string): boolean {
+  key2 = key2.replace(/\/\*/g, '/.*');
+
+  const tokens: string[] = [];
+  let j = -1;
+  for (let i = 0; i < key2.length; i++) {
+    const c = key2.charAt(i);
+    if (c === '{') {
+      j = i;
+    } else if (c === '}') {
+      tokens.push(key2.substring(j, i + 1));
+    }
+  }
+
+  let regexp = new RegExp(/(.*){[^/]+}(.*)/g);
+
+  for (;;) {
+    if (!key2.includes('/{')) {
+      break;
+    }
+    key2 = key2.replace(regexp, '$1([^/]+)$2');
+  }
+
+  regexp = new RegExp('^' + key2 + '$');
+
+  let values: RegExpExecArray | null | string[] = regexp.exec(key1);
+
+  if (!values) {
+    return false;
+  }
+
+  values = values.slice(1);
+
+  if (tokens.length !== values.length) {
+    throw new Error('KeyMatch4: number of tokens is not equal to number of values');
+  }
+
+  const m = new Map<string, string[]>();
+  tokens.forEach((n, index) => {
+    const key = tokens[index];
+    let v = m.get(key);
+    if (!v) {
+      v = [];
+    }
+
+    if (values) {
+      v.push(values[index]);
+    }
+    m.set(key, v);
+  });
+
+  for (const value of m.values()) {
+    if (value.length > 1) {
+      for (let i = 1; i < values.length; i++) {
+        if (values[i] !== values[0]) {
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
+// keyMatch4Func is the wrapper for keyMatch4.
+function keyMatch4Func(...args: any[]): boolean {
+  const name1: string = _.toString(args[0]);
+  const name2: string = _.toString(args[1]);
+
+  return keyMatch4(name1, name2);
+}
+
 // regexMatch determines whether key1 matches the pattern of key2 in regular expression.
 function regexMatch(key1: string, key2: string): boolean {
   return new RegExp(key2).test(key1);
@@ -148,4 +225,4 @@ function generateGFunction(rm: rbac.RoleManager): any {
   };
 }
 
-export { keyMatchFunc, keyMatch2Func, keyMatch3Func, regexMatchFunc, ipMatchFunc, generateGFunction };
+export { keyMatchFunc, keyMatch2Func, keyMatch3Func, regexMatchFunc, ipMatchFunc, generateGFunction, keyMatch4Func };

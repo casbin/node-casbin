@@ -63,6 +63,20 @@ test('test keyMatch3Func', () => {
   expect(util.keyMatch3Func('/baz', '/foo')).toEqual(false);
 });
 
+test('test keyMatch4Func', () => {
+  expect(util.keyMatch4Func('/parent/123/child/123', '/parent/{id}/child/{id}')).toEqual(true);
+  expect(util.keyMatch4Func('/parent/123/child/456', '/parent/{id}/child/{id}')).toEqual(false);
+
+  expect(util.keyMatch4Func('/parent/123/child/123', '/parent/{id}/child/{another_id}')).toEqual(true);
+  expect(util.keyMatch4Func('/parent/123/child/456', '/parent/{id}/child/{another_id}')).toEqual(true);
+
+  expect(util.keyMatch4Func('/parent/123/child/123/book/123', '/parent/{id}/child/{id}/book/{id}')).toEqual(true);
+  expect(util.keyMatch4Func('/parent/123/child/123/book/456', '/parent/{id}/child/{id}/book/{id}')).toEqual(false);
+  expect(util.keyMatch4Func('/parent/123/child/456/book/123', '/parent/{id}/child/{id}/book/{id}')).toEqual(false);
+  expect(util.keyMatch4Func('/parent/123/child/456/book/', '/parent/{id}/child/{id}/book/{id}')).toEqual(false);
+  expect(util.keyMatch4Func('/parent/123/child/456', '/parent/{id}/child/{id}/book/{id}')).toEqual(false);
+});
+
 test('test ipMatchFunc', () => {
   expect(util.ipMatchFunc('::1', '::0:1')).toEqual(true);
   expect(util.ipMatchFunc('192.168.1.1', '192.168.1.1')).toEqual(true);
