@@ -15,6 +15,58 @@
 import { RoleManager } from './roleManager';
 import { logPrint } from '../log';
 
+/**
+ * Role represents the data structure for a role in RBAC.
+ */
+class Role {
+  public name: string;
+  private roles: Role[];
+
+  constructor(name: string) {
+    this.name = name;
+    this.roles = [];
+  }
+
+  public addRole(role: Role): void {
+    if (this.roles.some(n => n.name === role.name)) {
+      return;
+    }
+    this.roles.push(role);
+  }
+
+  public deleteRole(role: Role): void {
+    this.roles = this.roles.filter(n => n.name !== role.name);
+  }
+
+  public hasRole(name: string, hierarchyLevel: number): boolean {
+    if (this.name === name) {
+      return true;
+    }
+    if (hierarchyLevel <= 0) {
+      return false;
+    }
+    for (const role of this.roles) {
+      if (role.hasRole(name, hierarchyLevel - 1)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  public hasDirectRole(name: string): boolean {
+    return this.roles.some(n => n.name === name);
+  }
+
+  public toString(): string {
+    return this.name + this.roles.join(', ');
+  }
+
+  public getRoles(): string[] {
+    return this.roles.map(n => n.name);
+  }
+}
+
 // RoleManager provides a default implementation for the RoleManager interface
 export class DefaultRoleManager implements RoleManager {
   private allRoles: Map<string, Role>;
@@ -52,7 +104,7 @@ export class DefaultRoleManager implements RoleManager {
   /**
    * clear clears all stored data and resets the role manager to the initial state.
    */
-  public async clear() {
+  public async clear(): Promise<void> {
     this.allRoles = new Map<string, Role>();
   }
 
@@ -151,7 +203,7 @@ export class DefaultRoleManager implements RoleManager {
   /**
    * printRoles prints all the roles to log.
    */
-  public async printRoles() {
+  public async printRoles(): Promise<void> {
     [...this.allRoles.values()].map(n => {
       logPrint(n.toString());
     });
@@ -168,59 +220,7 @@ export class DefaultRoleManager implements RoleManager {
     }
   }
 
-  private hasRole(name: string) {
+  private hasRole(name: string): boolean {
     return this.allRoles.has(name);
-  }
-}
-
-/**
- * Role represents the data structure for a role in RBAC.
- */
-class Role {
-  public name: string;
-  private roles: Role[];
-
-  constructor(name: string) {
-    this.name = name;
-    this.roles = [];
-  }
-
-  public addRole(role: Role): void {
-    if (this.roles.some(n => n.name === role.name)) {
-      return;
-    }
-    this.roles.push(role);
-  }
-
-  public deleteRole(role: Role): void {
-    this.roles = this.roles.filter(n => n.name !== role.name);
-  }
-
-  public hasRole(name: string, hierarchyLevel: number): boolean {
-    if (this.name === name) {
-      return true;
-    }
-    if (hierarchyLevel <= 0) {
-      return false;
-    }
-    for (const role of this.roles) {
-      if (role.hasRole(name, hierarchyLevel - 1)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  public hasDirectRole(name: string): boolean {
-    return this.roles.some(n => n.name === name);
-  }
-
-  public toString(): string {
-    return this.name + this.roles.join(', ');
-  }
-
-  public getRoles(): string[] {
-    return this.roles.map(n => n.name);
   }
 }

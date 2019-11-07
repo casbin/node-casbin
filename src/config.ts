@@ -116,7 +116,7 @@ export class Config {
     });
   }
 
-  private write(section: string, lineNum: number, line: string) {
+  private write(section: string, lineNum: number, line: string): void {
     const equalIndex = line.indexOf('=');
     if (equalIndex === -1) {
       throw new Error(`parse the content error : line ${lineNum}`);

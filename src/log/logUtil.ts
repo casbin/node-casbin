@@ -18,22 +18,22 @@ import { Logger } from './logger';
 let logger: Logger = new DefaultLogger();
 
 // setLogger sets the current logger.
-function setLogger(l: Logger) {
+function setLogger(l: Logger): void {
   logger = l;
 }
 
 // getLogger returns the current logger.
-function getLogger() {
+function getLogger(): Logger {
   return logger;
 }
 
 // logPrint prints the log.
-function logPrint(...v: any[]) {
+function logPrint(...v: any[]): void {
   logger.print(...v);
 }
 
 // logPrintf prints the log with the format.
-function logPrintf(format: string, ...v: any[]) {
+function logPrintf(format: string, ...v: any[]): void {
   logger.printf(format, ...v);
 }
 

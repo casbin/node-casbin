@@ -16,11 +16,11 @@ import { readFileSync } from 'fs';
 
 import { newModel, newEnforcer, Enforcer, FileAdapter, StringAdapter, Util } from '../src';
 
-async function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: boolean) {
+async function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: boolean): Promise<void> {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
 }
 
-function testGetPolicy(e: Enforcer, res: string[][]) {
+function testGetPolicy(e: Enforcer, res: string[][]): void {
   const myRes = e.getPolicy();
   console.log('Policy: ', myRes);
 
