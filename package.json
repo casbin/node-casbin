@@ -7,25 +7,30 @@
   "scripts": {
     "prepack": "yarn run lint && yarn run test && yarn build",
     "postpack": "rimraf lib",
-    "prettier": "prettier --write **/*.{ts,js}",
-    "build": "rimraf lib && tsc -p tsconfig.release.json",
-    "lint": "tslint -p . -c tslint.json",
-    "test": "jest"
+    "build": "rimraf lib && tsc",
+    "test": "jest",
+    "lint": "eslint . --ext .js,.ts"
   },
   "devDependencies": {
     "@types/ip": "^0.0.31",
     "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.113",
     "@types/node": "^10.5.3",
+    "@typescript-eslint/eslint-plugin": "^2.6.1",
+    "@typescript-eslint/parser": "^2.6.1",
     "coveralls": "^3.0.2",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-plugin-prettier": "^3.1.1",
     "husky": "^2.3.0",
     "jest": "^24.3.1",
     "lint-staged": "^8.1.7",
-    "prettier": "^1.17.1",
+    "prettier": "^1.18.2",
+    "pretty-quick": "^2.0.1",
     "rimraf": "^2.6.2",
     "ts-jest": "^24.0.0",
     "tslint": "^5.11.0",
-    "typescript": "^3.4.5"
+    "typescript": "^3.7.2"
   },
   "dependencies": {
     "expression-eval": "^2.0.0",
@@ -49,14 +54,8 @@
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "yarn lint && pretty-quick --staged"
     }
-  },
-  "lint-staged": {
-    "*.{ts,js}": [
-      "prettier --write",
-      "git add"
-    ]
   },
   "publishConfig": {
     "registry": "https://registry.yarnpkg.com"

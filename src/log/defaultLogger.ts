@@ -16,7 +16,7 @@ import { Logger } from './logger';
 
 // DefaultLogger is the implementation for a Logger
 export class DefaultLogger implements Logger {
-  private enable: boolean = false;
+  private enable = false;
 
   public enableLog(enable: boolean): void {
     this.enable = enable;

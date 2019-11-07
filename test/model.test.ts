@@ -15,15 +15,15 @@
 import * as _ from 'lodash';
 import { newEnforcer, Enforcer, newModel } from '../src';
 
-async function testEnforce(e: Enforcer, sub: string, obj: any, act: string, res: boolean) {
+async function testEnforce(e: Enforcer, sub: string, obj: any, act: string, res: boolean): Promise<void> {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
 }
 
-async function testEnforceWithoutUsers(e: Enforcer, obj: string, act: string, res: boolean) {
+async function testEnforceWithoutUsers(e: Enforcer, obj: string, act: string, res: boolean): Promise<void> {
   await expect(e.enforce(obj, act)).resolves.toBe(res);
 }
 
-async function testDomainEnforce(e: Enforcer, sub: string, dom: string, obj: string, act: string, res: boolean) {
+async function testDomainEnforce(e: Enforcer, sub: string, dom: string, obj: string, act: string, res: boolean): Promise<void> {
   await expect(e.enforce(sub, dom, obj, act)).resolves.toBe(res);
 }
 
@@ -280,5 +280,7 @@ test('TestMatcher', async () => {
 
   m.addDef('m', 'm', 'keyMatch(r.obj, ".*get$") || regexMatch(r.act, ".user.")');
 
-  expect(m.model.get('m')!.get('m')!.value).toEqual(`keyMatch(r_obj, ".*get$") || regexMatch(r_act, ".user.")`);
+  // TODO Typescript 3.7 is not supported by prettier
+  // eslint-disable-next-line prettier/prettier
+  expect(m.model.get('m')?.get('m')?.value).toEqual(`keyMatch(r_obj, ".*get$") || regexMatch(r_act, ".user.")`);
 });

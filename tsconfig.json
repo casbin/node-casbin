@@ -4,7 +4,12 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "strict": true,
-    "outDir": "lib",
-    "strictPropertyInitialization": false
-  }
+    "strictPropertyInitialization": false,
+    "declaration": true,
+    "declarationDir": "lib",
+    "outDir": "lib"
+  },
+  "include": [
+    "src/**/*"
+  ]
 }

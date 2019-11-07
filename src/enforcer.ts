@@ -83,11 +83,10 @@ export class Enforcer extends ManagementEnforcer {
    * @return the roles that the user has.
    */
   public async getRolesForUser(name: string, domain?: string): Promise<string[]> {
-    const rm = this.model.model.get('g')!.get('g')!.rm;
     if (domain == null) {
-      return await rm.getRoles(name);
+      return await this.rm.getRoles(name);
     } else {
-      return await rm.getRoles(name, domain);
+      return await this.rm.getRoles(name, domain);
     }
   }
 
@@ -99,11 +98,10 @@ export class Enforcer extends ManagementEnforcer {
    * @return the users that has the role.
    */
   public async getUsersForRole(name: string, domain?: string): Promise<string[]> {
-    const rm = this.model.model.get('g')!.get('g')!.rm;
     if (domain == null) {
-      return await rm.getUsers(name);
+      return await this.rm.getUsers(name);
     } else {
-      return await rm.getUsers(name, domain);
+      return await this.rm.getUsers(name, domain);
     }
   }
 
@@ -117,7 +115,7 @@ export class Enforcer extends ManagementEnforcer {
    */
   public async hasRoleForUser(name: string, role: string, domain?: string): Promise<boolean> {
     const roles = await this.getRolesForUser(name, domain);
-    let hasRole: boolean = false;
+    let hasRole = false;
     for (const r of roles) {
       if (r === role) {
         hasRole = true;
@@ -281,7 +279,7 @@ export class Enforcer extends ManagementEnforcer {
    * getRolesForUser("alice") can only get: ["role:admin"].
    * But getImplicitRolesForUser("alice") will get: ["role:admin", "role:user"].
    */
-  public async getImplicitRolesForUser(name: string, ...domain: string[]) {
+  public async getImplicitRolesForUser(name: string, ...domain: string[]): Promise<string[]> {
     const res: string[] = [];
     const roles = await this.rm.getRoles(name, ...domain);
     res.push(...roles);
@@ -304,7 +302,7 @@ export class Enforcer extends ManagementEnforcer {
    * getPermissionsForUser("alice") can only get: [["alice", "data2", "read"]].
    * But getImplicitPermissionsForUser("alice") will get: [["admin", "data1", "read"], ["alice", "data2", "read"]].
    */
-  public async getImplicitPermissionsForUser(user: string) {
+  public async getImplicitPermissionsForUser(user: string): Promise<string[][]> {
     const roles = [user, ...(await this.getImplicitRolesForUser(user))];
     const res: string[][] = [];
     roles.forEach(n => {

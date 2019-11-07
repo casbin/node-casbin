@@ -20,11 +20,11 @@ beforeEach(async () => {
   e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
 });
 
-function testArrayEquals(value: string[], other: string[]) {
+function testArrayEquals(value: string[], other: string[]): void {
   expect(Util.arrayEquals(value, other)).toBe(true);
 }
 
-function testArray2DEquals(value: string[][], other: string[][]) {
+function testArray2DEquals(value: string[][], other: string[][]): void {
   expect(Util.array2DEquals(value, other)).toBe(true);
 }
 

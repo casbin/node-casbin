@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { compileAsync, compile } from 'expression-eval';
-import * as _ from 'lodash';
 
 import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel } from './model';
@@ -156,7 +155,7 @@ export class CoreEnforcer {
   public async loadFilteredPolicy(filter: Filter): Promise<boolean> {
     this.model.clearPolicy();
 
-    if ((this.adapter as FilteredAdapter).isFiltered) {
+    if ((this.adapter as FilteredAdapter).isFiltered()) {
       await (this.adapter as FilteredAdapter).loadFilteredPolicy(this.model, filter);
     } else {
       throw new Error('filtered policies are not supported by this adapter');
@@ -187,7 +186,7 @@ export class CoreEnforcer {
    */
   public async savePolicy(): Promise<boolean> {
     if (this.isFiltered()) {
-      throw new Error('cannot save a filtered policy');
+      throw new Error('Cannot save a filtered policy');
     }
     const flag = await this.adapter.savePolicy(this.model);
     if (!flag) {
@@ -247,7 +246,7 @@ export class CoreEnforcer {
     await this.model.buildRoleLinks(this.rm);
   }
 
-  private async privateEnforce(asyncCompile: boolean = true, ...rvals: any[]) {
+  private async privateEnforce(asyncCompile = true, ...rvals: any[]): Promise<boolean> {
     if (!this.enabled) {
       return true;
     }
@@ -259,17 +258,21 @@ export class CoreEnforcer {
 
     const astMap = this.model.model.get('g');
 
-    if (astMap) {
-      astMap.forEach((value, key) => {
-        const rm = value.rm;
-        functions[key] = generateGFunction(rm);
-      });
+    // TODO Typescript 3.7 is not supported by prettier
+    // eslint-disable-next-line prettier/prettier
+    astMap?.forEach((value, key) => {
+      const rm = value.rm;
+      functions[key] = generateGFunction(rm);
+    });
+
+    const expString = this.model.model.get('m')?.get('m')?.value;
+    if (!expString) {
+      throw new Error('Unable to find matchers in model');
     }
 
-    const expString = this.model.model.get('m')!.get('m')!.value;
-
-    if (!expString) {
-      throw new Error('model is undefined');
+    const effect = this.model.model.get('e')?.get('e')?.value;
+    if (!effect) {
+      throw new Error('Unable to find policy_effect in model');
     }
 
     const matcherKey = `${asyncCompile ? 'ASYNC[' : 'SYNC['}${expString}]`;
@@ -283,25 +286,29 @@ export class CoreEnforcer {
     let policyEffects: Effect[];
     let matcherResults: number[];
 
-    const policyLen = this.model.model.get('p')!.get('p')!.policy.length;
+    const p = this.model.model.get('p')?.get('p');
+    const policyLen = p?.policy?.length;
 
-    if (policyLen !== 0) {
+    const rTokens = this.model.model.get('r')?.get('r')?.tokens;
+    const rTokensLen = rTokens?.length;
+
+    if (policyLen && policyLen !== 0) {
       policyEffects = new Array(policyLen);
       matcherResults = new Array(policyLen);
 
       for (let i = 0; i < policyLen; i++) {
-        const pvals = this.model.model.get('p')!.get('p')!.policy[i];
-
         const parameters: { [key: string]: any } = {};
 
-        const { tokens: rTokens } = this.model.model.get('r')!.get('r')!;
+        if (rTokens?.length !== rvals.length) {
+          throw new Error(`invalid request size: expected ${rTokensLen}, got ${rvals.length}, rvals: ${rvals}"`);
+        }
+
         rTokens.forEach((token, j) => {
           parameters[token] = rvals[j];
         });
 
-        const { tokens: gTokens } = this.model.model.get('p')!.get('p')!;
-        gTokens.forEach((token, j) => {
-          parameters[token] = pvals[j];
+        p?.tokens.forEach((token, j) => {
+          parameters[token] = p?.policy[i][j];
         });
 
         const context = { ...parameters, ...functions };
@@ -326,8 +333,8 @@ export class CoreEnforcer {
             throw new Error('matcher result should be boolean or number');
         }
 
-        if (_.has(parameters, 'p_eft')) {
-          const eft = _.get(parameters, 'p_eft');
+        const eft = parameters['p_eft'];
+        if (eft) {
           if (eft === 'allow') {
             policyEffects[i] = Effect.Allow;
           } else if (eft === 'deny') {
@@ -339,7 +346,7 @@ export class CoreEnforcer {
           policyEffects[i] = Effect.Allow;
         }
 
-        if (this.model.model.get('e')!.get('e')!.value === 'priority(p_eft) || deny') {
+        if (effect === 'priority(p_eft) || deny') {
           break;
         }
       }
@@ -349,13 +356,11 @@ export class CoreEnforcer {
 
       const parameters: { [key: string]: any } = {};
 
-      const { tokens: rTokens } = this.model.model.get('r')!.get('r')!;
-      rTokens.forEach((token, j) => {
+      rTokens?.forEach((token, j): void => {
         parameters[token] = rvals[j];
       });
 
-      const { tokens: pTokens } = this.model.model.get('p')!.get('p')!;
-      pTokens.forEach(token => {
+      p?.tokens?.forEach(token => {
         parameters[token] = '';
       });
 
@@ -369,7 +374,7 @@ export class CoreEnforcer {
       }
     }
 
-    const res = this.eft.mergeEffects(this.model.model.get('e')!.get('e')!.value, policyEffects, matcherResults);
+    const res = this.eft.mergeEffects(effect, policyEffects, matcherResults);
 
     // only generate the request --> result string if the message
     // is going to be logged.
@@ -399,7 +404,7 @@ export class CoreEnforcer {
    *              of strings, can be class instances if ABAC is used.
    * @return whether to allow the request.
    */
-  public async enforceWithSyncCompile(...rvals: any[]) {
+  public async enforceWithSyncCompile(...rvals: any[]): Promise<boolean> {
     return this.privateEnforce(false, ...rvals);
   }
 

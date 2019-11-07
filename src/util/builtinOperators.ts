@@ -16,6 +16,11 @@ import * as rbac from '../rbac';
 import * as ip from 'ip';
 import * as _ from 'lodash';
 
+// regexMatch determines whether key1 matches the pattern of key2 in regular expression.
+function regexMatch(key1: string, key2: string): boolean {
+  return new RegExp(key2).test(key1);
+}
+
 // keyMatch determines whether key1 matches the pattern of key2 (similar to RESTful path),
 // key2 can contain a *.
 // For example, '/foo/bar' matches '/foo/*'
@@ -46,7 +51,7 @@ function keyMatchFunc(...args: any[]): boolean {
 function keyMatch2(key1: string, key2: string): boolean {
   key2 = key2.replace(/\/\*/g, '/.*');
 
-  const regexp: RegExp = new RegExp(/(.*):[^/]+(.*)/g);
+  const regexp = new RegExp(/(.*):[^/]+(.*)/g);
   for (;;) {
     if (!_.includes(key2, '/:')) {
       break;
@@ -70,7 +75,7 @@ function keyMatch2Func(...args: any[]): boolean {
 function keyMatch3(key1: string, key2: string): boolean {
   key2 = key2.replace(/\/\*/g, '/.*');
 
-  const regexp: RegExp = new RegExp(/(.*){[^/]+}(.*)/g);
+  const regexp = new RegExp(/(.*){[^/]+}(.*)/g);
   for (;;) {
     if (!_.includes(key2, '/{')) {
       break;
@@ -164,11 +169,6 @@ function keyMatch4Func(...args: any[]): boolean {
   const name2: string = _.toString(args[1]);
 
   return keyMatch4(name1, name2);
-}
-
-// regexMatch determines whether key1 matches the pattern of key2 in regular expression.
-function regexMatch(key1: string, key2: string): boolean {
-  return new RegExp(key2).test(key1);
 }
 
 // regexMatchFunc is the wrapper for regexMatch.

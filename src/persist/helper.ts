@@ -1,7 +1,7 @@
 import { Model } from '../model';
 
 export class Helper {
-  public static loadPolicyLine(line: string, model: Model) {
+  public static loadPolicyLine(line: string, model: Model): void {
     if (line === '' || line.charAt(0) === '#') {
       return;
     }
