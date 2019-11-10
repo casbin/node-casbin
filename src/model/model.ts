@@ -57,7 +57,7 @@ export class Model {
   private loadSection(cfg: Config, sec: string): void {
     // console.log('loadSection: ', sec);
     let i = 1;
-    for (; ;) {
+    for (;;) {
       if (!this.loadAssertion(cfg, sec, sec + this.getKeySuffix(i))) {
         break;
       } else {
@@ -177,8 +177,6 @@ export class Model {
   public getPolicy(sec: string, key: string): string[][] {
     const policy: string[][] = [];
 
-    // TODO Typescript 3.7 is not supported by prettier
-    // eslint-disable-next-line prettier/prettier
     const ast = this.model.get(sec)?.get(key);
     if (ast) {
       policy.push(...ast.policy);

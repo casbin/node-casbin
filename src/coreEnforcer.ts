@@ -258,8 +258,6 @@ export class CoreEnforcer {
 
     const astMap = this.model.model.get('g');
 
-    // TODO Typescript 3.7 is not supported by prettier
-    // eslint-disable-next-line prettier/prettier
     astMap?.forEach((value, key) => {
       const rm = value.rm;
       functions[key] = generateGFunction(rm);

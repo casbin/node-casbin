@@ -280,7 +280,5 @@ test('TestMatcher', async () => {
 
   m.addDef('m', 'm', 'keyMatch(r.obj, ".*get$") || regexMatch(r.act, ".user.")');
 
-  // TODO Typescript 3.7 is not supported by prettier
-  // eslint-disable-next-line prettier/prettier
   expect(m.model.get('m')?.get('m')?.value).toEqual(`keyMatch(r_obj, ".*get$") || regexMatch(r_act, ".user.")`);
 });
