@@ -15,17 +15,19 @@
 import * as _ from 'lodash';
 import * as rbac from '../rbac';
 import * as util from '../util';
-import { Config } from '../config';
+import { Config, ConfigInterface } from '../config';
 import { Assertion } from './assertion';
 import { logPrint } from '../log';
 
-const sectionNameMap: { [index: string]: string } = {
+export const sectionNameMap: { [index: string]: string } = {
   r: 'request_definition',
   p: 'policy_definition',
   g: 'role_definition',
   e: 'policy_effect',
   m: 'matchers'
 };
+
+export const requiredSections = ['r', 'p', 'e', 'm'];
 
 export class Model {
   // Model represents the whole access control model.
@@ -39,8 +41,7 @@ export class Model {
     this.model = new Map<string, Map<string, Assertion>>();
   }
 
-  private loadAssertion(cfg: Config, sec: string, key: string): boolean {
-    // console.log('loadAssertion: ', sec, key);
+  private loadAssertion(cfg: ConfigInterface, sec: string, key: string): boolean {
     const secName = sectionNameMap[sec];
     const value = cfg.getString(`${secName}::${key}`);
     return this.addDef(sec, key, value);
@@ -54,8 +55,7 @@ export class Model {
     return _.toString(i);
   }
 
-  private loadSection(cfg: Config, sec: string): void {
-    // console.log('loadSection: ', sec);
+  private loadSection(cfg: ConfigInterface, sec: string): void {
     let i = 1;
     for (;;) {
       if (!this.loadAssertion(cfg, sec, sec + this.getKeySuffix(i))) {
@@ -68,7 +68,6 @@ export class Model {
 
   // addDef adds an assertion to the model.
   public addDef(sec: string, key: string, value: string): boolean {
-    // console.log('addDef: ', sec, key. value);
     if (value === '') {
       return false;
     }
@@ -118,27 +117,37 @@ export class Model {
 
   // loadModel loads the model from model CONF file.
   public loadModel(path: string): void {
-    // console.log('loadModel: ', path);
     const cfg = Config.newConfig(path);
 
-    this.loadSection(cfg, 'r');
-    this.loadSection(cfg, 'p');
-    this.loadSection(cfg, 'e');
-    this.loadSection(cfg, 'm');
-
-    this.loadSection(cfg, 'g');
+    this.loadModelFromConfig(cfg);
   }
 
   // loadModelFromText loads the model from the text.
   public loadModelFromText(text: string): void {
     const cfg = Config.newConfigFromText(text);
 
-    this.loadSection(cfg, 'r');
-    this.loadSection(cfg, 'p');
-    this.loadSection(cfg, 'e');
-    this.loadSection(cfg, 'm');
+    this.loadModelFromConfig(cfg);
+  }
 
-    this.loadSection(cfg, 'g');
+  public loadModelFromConfig(cfg: ConfigInterface): void {
+    for (const s in sectionNameMap) {
+      this.loadSection(cfg, s);
+    }
+
+    const ms: string[] = [];
+    requiredSections.forEach(n => {
+      if (!this.hasSection(n)) {
+        ms.push(sectionNameMap[n]);
+      }
+    });
+
+    if (ms.length > 0) {
+      throw new Error(`missing required sections: ${ms.join(',')}`);
+    }
+  }
+
+  private hasSection(sec: string): boolean {
+    return this.model.get(sec) !== undefined;
   }
 
   // printModel prints the model to the log.
@@ -314,5 +323,23 @@ export function newModel(...text: string[]): Model {
     throw new Error('Invalid parameters for model.');
   }
 
+  return m;
+}
+
+/**
+ * newModelFromFile creates a model from a .CONF file.
+ */
+export function newModelFromFile(path: string): Model {
+  const m = new Model();
+  m.loadModel(path);
+  return m;
+}
+
+/**
+ * newModelFromString creates a model from a string which contains model text.
+ */
+export function newModelFromString(text: string): Model {
+  const m = new Model();
+  m.loadModelFromText(text);
   return m;
 }

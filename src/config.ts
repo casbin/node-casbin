@@ -13,7 +13,17 @@
 // limitations under the License.
 import { readFileSync } from 'fs';
 
-export class Config {
+// ConfigInterface defines the behavior of a Config implementation
+export interface ConfigInterface {
+  getString(key: string): string;
+  getStrings(key: string): string[];
+  getBool(key: string): boolean;
+  getInt(key: string): number;
+  getFloat(key: string): number;
+  set(key: string, value: string): void;
+}
+
+export class Config implements ConfigInterface {
   private static DEFAULT_SECTION = 'default';
   private static DEFAULT_COMMENT = '#';
   private static DEFAULT_COMMENT_SEM = ';';
