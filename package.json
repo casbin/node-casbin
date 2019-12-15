@@ -1,6 +1,6 @@
 {
   "name": "casbin",
-  "version": "3.0.8",
+  "version": "0.0.0-development",
   "description": "An authorization library that supports access control models like ACL, RBAC, ABAC in Node.JS",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -9,9 +9,13 @@
     "postpack": "rimraf lib",
     "build": "rimraf lib && tsc",
     "test": "jest",
-    "lint": "eslint . --ext .js,.ts"
+    "lint": "eslint . --ext .js,.ts",
+    "semantic-release": "semantic-release",
+    "commit": "git-cz"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^3.0.6",
+    "@semantic-release/git": "^7.0.18",
     "@types/ip": "^0.0.31",
     "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.113",
@@ -19,6 +23,7 @@
     "@typescript-eslint/eslint-plugin": "^2.6.1",
     "@typescript-eslint/parser": "^2.6.1",
     "coveralls": "^3.0.2",
+    "cz-conventional-changelog": "3.0.2",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.5.0",
     "eslint-plugin-prettier": "^3.1.1",
@@ -28,6 +33,7 @@
     "prettier": "^1.19.1",
     "pretty-quick": "^2.0.1",
     "rimraf": "^2.6.2",
+    "semantic-release": "^15.13.31",
     "ts-jest": "^24.0.0",
     "tslint": "^5.11.0",
     "typescript": "^3.7.2"
@@ -54,10 +60,13 @@
   ],
   "husky": {
     "hooks": {
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true",
       "pre-commit": "yarn lint && pretty-quick --staged"
     }
   },
-  "publishConfig": {
-    "registry": "https://registry.yarnpkg.com"
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
