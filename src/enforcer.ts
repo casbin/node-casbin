@@ -302,8 +302,8 @@ export class Enforcer extends ManagementEnforcer {
    * getPermissionsForUser("alice") can only get: [["alice", "data2", "read"]].
    * But getImplicitPermissionsForUser("alice") will get: [["admin", "data1", "read"], ["alice", "data2", "read"]].
    */
-  public async getImplicitPermissionsForUser(user: string, ...domain: string[]): Promise<string[][]> {
-    const roles = [user, ...(await this.getImplicitRolesForUser(user, ...domain))];
+  public async getImplicitPermissionsForUser(user: string): Promise<string[][]> {
+    const roles = [user, ...(await this.getImplicitRolesForUser(user))];
     const res: string[][] = [];
     roles.forEach(n => {
       res.push(...this.getPermissionsForUser(n));
