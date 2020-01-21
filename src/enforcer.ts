@@ -317,24 +317,8 @@ export class Enforcer extends ManagementEnforcer {
   }
 }
 
-/**
- * newEnforcer creates an enforcer via file or DB.
- *
- * File:
- * ```js
- * const e = new Enforcer('path/to/basic_model.conf', 'path/to/basic_policy.csv');
- * ```
- *
- * MySQL DB:
- * ```js
- * const a = new MySQLAdapter('mysql', 'mysql_username:mysql_password@tcp(127.0.0.1:3306)/');
- * const e = new Enforcer('path/to/basic_model.conf', a);
- * ```
- *
- * @param params
- */
-export async function newEnforcer(...params: any[]): Promise<Enforcer> {
-  const e = new Enforcer();
+export async function newEnforcerWithClass<T extends Enforcer>(enforcer: new () => T, ...params: any[]): Promise<T> {
+  const e = new enforcer();
 
   let parsedParamLen = 0;
   if (params.length >= 1) {
@@ -372,4 +356,24 @@ export async function newEnforcer(...params: any[]): Promise<Enforcer> {
   }
 
   return e;
+}
+
+/**
+ * newEnforcer creates an enforcer via file or DB.
+ *
+ * File:
+ * ```js
+ * const e = new Enforcer('path/to/basic_model.conf', 'path/to/basic_policy.csv');
+ * ```
+ *
+ * MySQL DB:
+ * ```js
+ * const a = new MySQLAdapter('mysql', 'mysql_username:mysql_password@tcp(127.0.0.1:3306)/');
+ * const e = new Enforcer('path/to/basic_model.conf', a);
+ * ```
+ *
+ * @param params
+ */
+export async function newEnforcer(...params: any[]): Promise<Enforcer> {
+  return newEnforcerWithClass(Enforcer, ...params);
 }

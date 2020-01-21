@@ -1,4 +1,4 @@
-// Copyright 2019 The Casbin Authors. All Rights Reserved.
+// Copyright 2020 The Casbin Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as Util from './util';
+import { Enforcer, newCachedEnforcer } from '../src';
 
-export * from './config';
-export * from './enforcer';
-export * from './cachedEnforcer';
-export * from './effect';
-export * from './model';
-export * from './persist';
-export * from './rbac';
-export * from './log';
-export { Util };
+async function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: boolean): Promise<void> {
+  await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
+}
+
+test('TestRBACModel', async () => {
+  const e = await newCachedEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
+
+  await testEnforce(e, 'alice', 'data1', 'read', true);
+});
