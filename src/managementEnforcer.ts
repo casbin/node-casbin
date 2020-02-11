@@ -25,7 +25,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *         0-index elements of "p" policy rules. So make sure your subject
    *         is the 0-index element, like (sub, obj, act). Duplicates are removed.
    */
-  public getAllSubjects(): string[] {
+  public async getAllSubjects(): Promise<string[]> {
     return this.getAllNamedSubjects('p');
   }
 
@@ -38,7 +38,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *         your subject is the 0-index element, like (sub, obj, act).
    *         Duplicates are removed.
    */
-  public getAllNamedSubjects(ptype: string): string[] {
+  public async getAllNamedSubjects(ptype: string): Promise<string[]> {
     return this.model.getValuesForFieldInPolicy('p', ptype, 0);
   }
 
@@ -50,7 +50,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *         is the 1-index element, like (sub, obj, act).
    *         Duplicates are removed.
    */
-  public getAllObjects(): string[] {
+  public async getAllObjects(): Promise<string[]> {
     return this.getAllNamedObjects('p');
   }
 
@@ -63,7 +63,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *         your object is the 1-index element, like (sub, obj, act).
    *         Duplicates are removed.
    */
-  public getAllNamedObjects(ptype: string): string[] {
+  public async getAllNamedObjects(ptype: string): Promise<string[]> {
     return this.model.getValuesForFieldInPolicy('p', ptype, 1);
   }
 
@@ -75,7 +75,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *         is the 2-index element, like (sub, obj, act).
    *         Duplicates are removed.
    */
-  public getAllActions(): string[] {
+  public async getAllActions(): Promise<string[]> {
     return this.getAllNamedActions('p');
   }
 
@@ -88,7 +88,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *         your action is the 2-index element, like (sub, obj, act).
    *         Duplicates are removed.
    */
-  public getAllNamedActions(ptype: string): string[] {
+  public async getAllNamedActions(ptype: string): Promise<string[]> {
     return this.model.getValuesForFieldInPolicy('p', ptype, 2);
   }
 
@@ -100,7 +100,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *         role is the 1-index element, like (sub, role).
    *         Duplicates are removed.
    */
-  public getAllRoles(): string[] {
+  public async getAllRoles(): Promise<string[]> {
     return this.getAllNamedRoles('g');
   }
 
@@ -113,7 +113,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *         sure your subject is the 0-index element, like (sub, obj, act).
    *         Duplicates are removed.
    */
-  public getAllNamedRoles(ptype: string): string[] {
+  public async getAllNamedRoles(ptype: string): Promise<string[]> {
     return this.model.getValuesForFieldInPolicy('g', ptype, 1);
   }
 
@@ -122,7 +122,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *
    * @return all the "p" policy rules.
    */
-  public getPolicy(): string[][] {
+  public async getPolicy(): Promise<string[][]> {
     return this.getNamedPolicy('p');
   }
 
@@ -134,7 +134,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *                    means not to match this field.
    * @return the filtered "p" policy rules.
    */
-  public getFilteredPolicy(fieldIndex: number, ...fieldValues: string[]): string[][] {
+  public async getFilteredPolicy(fieldIndex: number, ...fieldValues: string[]): Promise<string[][]> {
     return this.getFilteredNamedPolicy('p', fieldIndex, ...fieldValues);
   }
 
@@ -144,7 +144,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param ptype the policy type, can be "p", "p2", "p3", ..
    * @return the "p" policy rules of the specified ptype.
    */
-  public getNamedPolicy(ptype: string): string[][] {
+  public async getNamedPolicy(ptype: string): Promise<string[][]> {
     return this.model.getPolicy('p', ptype);
   }
 
@@ -157,7 +157,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *                    means not to match this field.
    * @return the filtered "p" policy rules of the specified ptype.
    */
-  public getFilteredNamedPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): string[][] {
+  public async getFilteredNamedPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<string[][]> {
     return this.model.getFilteredPolicy('p', ptype, fieldIndex, ...fieldValues);
   }
 
@@ -166,7 +166,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *
    * @return all the "g" policy rules.
    */
-  public getGroupingPolicy(): string[][] {
+  public async getGroupingPolicy(): Promise<string[][]> {
     return this.getNamedGroupingPolicy('g');
   }
 
@@ -177,7 +177,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param fieldValues the field values to be matched, value "" means not to match this field.
    * @return the filtered "g" policy rules.
    */
-  public getFilteredGroupingPolicy(fieldIndex: number, ...fieldValues: string[]): string[][] {
+  public async getFilteredGroupingPolicy(fieldIndex: number, ...fieldValues: string[]): Promise<string[][]> {
     return this.getFilteredNamedGroupingPolicy('g', fieldIndex, ...fieldValues);
   }
 
@@ -187,7 +187,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param ptype the policy type, can be "g", "g2", "g3", ..
    * @return the "g" policy rules of the specified ptype.
    */
-  public getNamedGroupingPolicy(ptype: string): string[][] {
+  public async getNamedGroupingPolicy(ptype: string): Promise<string[][]> {
     return this.model.getPolicy('g', ptype);
   }
 
@@ -200,7 +200,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *                    means not to match this field.
    * @return the filtered "g" policy rules of the specified ptype.
    */
-  public getFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): string[][] {
+  public async getFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<string[][]> {
     return this.model.getFilteredPolicy('g', ptype, fieldIndex, ...fieldValues);
   }
 
@@ -210,7 +210,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param params the "p" policy rule, ptype "p" is implicitly used.
    * @return whether the rule exists.
    */
-  public hasPolicy(...params: string[]): boolean {
+  public async hasPolicy(...params: string[]): Promise<boolean> {
     return this.hasNamedPolicy('p', ...params);
   }
 
@@ -221,7 +221,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param params the "p" policy rule.
    * @return whether the rule exists.
    */
-  public hasNamedPolicy(ptype: string, ...params: string[]): boolean {
+  public async hasNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
     return this.model.hasPolicy('p', ptype, params);
   }
 
@@ -247,7 +247,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async addNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    return await this.addPolicyInternal('p', ptype, params);
+    return this.addPolicyInternal('p', ptype, params);
   }
 
   /**
@@ -257,7 +257,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removePolicy(...params: string[]): Promise<boolean> {
-    return await this.removeNamedPolicy('p', ...params);
+    return this.removeNamedPolicy('p', ...params);
   }
 
   /**
@@ -269,7 +269,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeFilteredPolicy(fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
-    return await this.removeFilteredNamedPolicy('p', fieldIndex, ...fieldValues);
+    return this.removeFilteredNamedPolicy('p', fieldIndex, ...fieldValues);
   }
 
   /**
@@ -280,7 +280,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    return await this.removePolicyInternal('p', ptype, params);
+    return this.removePolicyInternal('p', ptype, params);
   }
 
   /**
@@ -293,7 +293,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeFilteredNamedPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
-    return await this.removeFilteredPolicyInternal('p', ptype, fieldIndex, fieldValues);
+    return this.removeFilteredPolicyInternal('p', ptype, fieldIndex, fieldValues);
   }
 
   /**
@@ -302,7 +302,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param params the "g" policy rule, ptype "g" is implicitly used.
    * @return whether the rule exists.
    */
-  public hasGroupingPolicy(...params: string[]): boolean {
+  public async hasGroupingPolicy(...params: string[]): Promise<boolean> {
     return this.hasNamedGroupingPolicy('g', ...params);
   }
 
@@ -313,7 +313,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param params the "g" policy rule.
    * @return whether the rule exists.
    */
-  public hasNamedGroupingPolicy(ptype: string, ...params: string[]): boolean {
+  public async hasNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
     return this.model.hasPolicy('g', ptype, params);
   }
 
@@ -326,7 +326,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async addGroupingPolicy(...params: string[]): Promise<boolean> {
-    return await this.addNamedGroupingPolicy('g', ...params);
+    return this.addNamedGroupingPolicy('g', ...params);
   }
 
   /**
@@ -355,7 +355,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeGroupingPolicy(...params: string[]): Promise<boolean> {
-    return await this.removeNamedGroupingPolicy('g', ...params);
+    return this.removeNamedGroupingPolicy('g', ...params);
   }
 
   /**
@@ -367,7 +367,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeFilteredGroupingPolicy(fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
-    return await this.removeFilteredNamedGroupingPolicy('g', fieldIndex, ...fieldValues);
+    return this.removeFilteredNamedGroupingPolicy('g', fieldIndex, ...fieldValues);
   }
 
   /**
@@ -383,6 +383,7 @@ export class ManagementEnforcer extends InternalEnforcer {
     if (this.autoBuildRoleLinks) {
       await this.buildRoleLinks();
     }
+
     return ruleRemoved;
   }
 
@@ -397,9 +398,11 @@ export class ManagementEnforcer extends InternalEnforcer {
    */
   public async removeFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
     const ruleRemoved = await this.removeFilteredPolicyInternal('g', ptype, fieldIndex, fieldValues);
+
     if (this.autoBuildRoleLinks) {
       await this.buildRoleLinks();
     }
+
     return ruleRemoved;
   }
 
@@ -408,7 +411,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param name custom function name
    * @param func function
    */
-  public addFunction(name: string, func: any): void {
+  public async addFunction(name: string, func: any): Promise<void> {
     this.fm.addFunction(name, func);
   }
 }

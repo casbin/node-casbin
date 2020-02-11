@@ -20,8 +20,8 @@ async function testEnforce(e: Enforcer, sub: string, obj: string, act: string, r
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
 }
 
-function testGetPolicy(e: Enforcer, res: string[][]): void {
-  const myRes = e.getPolicy();
+async function testGetPolicy(e: Enforcer, res: string[][]): Promise<void> {
+  const myRes = await e.getPolicy();
   console.log('Policy: ', myRes);
 
   expect(Util.array2DEquals(res, myRes)).toBe(true);
@@ -208,7 +208,7 @@ test('TestReloadPolicy', async () => {
   const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
 
   await e.loadPolicy();
-  testGetPolicy(e, [
+  await testGetPolicy(e, [
     ['alice', 'data1', 'read'],
     ['bob', 'data2', 'write'],
     ['data2_admin', 'data2', 'read'],
