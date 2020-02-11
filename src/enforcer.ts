@@ -84,9 +84,9 @@ export class Enforcer extends ManagementEnforcer {
    */
   public async getRolesForUser(name: string, domain?: string): Promise<string[]> {
     if (domain == null) {
-      return await this.rm.getRoles(name);
+      return this.rm.getRoles(name);
     } else {
-      return await this.rm.getRoles(name, domain);
+      return this.rm.getRoles(name, domain);
     }
   }
 
@@ -99,9 +99,9 @@ export class Enforcer extends ManagementEnforcer {
    */
   public async getUsersForRole(name: string, domain?: string): Promise<string[]> {
     if (domain == null) {
-      return await this.rm.getUsers(name);
+      return this.rm.getUsers(name);
     } else {
-      return await this.rm.getUsers(name, domain);
+      return this.rm.getUsers(name, domain);
     }
   }
 
@@ -137,9 +137,9 @@ export class Enforcer extends ManagementEnforcer {
    */
   public async addRoleForUser(user: string, role: string, domain?: string): Promise<boolean> {
     if (domain == null) {
-      return await this.addGroupingPolicy(user, role);
+      return this.addGroupingPolicy(user, role);
     } else {
-      return await this.addGroupingPolicy(user, role, domain);
+      return this.addGroupingPolicy(user, role, domain);
     }
   }
 
@@ -154,9 +154,9 @@ export class Enforcer extends ManagementEnforcer {
    */
   public async deleteRoleForUser(user: string, role: string, domain?: string): Promise<boolean> {
     if (domain == null) {
-      return await this.removeGroupingPolicy(user, role);
+      return this.removeGroupingPolicy(user, role);
     } else {
-      return await this.removeGroupingPolicy(user, role, domain);
+      return this.removeGroupingPolicy(user, role, domain);
     }
   }
 
@@ -170,9 +170,9 @@ export class Enforcer extends ManagementEnforcer {
    */
   public async deleteRolesForUser(user: string, domain?: string): Promise<boolean> {
     if (domain == null) {
-      return await this.removeFilteredGroupingPolicy(0, user);
+      return this.removeFilteredGroupingPolicy(0, user);
     } else {
-      return await this.removeFilteredGroupingPolicy(0, user, '', domain);
+      return this.removeFilteredGroupingPolicy(0, user, '', domain);
     }
   }
 
@@ -184,7 +184,7 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deleteUser(user: string): Promise<boolean> {
-    return await this.removeFilteredGroupingPolicy(0, user);
+    return this.removeFilteredGroupingPolicy(0, user);
   }
 
   /**
@@ -207,7 +207,7 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deletePermission(...permission: string[]): Promise<boolean> {
-    return await this.removeFilteredPolicy(1, ...permission);
+    return this.removeFilteredPolicy(1, ...permission);
   }
 
   /**
@@ -220,7 +220,7 @@ export class Enforcer extends ManagementEnforcer {
    */
   public async addPermissionForUser(user: string, ...permission: string[]): Promise<boolean> {
     permission.unshift(user);
-    return await this.addPolicy(...permission);
+    return this.addPolicy(...permission);
   }
 
   /**
@@ -233,7 +233,7 @@ export class Enforcer extends ManagementEnforcer {
    */
   public async deletePermissionForUser(user: string, ...permission: string[]): Promise<boolean> {
     permission.unshift(user);
-    return await this.removePolicy(...permission);
+    return this.removePolicy(...permission);
   }
 
   /**
@@ -244,7 +244,7 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deletePermissionsForUser(user: string): Promise<boolean> {
-    return await this.removeFilteredPolicy(0, user);
+    return this.removeFilteredPolicy(0, user);
   }
 
   /**
@@ -253,7 +253,7 @@ export class Enforcer extends ManagementEnforcer {
    * @param user the user.
    * @return the permissions, a permission is usually like (obj, act). It is actually the rule without the subject.
    */
-  public getPermissionsForUser(user: string): string[][] {
+  public async getPermissionsForUser(user: string): Promise<string[][]> {
     return this.getFilteredPolicy(0, user);
   }
 
@@ -264,7 +264,7 @@ export class Enforcer extends ManagementEnforcer {
    * @param permission the permission, usually be (obj, act). It is actually the rule without the subject.
    * @return whether the user has the permission.
    */
-  public hasPermissionForUser(user: string, ...permission: string[]): boolean {
+  public async hasPermissionForUser(user: string, ...permission: string[]): Promise<boolean> {
     permission.unshift(user);
     return this.hasPolicy(...permission);
   }
@@ -283,11 +283,11 @@ export class Enforcer extends ManagementEnforcer {
     const res: string[] = [];
     const roles = await this.rm.getRoles(name, ...domain);
     res.push(...roles);
-    await Promise.all(
-      roles.map(async n => {
-        res.push(...(await this.getImplicitRolesForUser(n, ...domain)));
-      })
-    );
+
+    for (const n of roles) {
+      res.push(...(await this.getImplicitRolesForUser(n, ...domain)));
+    }
+
     return res;
   }
 
@@ -306,13 +306,15 @@ export class Enforcer extends ManagementEnforcer {
     const roles = [user, ...(await this.getImplicitRolesForUser(user, ...domain))];
     const res: string[][] = [];
     const withDomain = domain && domain.length !== 0;
-    roles.forEach(n => {
+
+    for (const n of roles) {
       if (withDomain) {
-        res.push(...this.getFilteredPolicy(0, n, ...domain));
+        res.push(...(await this.getFilteredPolicy(0, n, ...domain)));
       } else {
-        res.push(...this.getPermissionsForUser(n));
+        res.push(...(await this.getPermissionsForUser(n)));
       }
-    });
+    }
+
     return res;
   }
 }
