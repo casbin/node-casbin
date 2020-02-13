@@ -17,6 +17,7 @@ import * as Util from './util';
 export * from './config';
 export * from './enforcer';
 export * from './cachedEnforcer';
+export * from './syncedEnforcer';
 export * from './effect';
 export * from './model';
 export * from './persist';

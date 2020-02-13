@@ -1,4 +1,4 @@
-// Copyright 2018 The Casbin Authors. All Rights Reserved.
+// Copyright 2020 The Casbin Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,12 +12,87 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InternalEnforcer } from './internalEnforcer';
+import { Enforcer, newEnforcerWithClass } from './enforcer';
+import AwaitLock from 'await-lock';
+import { Watcher } from './persist';
 
-/**
- * ManagementEnforcer = InternalEnforcer + Management API.
- */
-export class ManagementEnforcer extends InternalEnforcer {
+// SyncedEnforcer wraps Enforcer and provides synchronized access
+export class SyncedEnforcer extends Enforcer {
+  private lock = new AwaitLock();
+
+  /**
+   * setWatcher sets the current watcher.
+   *
+   * @param watcher the watcher.
+   */
+
+  public setWatcher(watcher: Watcher): void {
+    this.watcher = watcher;
+    this.watcher.setUpdateCallback(() => this.loadPolicy());
+  }
+
+  /**
+   * loadPolicy reloads the policy from file/database.
+   */
+  public async loadPolicy(): Promise<void> {
+    await this.lock.acquireAsync();
+    return super.loadPolicy().finally(() => this.lock.release());
+  }
+
+  /**
+   * clearPolicy clears all policy.
+   */
+  public clearPolicy(): void {
+    this.lock
+      .acquireAsync()
+      .then(() => super.clearPolicy())
+      .finally(() => this.lock.release());
+  }
+
+  /**
+   * savePolicy saves the current policy (usually after changed with Casbin API) back to file/database.
+   */
+  public async savePolicy(): Promise<boolean> {
+    await this.lock.acquireAsync();
+    return super.savePolicy().finally(() => this.lock.release());
+  }
+
+  /**
+   * buildRoleLinks manually rebuild the role inheritance relations.
+   */
+  public async buildRoleLinks(): Promise<void> {
+    await this.lock.acquireAsync();
+    return super.buildRoleLinks().finally(() => this.lock.release());
+  }
+
+  /**
+   * If the matchers does not contain an asynchronous method, call it faster.
+   *
+   * enforceWithSyncCompile decides whether a "subject" can access a "object" with
+   * the operation "action", input parameters are usually: (sub, obj, act).
+   *
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request.
+   */
+  public async enforceWithSyncCompile(...rvals: any[]): Promise<boolean> {
+    await this.lock.acquireAsync();
+    return super.enforceWithSyncCompile(...rvals).finally(() => this.lock.release());
+  }
+
+  /**
+   * enforce decides whether a "subject" can access a "object" with
+   * the operation "action", input parameters are usually: (sub, obj, act).
+   *
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request.
+   */
+  public async enforce(...rvals: any[]): Promise<boolean> {
+    await this.lock.acquireAsync();
+    return super.enforce(...rvals).finally(() => this.lock.release());
+  }
+
   /**
    * getAllSubjects gets the list of subjects that show up in the current policy.
    *
@@ -39,7 +114,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    *         Duplicates are removed.
    */
   public async getAllNamedSubjects(ptype: string): Promise<string[]> {
-    return this.model.getValuesForFieldInPolicy('p', ptype, 0);
+    await this.lock.acquireAsync();
+    return super.getAllNamedSubjects(ptype).finally(() => this.lock.release());
   }
 
   /**
@@ -64,7 +140,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    *         Duplicates are removed.
    */
   public async getAllNamedObjects(ptype: string): Promise<string[]> {
-    return this.model.getValuesForFieldInPolicy('p', ptype, 1);
+    await this.lock.acquireAsync();
+    return super.getAllNamedObjects(ptype).finally(() => this.lock.release());
   }
 
   /**
@@ -89,7 +166,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    *         Duplicates are removed.
    */
   public async getAllNamedActions(ptype: string): Promise<string[]> {
-    return this.model.getValuesForFieldInPolicy('p', ptype, 2);
+    await this.lock.acquireAsync();
+    return super.getAllNamedActions(ptype).finally(() => this.lock.release());
   }
 
   /**
@@ -114,7 +192,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    *         Duplicates are removed.
    */
   public async getAllNamedRoles(ptype: string): Promise<string[]> {
-    return this.model.getValuesForFieldInPolicy('g', ptype, 1);
+    await this.lock.acquireAsync();
+    return super.getAllNamedRoles(ptype).finally(() => this.lock.release());
   }
 
   /**
@@ -145,7 +224,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return the "p" policy rules of the specified ptype.
    */
   public async getNamedPolicy(ptype: string): Promise<string[][]> {
-    return this.model.getPolicy('p', ptype);
+    await this.lock.acquireAsync();
+    return super.getNamedPolicy(ptype).finally(() => this.lock.release());
   }
 
   /**
@@ -158,7 +238,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return the filtered "p" policy rules of the specified ptype.
    */
   public async getFilteredNamedPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<string[][]> {
-    return this.model.getFilteredPolicy('p', ptype, fieldIndex, ...fieldValues);
+    await this.lock.acquireAsync();
+    return super.getFilteredNamedPolicy(ptype, fieldIndex, ...fieldValues).finally(() => this.lock.release());
   }
 
   /**
@@ -188,7 +269,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return the "g" policy rules of the specified ptype.
    */
   public async getNamedGroupingPolicy(ptype: string): Promise<string[][]> {
-    return this.model.getPolicy('g', ptype);
+    await this.lock.acquireAsync();
+    return super.getNamedGroupingPolicy(ptype).finally(() => this.lock.release());
   }
 
   /**
@@ -201,7 +283,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return the filtered "g" policy rules of the specified ptype.
    */
   public async getFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<string[][]> {
-    return this.model.getFilteredPolicy('g', ptype, fieldIndex, ...fieldValues);
+    await this.lock.acquireAsync();
+    return super.getFilteredNamedGroupingPolicy(ptype, fieldIndex, ...fieldValues).finally(() => this.lock.release());
   }
 
   /**
@@ -222,7 +305,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return whether the rule exists.
    */
   public async hasNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    return this.model.hasPolicy('p', ptype, params);
+    await this.lock.acquireAsync();
+    return super.hasNamedPolicy(ptype, ...params).finally(() => this.lock.release());
   }
 
   /**
@@ -247,7 +331,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async addNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    return this.addPolicyInternal('p', ptype, params);
+    await this.lock.acquireAsync();
+    return super.addNamedPolicy(ptype, ...params).finally(() => this.lock.release());
   }
 
   /**
@@ -280,7 +365,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    return this.removePolicyInternal('p', ptype, params);
+    await this.lock.acquireAsync();
+    return this.removePolicyInternal('p', ptype, params).finally(() => this.lock.release());
   }
 
   /**
@@ -293,7 +379,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeFilteredNamedPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
-    return this.removeFilteredPolicyInternal('p', ptype, fieldIndex, fieldValues);
+    await this.lock.acquireAsync();
+    return super.removeFilteredNamedPolicy(ptype, fieldIndex, ...fieldValues).finally(() => this.lock.release());
   }
 
   /**
@@ -314,7 +401,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return whether the rule exists.
    */
   public async hasNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    return this.model.hasPolicy('g', ptype, params);
+    await this.lock.acquireAsync();
+    return super.hasNamedGroupingPolicy(ptype, ...params).finally(() => this.lock.release());
   }
 
   /**
@@ -339,13 +427,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async addNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    const ruleadded = await this.addPolicyInternal('g', ptype, params);
-
-    if (this.autoBuildRoleLinks) {
-      await this.buildRoleLinksInternal();
-    }
-
-    return ruleadded;
+    await this.lock.acquireAsync();
+    return super.addNamedGroupingPolicy(ptype, ...params).finally(() => this.lock.release());
   }
 
   /**
@@ -378,13 +461,8 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    const ruleRemoved = await this.removePolicyInternal('g', ptype, params);
-
-    if (this.autoBuildRoleLinks) {
-      await this.buildRoleLinksInternal();
-    }
-
-    return ruleRemoved;
+    await this.lock.acquireAsync();
+    return super.removeNamedGroupingPolicy(ptype, ...params).finally(() => this.lock.release());
   }
 
   /**
@@ -397,21 +475,12 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
-    const ruleRemoved = await this.removeFilteredPolicyInternal('g', ptype, fieldIndex, fieldValues);
-
-    if (this.autoBuildRoleLinks) {
-      await this.buildRoleLinksInternal();
-    }
-
-    return ruleRemoved;
+    await this.lock.acquireAsync();
+    return super.removeFilteredNamedGroupingPolicy(ptype, fieldIndex, ...fieldValues).finally(() => this.lock.release());
   }
+}
 
-  /**
-   * addFunction adds a customized function.
-   * @param name custom function name
-   * @param func function
-   */
-  public async addFunction(name: string, func: any): Promise<void> {
-    this.fm.addFunction(name, func);
-  }
+// newSyncedEnforcer creates a synchronized enforcer via file or DB.
+export async function newSyncedEnforcer(...params: any[]): Promise<SyncedEnforcer> {
+  return newEnforcerWithClass(SyncedEnforcer, ...params);
 }
