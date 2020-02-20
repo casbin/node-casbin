@@ -184,11 +184,14 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deleteUser(user: string): Promise<boolean> {
-    return this.removeFilteredGroupingPolicy(0, user);
+    const res1 = await this.removeFilteredGroupingPolicy(0, user);
+    const res2 = await this.removeFilteredPolicy(0, user);
+    return res1 || res2;
   }
 
   /**
    * deleteRole deletes a role.
+   * Returns false if the role does not exist (aka not affected).
    *
    * @param role the role.
    * @return succeeds or not.
