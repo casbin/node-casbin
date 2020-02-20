@@ -139,6 +139,53 @@ test('TestRBACModelInMemory', async () => {
   await testEnforce(e, 'bob', 'data1', 'write', false);
   await testEnforce(e, 'bob', 'data2', 'read', false);
   await testEnforce(e, 'bob', 'data2', 'write', true);
+
+  await e.deletePermissionForUser('alice', 'data1', 'read');
+  await e.deletePermissionForUser('bob', 'data2', 'write');
+  await e.deletePermissionForUser('data2_admin', 'data2', 'read');
+  await e.deletePermissionForUser('data2_admin', 'data2', 'write');
+
+  await testEnforce(e, 'alice', 'data1', 'read', false);
+  await testEnforce(e, 'alice', 'data1', 'write', false);
+  await testEnforce(e, 'alice', 'data2', 'read', false);
+  await testEnforce(e, 'alice', 'data2', 'write', false);
+  await testEnforce(e, 'bob', 'data1', 'read', false);
+  await testEnforce(e, 'bob', 'data1', 'write', false);
+  await testEnforce(e, 'bob', 'data2', 'read', false);
+  await testEnforce(e, 'bob', 'data2', 'write', false);
+
+  await e.addPermissionForUser('bob', 'data2', 'write');
+  await e.addPermissionForUser('data2_admin', 'data2', 'read');
+  await e.addPermissionForUser('data2_admin', 'data2', 'write');
+  await e.addRoleForUser('alice', 'data2_admin');
+
+  await testEnforce(e, 'alice', 'data2', 'read', true);
+  await testEnforce(e, 'alice', 'data2', 'write', true);
+  await testEnforce(e, 'bob', 'data2', 'read', false);
+  await testEnforce(e, 'bob', 'data2', 'write', true);
+
+  await e.deletePermission('data2', 'write');
+
+  await testEnforce(e, 'alice', 'data2', 'read', true);
+  await testEnforce(e, 'alice', 'data2', 'write', false);
+  await testEnforce(e, 'bob', 'data2', 'read', false);
+  await testEnforce(e, 'bob', 'data2', 'write', false);
+
+  await e.addPermissionForUser('bob', 'data2', 'write');
+  await e.addPermissionForUser('data2_admin', 'data2', 'read');
+  await e.addPermissionForUser('data2_admin', 'data2', 'write');
+
+  await testEnforce(e, 'alice', 'data2', 'read', true);
+  await testEnforce(e, 'alice', 'data2', 'write', true);
+  await testEnforce(e, 'bob', 'data2', 'read', false);
+  await testEnforce(e, 'bob', 'data2', 'write', true);
+
+  await e.deletePermissionsForUser('data2_admin');
+
+  await testEnforce(e, 'alice', 'data2', 'read', false);
+  await testEnforce(e, 'alice', 'data2', 'write', false);
+  await testEnforce(e, 'bob', 'data2', 'read', false);
+  await testEnforce(e, 'bob', 'data2', 'write', true);
 });
 
 test('TestRBACModelInMemory2', async () => {
