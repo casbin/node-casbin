@@ -67,7 +67,7 @@ npm install casbin --save
 3. Besides the static policy file, node-Casbin also provides API for permission management at run-time. For example, You can get all the roles assigned to a user as below:
 
    ```typescript
-   const roles = enforcer.getRolesForUser('alice');
+   const roles = await enforcer.getRolesForUser('alice');
    ```
 
    See [Policy management APIs](#policy-management) for more usage.
