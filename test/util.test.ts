@@ -87,3 +87,49 @@ test('test ipMatchFunc', () => {
   expect(() => util.ipMatchFunc('127.0.0.1', 'I am alice')).toThrow(/invalid/g);
   expect(util.ipMatchFunc('192.168.2.189', '192.168.1.134/26')).toEqual(false);
 });
+
+test('test globMatch', () => {
+  expect(util.globMatch('/foo', '/foo')).toEqual(true);
+  expect(util.globMatch('/foo', '/foo*')).toEqual(true);
+  expect(util.globMatch('/foo', '/foo/*')).toEqual(false);
+
+  expect(util.globMatch('/foo', '/foo')).toEqual(true);
+  expect(util.globMatch('/foo', '/foo*')).toEqual(true);
+  expect(util.globMatch('/foo', '/foo/*')).toEqual(false);
+  expect(util.globMatch('/foo/bar', '/foo')).toEqual(false);
+  expect(util.globMatch('/foo/bar', '/foo*')).toEqual(false);
+  expect(util.globMatch('/foo/bar', '/foo/*')).toEqual(true);
+  expect(util.globMatch('/foobar', '/foo')).toEqual(false);
+  expect(util.globMatch('/foobar', '/foo*')).toEqual(true);
+  expect(util.globMatch('/foobar', '/foo/*')).toEqual(false);
+
+  expect(util.globMatch('/foo', '*/foo')).toEqual(true);
+  expect(util.globMatch('/foo', '*/foo*')).toEqual(true);
+  expect(util.globMatch('/foo', '*/foo/*')).toEqual(false);
+  expect(util.globMatch('/foo/bar', '*/foo')).toEqual(false);
+  expect(util.globMatch('/foo/bar', '*/foo*')).toEqual(false);
+  expect(util.globMatch('/foo/bar', '*/foo/*')).toEqual(true);
+  expect(util.globMatch('/foobar', '*/foo')).toEqual(false);
+  expect(util.globMatch('/foobar', '*/foo*')).toEqual(true);
+  expect(util.globMatch('/foobar', '*/foo/*')).toEqual(false);
+
+  expect(util.globMatch('/prefix/foo', '*/foo')).toEqual(false);
+  expect(util.globMatch('/prefix/foo', '*/foo*')).toEqual(false);
+  expect(util.globMatch('/prefix/foo', '*/foo/*')).toEqual(false);
+  expect(util.globMatch('/prefix/foo/bar', '*/foo')).toEqual(false);
+  expect(util.globMatch('/prefix/foo/bar', '*/foo*')).toEqual(false);
+  expect(util.globMatch('/prefix/foo/bar', '*/foo/*')).toEqual(false);
+  expect(util.globMatch('/prefix/foobar', '*/foo')).toEqual(false);
+  expect(util.globMatch('/prefix/foobar', '*/foo*')).toEqual(false);
+  expect(util.globMatch('/prefix/foobar', '*/foo/*')).toEqual(false);
+
+  expect(util.globMatch('/prefix/subprefix/foo', '*/foo')).toEqual(false);
+  expect(util.globMatch('/prefix/subprefix/foo', '*/foo*')).toEqual(false);
+  expect(util.globMatch('/prefix/subprefix/foo', '*/foo/*')).toEqual(false);
+  expect(util.globMatch('/prefix/subprefix/foo/bar', '*/foo')).toEqual(false);
+  expect(util.globMatch('/prefix/subprefix/foo/bar', '*/foo*')).toEqual(false);
+  expect(util.globMatch('/prefix/subprefix/foo/bar', '*/foo/*')).toEqual(false);
+  expect(util.globMatch('/prefix/subprefix/foobar', '*/foo')).toEqual(false);
+  expect(util.globMatch('/prefix/subprefix/foobar', '*/foo*')).toEqual(false);
+  expect(util.globMatch('/prefix/subprefix/foobar', '*/foo/*')).toEqual(false);
+});

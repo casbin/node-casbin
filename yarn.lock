@@ -545,6 +545,11 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/braces@*":
+  version "3.0.0"
+  resolved "https://registry.npm.taobao.org/@types/braces/download/@types/braces-3.0.0.tgz#7da1c0d44ff1c7eb660a36ec078ea61ba7eb42cb"
+  integrity sha1-faHA1E/xx+tmCjbsB46mG6frQss=
+
 "@types/color-name@^1.1.1":
   version "1.1.1"
   resolved "https://registry.npm.taobao.org/@types/color-name/download/@types/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
@@ -617,6 +622,13 @@
   version "4.14.135"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.135.tgz#d2607c35dd68f70c2b35ba020c667493dedd8447"
   integrity sha512-Ed+tSZ9qM1oYpi5kzdsBuOzcAIn1wDW+e8TFJ50IMJMlSopGdJgKAbhHzN6h1E1OfjlGOr2JepzEWtg9NIfoNg==
+
+"@types/micromatch@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.npm.taobao.org/@types/micromatch/download/@types/micromatch-4.0.1.tgz#9381449dd659fc3823fd2a4190ceacc985083bc7"
+  integrity sha1-k4FEndZZ/Dgj/SpBkM6syYUIO8c=
+  dependencies:
+    "@types/braces" "*"
 
 "@types/minimatch@*", "@types/minimatch@^3.0.3":
   version "3.0.3"

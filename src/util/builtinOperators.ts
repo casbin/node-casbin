@@ -15,6 +15,7 @@
 import * as rbac from '../rbac';
 import * as ip from 'ip';
 import * as _ from 'lodash';
+import { isMatch } from 'micromatch';
 
 // regexMatch determines whether key1 matches the pattern of key2 in regular expression.
 function regexMatch(key1: string, key2: string): boolean {
@@ -208,6 +209,23 @@ function ipMatchFunc(...args: any[]): boolean {
   return ipMatch(ip1, ip2);
 }
 
+/**
+ * Returns true if the specified `string` matches the given glob `pattern`.
+ *
+ * @param string String to match
+ * @param pattern Glob pattern to use for matching.
+ * @returns Returns true if the string matches the glob pattern.
+ *
+ * @example
+ * ```javascript
+ * globMatch("abc.conf", "*.conf") => true
+ * ```
+ */
+function globMatch(string: string, pattern: string): boolean {
+  const ok = isMatch(string, pattern);
+  return ok;
+}
+
 // generateGFunction is the factory method of the g(_, _) function.
 function generateGFunction(rm: rbac.RoleManager): any {
   return async function func(...args: any[]): Promise<boolean> {
@@ -225,4 +243,4 @@ function generateGFunction(rm: rbac.RoleManager): any {
   };
 }
 
-export { keyMatchFunc, keyMatch2Func, keyMatch3Func, regexMatchFunc, ipMatchFunc, generateGFunction, keyMatch4Func };
+export { keyMatchFunc, keyMatch2Func, keyMatch3Func, regexMatchFunc, ipMatchFunc, generateGFunction, keyMatch4Func, globMatch };
