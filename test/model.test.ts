@@ -155,6 +155,24 @@ class TestResource {
   }
 }
 
+test('TestGlobMatchModel', async () => {
+  const e = await newEnforcer('examples/glob_model.conf', 'examples/glob_policy.csv');
+
+  await testEnforce(e, 'u1', '/foo', 'read', false);
+  await testEnforce(e, 'u1', '/foo/subprefix', 'read', true);
+  await testEnforce(e, 'u1', 'foo', 'read', false);
+
+  await testEnforce(e, 'u2', '/foosubprefix', 'read', true);
+  await testEnforce(e, 'u2', '/foo/subprefix', 'read', false);
+  await testEnforce(e, 'u2', 'foo', 'read', false);
+
+  await testEnforce(e, 'u3', '/prefix/foo/subprefix', 'read', true);
+  await testEnforce(e, 'u3', '/prefix/foo', 'read', false);
+
+  await testEnforce(e, 'u4', '/foo', 'read', false);
+  await testEnforce(e, 'u4', 'foo', 'read', true);
+});
+
 test('TestABACModel', async () => {
   const e = await newEnforcer('examples/abac_model.conf');
 
