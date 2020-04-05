@@ -288,7 +288,8 @@ export class Enforcer extends ManagementEnforcer {
     res.push(...roles);
 
     for (const n of roles) {
-      res.push(...(await this.getImplicitRolesForUser(n, ...domain)));
+      const role = await this.getImplicitRolesForUser(n, ...domain);
+      res.push(...role);
     }
 
     return res;
@@ -306,15 +307,18 @@ export class Enforcer extends ManagementEnforcer {
    * But getImplicitPermissionsForUser("alice") will get: [["admin", "data1", "read"], ["alice", "data2", "read"]].
    */
   public async getImplicitPermissionsForUser(user: string, ...domain: string[]): Promise<string[][]> {
-    const roles = [user, ...(await this.getImplicitRolesForUser(user, ...domain))];
+    const roles = await this.getImplicitRolesForUser(user, ...domain);
+    roles.unshift(user);
     const res: string[][] = [];
     const withDomain = domain && domain.length !== 0;
 
     for (const n of roles) {
       if (withDomain) {
-        res.push(...(await this.getFilteredPolicy(0, n, ...domain)));
+        const p = await this.getFilteredPolicy(0, n, ...domain);
+        res.push(...p);
       } else {
-        res.push(...(await this.getPermissionsForUser(n)));
+        const p = await this.getPermissionsForUser(n);
+        res.push(...p);
       }
     }
 
