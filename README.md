@@ -1,4 +1,4 @@
-# node-Casbin
+# Node-Casbin
 
 [![NPM version][npm-image]][npm-url]
 [![NPM download][download-image]][download-url]
@@ -14,65 +14,72 @@
 [download-image]: https://img.shields.io/npm/dm/casbin.svg?style=flat-square
 [download-url]: https://npmjs.org/package/casbin
 
-**News**: still worry about how to write the correct node-Casbin policy? `Casbin online editor` is coming to help! Try it at: http://casbin.org/en/editor/
+**News**: still worry about how to write the correct `node-casbin` policy? [Casbin online editor](http://casbin.org/en/editor) is coming to help!
 
 ![casbin Logo](casbin-logo.png)
 
-node-Casbin is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https://en.wikipedia.org/wiki/Computer_security_model).
+`node-casbin` is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https://en.wikipedia.org/wiki/Computer_security_model).
 
 ## All the languages supported by Casbin:
 
-[![golang](https://casbin.org/img/langs/golang.png)](https://github.com/casbin/casbin) | [![java](https://casbin.org/img/langs/java.png)](https://github.com/casbin/jcasbin) | [![nodejs](https://casbin.org/img/langs/nodejs.png)](https://github.com/casbin/node-casbin) | [![php](https://casbin.org/img/langs/php.png)](https://github.com/php-casbin/php-casbin)
-----|----|----|----
-[Casbin](https://github.com/casbin/casbin) | [jCasbin](https://github.com/casbin/jcasbin) | [node-Casbin](https://github.com/casbin/node-casbin) | [PHP-Casbin](https://github.com/php-casbin/php-casbin)
-production-ready | production-ready | production-ready | production-ready
+| [![golang](https://casbin.org/img/langs/golang.png)](https://github.com/casbin/casbin) | [![java](https://casbin.org/img/langs/java.png)](https://github.com/casbin/jcasbin) | [![nodejs](https://casbin.org/img/langs/nodejs.png)](https://github.com/casbin/node-casbin) | [![php](https://casbin.org/img/langs/php.png)](https://github.com/php-casbin/php-casbin) |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| [Casbin](https://github.com/casbin/casbin)                                             | [jCasbin](https://github.com/casbin/jcasbin)                                        | [node-Casbin](https://github.com/casbin/node-casbin)                                        | [PHP-Casbin](https://github.com/php-casbin/php-casbin)                                   |
+| production-ready                                                                       | production-ready                                                                    | production-ready                                                                            | production-ready                                                                         |
 
-[![python](https://casbin.org/img/langs/python.png)](https://github.com/casbin/pycasbin) | [![dotnet](https://casbin.org/img/langs/dotnet.png)](https://github.com/casbin-net/Casbin.NET) | [![delphi](https://casbin.org/img/langs/delphi.png)](https://github.com/casbin4d/Casbin4D) | [![rust](https://casbin.org/img/langs/rust.png)](https://github.com/casbin/casbin-rs)
-----|----|----|----
-[PyCasbin](https://github.com/casbin/pycasbin) | [Casbin.NET](https://github.com/casbin-net/Casbin.NET) | [Casbin4D](https://github.com/casbin4d/Casbin4D) | [Casbin-RS](https://github.com/casbin/casbin-rs)
-production-ready | production-ready | experimental | WIP
+| [![python](https://casbin.org/img/langs/python.png)](https://github.com/casbin/pycasbin) | [![dotnet](https://casbin.org/img/langs/dotnet.png)](https://github.com/casbin-net/Casbin.NET) | [![delphi](https://casbin.org/img/langs/delphi.png)](https://github.com/casbin4d/Casbin4D) | [![rust](https://casbin.org/img/langs/rust.png)](https://github.com/casbin/casbin-rs) |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
+| [PyCasbin](https://github.com/casbin/pycasbin)                                           | [Casbin.NET](https://github.com/casbin-net/Casbin.NET)                                         | [Casbin4D](https://github.com/casbin4d/Casbin4D)                                           | [Casbin-RS](https://github.com/casbin/casbin-rs)                                      |
+| production-ready                                                                         | production-ready                                                                               | experimental                                                                               | WIP                                                                                   |
+
+## Documentation
+
+https://casbin.org/docs/en/overview
 
 ## Installation
 
-```
+```shell script
+# NPM
 npm install casbin --save
+
+# Yarn
+yarn add casbin
 ```
 
 ## Get started
 
-1. Initialize a new node-Casbin enforcer with a model file and a policy file:
+New a `node-casbin` enforcer with a model file and a policy file, see [Model](#official-model) section for details:
 
-   ```typescript
-   import casbin from 'casbin';
-   const enforcer = await casbin.newEnforcer('path/to/model.conf', 'path/to/policy.csv');
-   ```
+```typescript
+import { newEnforcer } from 'casbin';
+const enforcer = await newEnforcer('basic_model.conf', 'basic_policy.csv');
+```
 
-   Note: you can also initialize an enforcer with policy in DB instead of file, see [Persistence](#policy-persistence) section for details.
+> **Note**: you can also initialize an enforcer with policy in DB instead of file, see [Persistence](#policy-persistence) section for details.
 
-2. Add an enforcement hook into your code right before the access happens:
+Add an enforcement hook into your code right before the access happens:
 
-   ```typescript
-   const sub = 'alice'; // the user that wants to access a resource.
-   const obj = 'data1'; // the resource that is going to be accessed.
-   const act = 'read'; // the operation that the user performs on the resource.
+```typescript
+const sub = 'alice'; // the user that wants to access a resource.
+const obj = 'data1'; // the resource that is going to be accessed.
+const act = 'read'; // the operation that the user performs on the resource.
 
-   const res = await enforcer.enforce(sub, obj, act);
-   if (res) {
-     // permit alice to read data1
-   } else {
-     // deny the request, show an error
-   }
-   ```
+const res = await enforcer.enforce(sub, obj, act);
+if (res) {
+  // permit alice to read data1
+} else {
+  // deny the request, show an error
+}
+```
 
-3. Besides the static policy file, node-Casbin also provides API for permission management at run-time. For example, You can get all the roles assigned to a user as below:
+Besides the static policy file, `node-casbin` also provides API for permission management at run-time.
+For example, You can get all the roles assigned to a user as below:
 
-   ```typescript
-   const roles = await enforcer.getRolesForUser('alice');
-   ```
+```typescript
+const roles = await enforcer.getRolesForUser('alice');
+```
 
-   See [Policy management APIs](#policy-management) for more usage.
-
-4. Please refer to the [src/test](https://github.com/casbin/node-casbin/tree/master/test) package for more usage.
+See [Policy management APIs](#policy-management) for more usage.
 
 ## Policy management
 
@@ -81,23 +88,25 @@ Casbin provides two sets of APIs to manage permissions:
 - [Management API](https://casbin.org/docs/en/management-api): the primitive API that provides full support for Casbin policy management.
 - [RBAC API](https://casbin.org/docs/en/rbac-api): a more friendly API for RBAC. This API is a subset of Management API. The RBAC users could use this API to simplify the code.
 
-We also provide a [web-based UI](https://casbin.org/docs/en/admin-portal) for model management and policy management:
+## Official Model
 
-![model editor](https://hsluoyz.github.io/casbin/ui_model_editor.png)
-
-![policy editor](https://hsluoyz.github.io/casbin/ui_policy_editor.png)
+https://casbin.org/docs/en/supported-models
 
 ## Policy persistence
 
 https://casbin.org/docs/en/adapters
 
-## Documentation
+## Policy consistence between multiple nodes
 
-https://casbin.org/docs/en/overview
+https://casbin.org/docs/en/watchers
+
+## Role manager
+
+https://casbin.org/docs/en/role-managers
 
 ## Contributors
 
-This project exists thanks to all the people who contribute. 
+This project exists thanks to all the people who contribute.
 <a href="https://github.com/casbin/node-casbin/graphs/contributors"><img src="https://opencollective.com/node-casbin/contributors.svg?width=890&button=false" /></a>
 
 ## Backers
