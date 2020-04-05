@@ -204,7 +204,7 @@ export class DefaultRoleManager implements RoleManager {
    * printRoles prints all the roles to log.
    */
   public async printRoles(): Promise<void> {
-    [...this.allRoles.values()].map(n => {
+    [...this.allRoles.values()].forEach(n => {
       logPrint(n.toString());
     });
   }
