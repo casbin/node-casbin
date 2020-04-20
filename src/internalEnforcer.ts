@@ -35,11 +35,11 @@ export class InternalEnforcer extends CoreEnforcer {
           throw e;
         }
       }
+    }
 
-      if (this.watcher) {
-        // error intentionally ignored
-        await this.watcher.update();
-      }
+    if (this.watcher && this.autoNotifyWatcher) {
+      // error intentionally ignored
+      await this.watcher.update();
     }
 
     return ruleAdded;
@@ -62,11 +62,11 @@ export class InternalEnforcer extends CoreEnforcer {
           throw e;
         }
       }
+    }
 
-      if (this.watcher) {
-        // error intentionally ignored
-        await this.watcher.update();
-      }
+    if (this.watcher && this.autoNotifyWatcher) {
+      // error intentionally ignored
+      await this.watcher.update();
     }
 
     return ruleRemoved;
@@ -89,11 +89,11 @@ export class InternalEnforcer extends CoreEnforcer {
           throw e;
         }
       }
+    }
 
-      if (this.watcher) {
-        // error intentionally ignored
-        await this.watcher.update();
-      }
+    if (this.watcher && this.autoNotifyWatcher) {
+      // error intentionally ignored
+      await this.watcher.update();
     }
 
     return ruleRemoved;

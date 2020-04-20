@@ -38,6 +38,7 @@ export class CoreEnforcer {
   private enabled: boolean;
   protected autoSave: boolean;
   protected autoBuildRoleLinks: boolean;
+  protected autoNotifyWatcher: boolean;
 
   public initialize(): void {
     this.rm = new DefaultRoleManager(10);
@@ -48,6 +49,7 @@ export class CoreEnforcer {
     this.enabled = true;
     this.autoSave = true;
     this.autoBuildRoleLinks = true;
+    this.autoNotifyWatcher = true;
   }
 
   /**
@@ -225,6 +227,14 @@ export class CoreEnforcer {
    */
   public enableAutoSave(autoSave: boolean): void {
     this.autoSave = autoSave;
+  }
+
+  /**
+   * enableAutoNotifyWatcher controls whether to save a policy rule automatically notify the Watcher when it is added or removed.
+   * @param enable whether to enable the AutoNotifyWatcher feature.
+   */
+  public enableAutoNotifyWatcher(enable: boolean): void {
+    this.autoNotifyWatcher = enable;
   }
 
   /**
