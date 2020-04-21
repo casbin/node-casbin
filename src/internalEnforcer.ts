@@ -22,9 +22,8 @@ export class InternalEnforcer extends CoreEnforcer {
    * addPolicyInternal adds a rule to the current policy.
    */
   public async addPolicyInternal(sec: string, ptype: string, rule: string[]): Promise<boolean> {
-    const ruleAdded = this.model.addPolicy(sec, ptype, rule);
-    if (!ruleAdded) {
-      return ruleAdded;
+    if (this.model.hasPolicy(sec, ptype, rule)) {
+      return false;
     }
 
     if (this.adapter && this.autoSave) {
@@ -39,19 +38,18 @@ export class InternalEnforcer extends CoreEnforcer {
 
     if (this.watcher && this.autoNotifyWatcher) {
       // error intentionally ignored
-      await this.watcher.update();
+      this.watcher.update();
     }
 
-    return ruleAdded;
+    return this.model.addPolicy(sec, ptype, rule);
   }
 
   /**
    * removePolicyInternal removes a rule from the current policy.
    */
   public async removePolicyInternal(sec: string, ptype: string, rule: string[]): Promise<boolean> {
-    const ruleRemoved = this.model.removePolicy(sec, ptype, rule);
-    if (!ruleRemoved) {
-      return ruleRemoved;
+    if (!this.model.hasPolicy(sec, ptype, rule)) {
+      return false;
     }
 
     if (this.adapter && this.autoSave) {
@@ -66,21 +64,16 @@ export class InternalEnforcer extends CoreEnforcer {
 
     if (this.watcher && this.autoNotifyWatcher) {
       // error intentionally ignored
-      await this.watcher.update();
+      this.watcher.update();
     }
 
-    return ruleRemoved;
+    return this.model.removePolicy(sec, ptype, rule);
   }
 
   /**
    * removeFilteredPolicyInternal removes rules based on field filters from the current policy.
    */
   public async removeFilteredPolicyInternal(sec: string, ptype: string, fieldIndex: number, fieldValues: string[]): Promise<boolean> {
-    const ruleRemoved = this.model.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
-    if (!ruleRemoved) {
-      return ruleRemoved;
-    }
-
     if (this.adapter && this.autoSave) {
       try {
         await this.adapter.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
@@ -93,9 +86,9 @@ export class InternalEnforcer extends CoreEnforcer {
 
     if (this.watcher && this.autoNotifyWatcher) {
       // error intentionally ignored
-      await this.watcher.update();
+      this.watcher.update();
     }
 
-    return ruleRemoved;
+    return this.model.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
   }
 }
