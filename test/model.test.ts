@@ -13,7 +13,8 @@
 // limitations under the License.
 
 import * as _ from 'lodash';
-import { newEnforcer, Enforcer, newModel } from '../src';
+import { DefaultRoleManager, Enforcer, newEnforcer, newModel } from '../src';
+import { keyMatch2Func, keyMatch3Func } from '../src/util';
 
 async function testEnforce(e: Enforcer, sub: string, obj: any, act: string, res: boolean): Promise<void> {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
@@ -299,4 +300,38 @@ test('TestMatcher', async () => {
   m.addDef('m', 'm', 'keyMatch(r.obj, ".*get$") || regexMatch(r.act, ".user.")');
 
   expect(m.model.get('m')?.get('m')?.value).toEqual(`keyMatch(r_obj, ".*get$") || regexMatch(r_act, ".user.")`);
+});
+
+test('TestRBACModelWithPattern', async () => {
+  const e = await newEnforcer('examples/rbac_with_pattern_model.conf', 'examples/rbac_with_pattern_policy.csv');
+
+  // Here's a little confusing: the matching function here is not the custom function used in matcher.
+  // It is the matching function used by "g" (and "g2", "g3" if any..)
+  // You can see in policy that: "g2, /book/:id, book_group", so in "g2()" function in the matcher, instead
+  // of checking whether "/book/:id" equals the obj: "/book/1", it checks whether the pattern matches.
+  // You can see it as normal RBAC: "/book/:id" == "/book/1" becomes KeyMatch2("/book/:id", "/book/1")
+  const rm = e.getRoleManager() as DefaultRoleManager;
+  await rm.addMatchingFunc('KeyMatch2', keyMatch2Func);
+  await e.buildRoleLinks();
+  await testEnforce(e, 'alice', '/book/1', 'GET', true);
+  await testEnforce(e, 'alice', '/book/2', 'GET', true);
+  await testEnforce(e, 'alice', '/pen/1', 'GET', true);
+  await testEnforce(e, 'alice', '/pen/2', 'GET', false);
+  await testEnforce(e, 'bob', '/book/1', 'GET', false);
+  await testEnforce(e, 'bob', '/book/2', 'GET', false);
+  await testEnforce(e, 'bob', '/pen/1', 'GET', true);
+  await testEnforce(e, 'bob', '/pen/2', 'GET', true);
+
+  // AddMatchingFunc() is actually setting a function because only one function is allowed,
+  // so when we set "KeyMatch3", we are actually replacing "KeyMatch2" with "KeyMatch3".
+  await rm.addMatchingFunc('KeyMatch3', keyMatch3Func);
+  await e.buildRoleLinks();
+  await testEnforce(e, 'alice', '/book2/1', 'GET', true);
+  await testEnforce(e, 'alice', '/book2/2', 'GET', true);
+  await testEnforce(e, 'alice', '/pen2/1', 'GET', true);
+  await testEnforce(e, 'alice', '/pen2/2', 'GET', false);
+  await testEnforce(e, 'bob', '/book2/1', 'GET', false);
+  await testEnforce(e, 'bob', '/book2/2', 'GET', false);
+  await testEnforce(e, 'bob', '/pen2/1', 'GET', true);
+  await testEnforce(e, 'bob', '/pen2/2', 'GET', true);
 });
