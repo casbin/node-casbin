@@ -67,10 +67,14 @@ class Role {
   }
 }
 
+type MatchingFunc = (arg1: string, arg2: string) => boolean;
+
 // RoleManager provides a default implementation for the RoleManager interface
 export class DefaultRoleManager implements RoleManager {
   private allRoles: Map<string, Role>;
   private maxHierarchyLevel: number;
+  private hasPattern = false;
+  private matchingFunc: MatchingFunc;
 
   /**
    * DefaultRoleManager is the constructor for creating an instance of the
@@ -81,6 +85,19 @@ export class DefaultRoleManager implements RoleManager {
   constructor(maxHierarchyLevel: number) {
     this.allRoles = new Map<string, Role>();
     this.maxHierarchyLevel = maxHierarchyLevel;
+  }
+
+  /**
+   * e.buildRoleLinks must be called after addMatchingFunc().
+   * @param name
+   * @param fn
+   * @example ```javascript
+   * await e.GetRoleManager().addMatchingFunc('matcher', util.keyMatch); await e.buildRoleLinks();
+   * ```
+   */
+  public async addMatchingFunc(name: string, fn: MatchingFunc): Promise<void> {
+    this.hasPattern = true;
+    this.matchingFunc = fn;
   }
 
   /**
@@ -210,17 +227,42 @@ export class DefaultRoleManager implements RoleManager {
   }
 
   private createRole(name: string): Role {
-    const role = this.allRoles.get(name);
-    if (role) {
-      return role;
-    } else {
+    let role = this.allRoles.get(name);
+    if (!role) {
       const newRole = new Role(name);
+      role = newRole;
       this.allRoles.set(name, newRole);
-      return newRole;
     }
+
+    if (!this.hasPattern) {
+      return role;
+    }
+
+    for (const roleName of this.allRoles.keys()) {
+      if (!(this.matchingFunc(name, roleName) && name !== roleName)) {
+        continue;
+      }
+
+      const inherit = this.allRoles.get(roleName);
+      if (inherit) {
+        role.addRole(inherit);
+      }
+    }
+
+    return role;
   }
 
   private hasRole(name: string): boolean {
-    return this.allRoles.has(name);
+    if (!this.hasPattern) {
+      return this.allRoles.has(name);
+    } else {
+      for (const role of this.allRoles.keys()) {
+        if (this.matchingFunc(name, role)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }

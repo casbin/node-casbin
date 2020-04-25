@@ -121,6 +121,13 @@ export class CoreEnforcer {
   }
 
   /**
+   * getRoleManager gets the current role manager.
+   */
+  public getRoleManager(): RoleManager {
+    return this.rm;
+  }
+
+  /**
    * setEffector sets the current effector.
    *
    * @param eft the effector.
