@@ -216,6 +216,22 @@ export class Model {
     return false;
   }
 
+  // addPolicies adds policy rules to the model.
+  public addPolicies(sec: string, ptype: string, rules: string[][]): boolean {
+    for (let i = 0; i < rules.length; i++) {
+      if (this.hasPolicy(sec, ptype, rules[i])) {
+        return false;
+      }
+    }
+
+    const ast: any = this.model.get(sec)?.get(ptype);
+    for (let i = 0; i < rules.length; i++) {
+      ast.policy.push(rules[i]);
+    }
+
+    return true;
+  }
+
   // removePolicy removes a policy rule from the model.
   public removePolicy(sec: string, key: string, rule: string[]): boolean {
     if (this.hasPolicy(sec, key, rule)) {
@@ -228,6 +244,28 @@ export class Model {
     }
 
     return false;
+  }
+
+  // removePolicies removes policy rules from the model.
+  public removePolicies(sec: string, ptype: string, rules: string[][]): boolean {
+    const ast: any = this.model.get(sec)?.get(ptype);
+    OUTER: for (let j = 0; j < rules.length; j++) {
+      for (const r of ast.policy) {
+        if (util.arrayEquals(rules[j], r)) {
+          continue OUTER;
+        }
+      }
+      return false;
+    }
+
+    for (let j = 0; j < rules.length; j++) {
+      for (const i in ast.policy) {
+        if (util.arrayEquals(rules[j], ast.policy[i])) {
+          ast.policy = ast.policy.slice(0, i).concat(ast.policy.slice(i + 1));
+        }
+      }
+    }
+    return true;
   }
 
   // getFilteredPolicy gets rules based on field filters from a policy.
