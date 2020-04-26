@@ -100,7 +100,7 @@ export class InternalEnforcer extends CoreEnforcer {
   }
 
   // removePolicies removes rules from the current policy.
-  public async removePolicies(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
+  public async removePoliciesInternal(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
     for (const rule of rules) {
       if (!this.model.hasPolicy(sec, ptype, rule)) {
         return false;

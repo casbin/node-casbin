@@ -238,6 +238,18 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
+   * addPolicies adds authorization rules to the current policy.
+   * If the rule already exists, the function returns false and the rules will not be added.
+   * Otherwise the function returns true by adding the new rules.
+   *
+   * @param rules the "p" policy rules, ptype "p" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async addPolicies(rules: string[][]): Promise<boolean> {
+    return this.addNamedPolicies('p', rules);
+  }
+
+  /**
    * addNamedPolicy adds an authorization rule to the current named policy.
    * If the rule already exists, the function returns false and the rule will not be added.
    * Otherwise the function returns true by adding the new rule.
@@ -251,6 +263,19 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
+   * addNamedPolicies adds authorization rules to the current named policy.
+   * If the rule already exists, the function returns false and the rules will not be added.
+   * Otherwise the function returns true by adding the new rules.
+   *
+   * @param ptype the policy type, can be "p", "p2", "p3", ..
+   * @param rules the "p" policy rules.
+   * @return succeeds or not.
+   */
+  public async addNamedPolicies(ptype: string, rules: string[][]): Promise<boolean> {
+    return this.addPoliciesInternal('p', ptype, rules);
+  }
+
+  /**
    * removePolicy removes an authorization rule from the current policy.
    *
    * @param params the "p" policy rule, ptype "p" is implicitly used.
@@ -258,6 +283,16 @@ export class ManagementEnforcer extends InternalEnforcer {
    */
   public async removePolicy(...params: string[]): Promise<boolean> {
     return this.removeNamedPolicy('p', ...params);
+  }
+
+  /**
+   * removePolicies removes an authorization rules from the current policy.
+   *
+   * @param rules the "p" policy rules, ptype "p" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async removePolicies(rules: string[][]): Promise<boolean> {
+    return this.removeNamedPolicies('p', rules);
   }
 
   /**
@@ -281,6 +316,17 @@ export class ManagementEnforcer extends InternalEnforcer {
    */
   public async removeNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
     return this.removePolicyInternal('p', ptype, params);
+  }
+
+  /**
+   * removeNamedPolicies removes authorization rules from the current named policy.
+   *
+   * @param ptype the policy type, can be "p", "p2", "p3", ..
+   * @param rules the "p" policy rules.
+   * @return succeeds or not.
+   */
+  public async removeNamedPolicies(ptype: string, rules: string[][]): Promise<boolean> {
+    return this.removePoliciesInternal('p', ptype, rules);
   }
 
   /**
@@ -330,6 +376,18 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
+   * addGroupingPolicies adds a role inheritance rules to the current policy.
+   * If the rule already exists, the function returns false and the rules will not be added.
+   * Otherwise the function returns true by adding the new rules.
+   *
+   * @param rules the "g" policy rules, ptype "g" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async addGroupingPolicies(rules: string[][]): Promise<boolean> {
+    return this.addNamedGroupingPolicies('g', rules);
+  }
+
+  /**
    * addNamedGroupingPolicy adds a named role inheritance rule to the current policy.
    * If the rule already exists, the function returns false and the rule will not be added.
    * Otherwise the function returns true by adding the new rule.
@@ -349,6 +407,25 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
+   * addNamedGroupingPolicies adds named role inheritance rules to the current policy.
+   * If the rule already exists, the function returns false and the rules will not be added.
+   * Otherwise the function returns true by adding the new rules.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param rules the "g" policy rule.
+   * @return succeeds or not.
+   */
+  public async addNamedGroupingPolicies(ptype: string, rules: string[][]): Promise<boolean> {
+    const rulesAdded = await this.addPoliciesInternal('g', ptype, rules);
+
+    if (this.autoBuildRoleLinks) {
+      await this.buildRoleLinksInternal();
+    }
+
+    return rulesAdded;
+  }
+
+  /**
    * removeGroupingPolicy removes a role inheritance rule from the current policy.
    *
    * @param params the "g" policy rule, ptype "g" is implicitly used.
@@ -356,6 +433,16 @@ export class ManagementEnforcer extends InternalEnforcer {
    */
   public async removeGroupingPolicy(...params: string[]): Promise<boolean> {
     return this.removeNamedGroupingPolicy('g', ...params);
+  }
+
+  /**
+   * removeGroupingPolicies removes role inheritance rules from the current policy.
+   *
+   * @param rules the "g" policy rules, ptype "g" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async removeGroupingPolicies(rules: string[][]): Promise<boolean> {
+    return this.removeNamedGroupingPolicies('g', rules);
   }
 
   /**
@@ -385,6 +472,23 @@ export class ManagementEnforcer extends InternalEnforcer {
     }
 
     return ruleRemoved;
+  }
+
+  /**
+   * removeNamedGroupingPolicies removes role inheritance rules from the current named policy.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param rules the "g" policy rules.
+   * @return succeeds or not.
+   */
+  public async removeNamedGroupingPolicies(ptype: string, rules: string[][]): Promise<boolean> {
+    const rulesRemoved = this.removePoliciesInternal('g', ptype, rules);
+
+    if (this.autoBuildRoleLinks) {
+      await this.buildRoleLinksInternal();
+    }
+
+    return rulesRemoved;
   }
 
   /**
