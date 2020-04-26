@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { CoreEnforcer } from './coreEnforcer';
+import { BatchAdapter } from './persist/batchAdapter';
 
 /**
  * InternalEnforcer = CoreEnforcer + Internal API.
@@ -44,6 +45,34 @@ export class InternalEnforcer extends CoreEnforcer {
     return this.model.addPolicy(sec, ptype, rule);
   }
 
+  // addPolicies adds rules to the current policy.
+  // removePolicies removes rules from the current policy.
+  public async addPoliciesInternal(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
+    for (const rule of rules) {
+      if (this.model.hasPolicy(sec, ptype, rule)) {
+        return false;
+      }
+    }
+
+    const batchAdapter = this.adapter as BatchAdapter;
+    if (batchAdapter && this.autoSave) {
+      try {
+        await batchAdapter.addPolicies(sec, ptype, rules);
+      } catch (e) {
+        if (e.message !== 'not implemented') {
+          throw e;
+        }
+      }
+    }
+
+    if (this.watcher && this.autoNotifyWatcher) {
+      // error intentionally ignored
+      this.watcher.update();
+    }
+
+    return this.model.addPolicies(sec, ptype, rules);
+  }
+
   /**
    * removePolicyInternal removes a rule from the current policy.
    */
@@ -68,6 +97,33 @@ export class InternalEnforcer extends CoreEnforcer {
     }
 
     return this.model.removePolicy(sec, ptype, rule);
+  }
+
+  // removePolicies removes rules from the current policy.
+  public async removePolicies(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
+    for (const rule of rules) {
+      if (!this.model.hasPolicy(sec, ptype, rule)) {
+        return false;
+      }
+    }
+
+    const batchAdapter = this.adapter as BatchAdapter;
+    if (batchAdapter && this.autoSave) {
+      try {
+        await batchAdapter.removePolicies(sec, ptype, rules);
+      } catch (e) {
+        if (e.message !== 'not implemented') {
+          throw e;
+        }
+      }
+    }
+
+    if (this.watcher && this.autoNotifyWatcher) {
+      // error intentionally ignored
+      this.watcher.update();
+    }
+
+    return this.model.removePolicies(sec, ptype, rules);
   }
 
   /**
