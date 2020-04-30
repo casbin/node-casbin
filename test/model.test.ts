@@ -99,7 +99,6 @@ test('TestBasicModelWithoutUsers', async () => {
 
 test('TestBasicModelWithoutResources', async () => {
   const e = await newEnforcer('examples/basic_without_resources_model.conf', 'examples/basic_without_resources_policy.csv');
-  e.initialize();
 
   await testEnforceWithoutUsers(e, 'alice', 'read', true);
   await testEnforceWithoutUsers(e, 'alice', 'write', false);
