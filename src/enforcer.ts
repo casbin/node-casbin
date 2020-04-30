@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ManagementEnforcer } from './managementEnforcer';
-import { FunctionMap, Model, newModel } from './model';
+import { Model, newModel } from './model';
 import { Adapter, FileAdapter, StringAdapter } from './persist';
 import { getLogger } from './log';
 
@@ -65,12 +65,8 @@ export class Enforcer extends ManagementEnforcer {
 
     this.model = m;
     this.model.printModel();
-    this.fm = FunctionMap.loadFunctionMap();
-
-    this.initialize();
 
     if (this.adapter) {
-      // error intentionally ignored
       await this.loadPolicy();
     }
   }

@@ -27,30 +27,18 @@ import { getLogger, logPrint } from './log';
 export class CoreEnforcer {
   protected modelPath: string;
   protected model: Model;
-  protected fm: FunctionMap;
-  private eft: Effector;
-  private matcherMap: Map<string, ((context: object) => Promise<any>) | ((context: object) => any)>;
+  protected fm: FunctionMap = FunctionMap.loadFunctionMap();
+  protected eft: Effector = new DefaultEffector();
+  private matcherMap: Map<string, ((context: object) => Promise<any>) | ((context: object) => any)> = new Map();
 
   protected adapter: FilteredAdapter | Adapter;
   protected watcher: Watcher | null = null;
-  protected rm: RoleManager;
+  protected rm: RoleManager = new DefaultRoleManager(10);
 
-  private enabled: boolean;
-  protected autoSave: boolean;
-  protected autoBuildRoleLinks: boolean;
-  protected autoNotifyWatcher: boolean;
-
-  public initialize(): void {
-    this.rm = new DefaultRoleManager(10);
-    this.eft = new DefaultEffector();
-    this.matcherMap = new Map();
-    this.watcher = null;
-
-    this.enabled = true;
-    this.autoSave = true;
-    this.autoBuildRoleLinks = true;
-    this.autoNotifyWatcher = true;
-  }
+  protected enabled = true;
+  protected autoSave = true;
+  protected autoBuildRoleLinks = true;
+  protected autoNotifyWatcher = true;
 
   /**
    * loadModel reloads the model from the model CONF file.
@@ -61,7 +49,6 @@ export class CoreEnforcer {
     this.model = newModel();
     this.model.loadModel(this.modelPath);
     this.model.printModel();
-    this.fm = FunctionMap.loadFunctionMap();
   }
 
   /**
@@ -80,7 +67,6 @@ export class CoreEnforcer {
    */
   public setModel(m: Model): void {
     this.model = m;
-    this.fm = FunctionMap.loadFunctionMap();
   }
 
   /**
