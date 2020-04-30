@@ -219,11 +219,12 @@ export class Model {
   // addPolicies adds policy rules to the model.
   public addPolicies(sec: string, ptype: string, rules: string[][]): boolean {
     const ast = this.model.get(sec)?.get(ptype);
+    if (!ast) {
+      return false;
+    }
+
     for (const rule of rules) {
       if (!this.hasPolicy(sec, ptype, rule)) {
-        if (!ast) {
-          return false;
-        }
         ast.policy.push(rule);
       } else {
         return false;
@@ -250,11 +251,12 @@ export class Model {
   // removePolicies removes policy rules from the model.
   public removePolicies(sec: string, ptype: string, rules: string[][]): boolean {
     const ast = this.model.get(sec)?.get(ptype);
+    if (!ast) {
+      return true;
+    }
+
     for (const rule of rules) {
       if (this.hasPolicy(sec, ptype, rule)) {
-        if (!ast) {
-          continue;
-        }
         ast.policy = _.filter(ast.policy, r => !util.arrayEquals(rule, r));
       } else {
         return false;
