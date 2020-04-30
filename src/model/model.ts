@@ -224,9 +224,13 @@ export class Model {
       }
     }
 
-    const ast: any = this.model.get(sec)?.get(ptype);
-    for (let i = 0; i < rules.length; i++) {
-      ast.policy.push(rules[i]);
+    const ast = this.model.get(sec)?.get(ptype);
+    if (ast) {
+      for (let i = 0; i < rules.length; i++) {
+        ast.policy.push(rules[i]);
+      }
+    } else {
+      return false;
     }
 
     return true;
@@ -248,20 +252,24 @@ export class Model {
 
   // removePolicies removes policy rules from the model.
   public removePolicies(sec: string, ptype: string, rules: string[][]): boolean {
-    const ast: any = this.model.get(sec)?.get(ptype);
+    const ast = this.model.get(sec)?.get(ptype);
     OUTER: for (let j = 0; j < rules.length; j++) {
-      for (const r of ast.policy) {
-        if (util.arrayEquals(rules[j], r)) {
-          continue OUTER;
+      if (ast) {
+        for (const r of ast.policy) {
+          if (util.arrayEquals(rules[j], r)) {
+            continue OUTER;
+          }
         }
       }
       return false;
     }
 
     for (let j = 0; j < rules.length; j++) {
-      for (const i in ast.policy) {
-        if (util.arrayEquals(rules[j], ast.policy[i])) {
-          ast.policy = ast.policy.slice(0, i).concat(ast.policy.slice(i + 1));
+      if (ast) {
+        for (const i in ast.policy) {
+          if (util.arrayEquals(rules[j], ast.policy[i])) {
+            ast.policy = ast.policy.slice(0, parseInt(i)).concat(ast.policy.slice(parseInt(i) + 1));
+          }
         }
       }
     }
