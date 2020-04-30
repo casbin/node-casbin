@@ -224,11 +224,13 @@ export class Model {
     }
 
     for (const rule of rules) {
-      if (!this.hasPolicy(sec, ptype, rule)) {
-        ast.policy.push(rule);
-      } else {
+      if (this.hasPolicy(sec, ptype, rule)) {
         return false;
       }
+    }
+
+    for (const rule of rules) {
+      ast.policy.push(rule);
     }
 
     return true;
@@ -256,11 +258,13 @@ export class Model {
     }
 
     for (const rule of rules) {
-      if (this.hasPolicy(sec, ptype, rule)) {
-        ast.policy = _.filter(ast.policy, r => !util.arrayEquals(rule, r));
-      } else {
+      if (!this.hasPolicy(sec, ptype, rule)) {
         return false;
       }
+    }
+
+    for (const rule of rules) {
+      ast.policy = _.filter(ast.policy, r => !util.arrayEquals(rule, r));
     }
 
     return true;
