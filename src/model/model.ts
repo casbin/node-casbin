@@ -239,7 +239,7 @@ export class Model {
     if (this.hasPolicy(sec, key, rule)) {
       const ast = this.model.get(sec)?.get(key);
       if (!ast) {
-        return true;
+        return false;
       }
       ast.policy = _.filter(ast.policy, r => !util.arrayEquals(rule, r));
       return true;
@@ -252,7 +252,7 @@ export class Model {
   public removePolicies(sec: string, ptype: string, rules: string[][]): boolean {
     const ast = this.model.get(sec)?.get(ptype);
     if (!ast) {
-      return true;
+      return false;
     }
 
     for (const rule of rules) {
