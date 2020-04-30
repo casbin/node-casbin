@@ -218,9 +218,9 @@ export class Model {
 
   // addPolicies adds policy rules to the model.
   public addPolicies(sec: string, ptype: string, rules: string[][]): boolean {
+    const ast = this.model.get(sec)?.get(ptype);
     for (const rule of rules) {
       if (!this.hasPolicy(sec, ptype, rule)) {
-        const ast = this.model.get(sec)?.get(ptype);
         if (!ast) {
           return false;
         }
@@ -249,9 +249,10 @@ export class Model {
 
   // removePolicies removes policy rules from the model.
   public removePolicies(sec: string, ptype: string, rules: string[][]): boolean {
+    const ast = this.model.get(sec)?.get(ptype);
     for (const rule of rules) {
       if (this.hasPolicy(sec, ptype, rule)) {
-        const ast = this.model.get(sec)?.get(ptype);
+        
         if (!ast) {
           continue;
         }
