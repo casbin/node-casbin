@@ -252,7 +252,6 @@ export class Model {
     const ast = this.model.get(sec)?.get(ptype);
     for (const rule of rules) {
       if (this.hasPolicy(sec, ptype, rule)) {
-        
         if (!ast) {
           continue;
         }
