@@ -218,19 +218,16 @@ export class Model {
 
   // addPolicies adds policy rules to the model.
   public addPolicies(sec: string, ptype: string, rules: string[][]): boolean {
-    for (let i = 0; i < rules.length; i++) {
-      if (this.hasPolicy(sec, ptype, rules[i])) {
+    for (let rule of rules) {
+      if (!this.hasPolicy(sec, ptype, rule)) {
+        const ast = this.model.get(sec)?.get(ptype);
+        if (!ast) {
+          return false;
+        }
+        ast.policy.push(rule);
+      } else {
         return false;
       }
-    }
-
-    const ast = this.model.get(sec)?.get(ptype);
-    if (ast) {
-      for (let i = 0; i < rules.length; i++) {
-        ast.policy.push(rules[i]);
-      }
-    } else {
-      return false;
     }
 
     return true;
@@ -252,27 +249,18 @@ export class Model {
 
   // removePolicies removes policy rules from the model.
   public removePolicies(sec: string, ptype: string, rules: string[][]): boolean {
-    const ast = this.model.get(sec)?.get(ptype);
-    OUTER: for (let j = 0; j < rules.length; j++) {
-      if (ast) {
-        for (const r of ast.policy) {
-          if (util.arrayEquals(rules[j], r)) {
-            continue OUTER;
-          }
+    for (let rule of rules) {
+      if (this.hasPolicy(sec, ptype, rule)) {
+        const ast = this.model.get(sec)?.get(ptype);
+        if (!ast) {
+          continue;
         }
+        ast.policy = _.filter(ast.policy, r => !util.arrayEquals(rule, r));
+      } else {
+        return false;
       }
-      return false;
     }
 
-    for (let j = 0; j < rules.length; j++) {
-      if (ast) {
-        for (const i in ast.policy) {
-          if (util.arrayEquals(rules[j], ast.policy[i])) {
-            ast.policy = ast.policy.slice(0, parseInt(i)).concat(ast.policy.slice(parseInt(i) + 1));
-          }
-        }
-      }
-    }
     return true;
   }
 
@@ -326,7 +314,7 @@ export class Model {
       }
     }
     ast.policy = res;
-
+    
     return bool;
   }
 
