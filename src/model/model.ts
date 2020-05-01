@@ -229,9 +229,7 @@ export class Model {
       }
     }
 
-    for (const rule of rules) {
-      ast.policy.push(rule);
-    }
+    ast.policy = ast.policy.concat(rules);
 
     return true;
   }
