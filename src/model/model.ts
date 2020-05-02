@@ -216,18 +216,56 @@ export class Model {
     return false;
   }
 
+  // addPolicies adds policy rules to the model.
+  public addPolicies(sec: string, ptype: string, rules: string[][]): boolean {
+    const ast = this.model.get(sec)?.get(ptype);
+    if (!ast) {
+      return false;
+    }
+
+    for (const rule of rules) {
+      if (this.hasPolicy(sec, ptype, rule)) {
+        return false;
+      }
+    }
+
+    ast.policy = ast.policy.concat(rules);
+
+    return true;
+  }
+
   // removePolicy removes a policy rule from the model.
   public removePolicy(sec: string, key: string, rule: string[]): boolean {
     if (this.hasPolicy(sec, key, rule)) {
       const ast = this.model.get(sec)?.get(key);
       if (!ast) {
-        return true;
+        return false;
       }
       ast.policy = _.filter(ast.policy, r => !util.arrayEquals(rule, r));
       return true;
     }
 
     return false;
+  }
+
+  // removePolicies removes policy rules from the model.
+  public removePolicies(sec: string, ptype: string, rules: string[][]): boolean {
+    const ast = this.model.get(sec)?.get(ptype);
+    if (!ast) {
+      return false;
+    }
+
+    for (const rule of rules) {
+      if (!this.hasPolicy(sec, ptype, rule)) {
+        return false;
+      }
+    }
+
+    for (const rule of rules) {
+      ast.policy = _.filter(ast.policy, r => !util.arrayEquals(rule, r));
+    }
+
+    return true;
   }
 
   // getFilteredPolicy gets rules based on field filters from a policy.
