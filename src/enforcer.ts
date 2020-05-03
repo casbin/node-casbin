@@ -16,6 +16,7 @@ import { ManagementEnforcer } from './managementEnforcer';
 import { Model, newModel } from './model';
 import { Adapter, FileAdapter, StringAdapter } from './persist';
 import { getLogger } from './log';
+import { arrayRemoveDuplicates } from './util';
 
 /**
  * Enforcer = ManagementEnforcer + RBAC API.
@@ -319,6 +320,32 @@ export class Enforcer extends ManagementEnforcer {
     }
 
     return res;
+  }
+
+  /**
+   * getImplicitUsersForPermission gets implicit users for a permission.
+   * For example:
+   * p, admin, data1, read
+   * p, bob, data1, read
+   * g, alice, admin
+   *
+   * getImplicitUsersForPermission("data1", "read") will get: ["alice", "bob"].
+   * Note: only users will be returned, roles (2nd arg in "g") will be excluded.
+   */
+  public async getImplicitUsersForPermission(...permission: string[]): Promise<string[]> {
+    const res: string[] = [];
+    const policySubjects = await this.getAllSubjects();
+    const subjects = arrayRemoveDuplicates([...policySubjects, ...this.model.getValuesForFieldInPolicyAllTypes('g', 0)]);
+    const inherits = this.model.getValuesForFieldInPolicyAllTypes('g', 1);
+
+    for (const user of subjects) {
+      const allowed = await this.enforce(user, ...permission);
+      if (allowed) {
+        res.push(user);
+      }
+    }
+
+    return res.filter(n => !inherits.some(m => n === m));
   }
 }
 

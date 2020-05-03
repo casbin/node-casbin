@@ -158,3 +158,19 @@ test('test deleteUser', async () => {
   expect(await e.getImplicitPermissionsForUser('alice')).toEqual([]);
   expect(await e.getImplicitPermissionsForUser('bob')).toEqual([]);
 });
+
+test('test getImplicitPermissionsForUser', async () => {
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  expect(await e.getImplicitUsersForPermission('data1', 'read')).toEqual(['alice']);
+  expect(await e.getImplicitUsersForPermission('data1', 'write')).toEqual(['alice']);
+  expect(await e.getImplicitUsersForPermission('data2', 'read')).toEqual(['alice']);
+  expect(await e.getImplicitUsersForPermission('data2', 'write')).toEqual(['alice', 'bob']);
+
+  e.clearPolicy();
+
+  await e.addPolicy('admin', 'data1', 'read');
+  await e.addPolicy('bob', 'data1', 'read');
+  await e.addGroupingPolicy('alice', 'admin');
+
+  expect(await e.getImplicitUsersForPermission('data1', 'read')).toEqual(['bob', 'alice']);
+});
