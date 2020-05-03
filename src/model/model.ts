@@ -332,6 +332,22 @@ export class Model {
     return util.arrayRemoveDuplicates(ast.policy.map((n: string[]) => n[fieldIndex]));
   }
 
+  // getValuesForFieldInPolicyAllTypes gets all values for a field for all rules in a policy of all ptypes, duplicated values are removed.
+  public getValuesForFieldInPolicyAllTypes(sec: string, fieldIndex: number): string[] {
+    const values: string[] = [];
+
+    const ast = this.model.get(sec);
+    if (!ast) {
+      return values;
+    }
+
+    for (const ptype of ast.keys()) {
+      values.push(...this.getValuesForFieldInPolicy(sec, ptype, fieldIndex));
+    }
+
+    return util.arrayRemoveDuplicates(values);
+  }
+
   // printPolicy prints the policy to log.
   public printPolicy(): void {
     logPrint('Policy:');
