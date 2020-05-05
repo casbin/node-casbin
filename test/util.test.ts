@@ -133,3 +133,23 @@ test('test globMatch', () => {
   expect(util.globMatch('/prefix/subprefix/foobar', '*/foo*')).toEqual(false);
   expect(util.globMatch('/prefix/subprefix/foobar', '*/foo/*')).toEqual(false);
 });
+
+test('test hasEval', () => {
+  expect(util.hasEval('eval() && a && b && c')).toEqual(true);
+  expect(util.hasEval('eval) && a && b && c')).toEqual(false);
+  expect(util.hasEval('eval)( && a && b && c')).toEqual(false);
+  expect(util.hasEval('xeval() && a && b && c')).toEqual(false);
+  expect(util.hasEval('eval(c * (a + b)) && a && b && c')).toEqual(true);
+});
+
+test('test replaceEval', () => {
+  expect(util.replaceEval('eval() && a && b && c', 'a')).toEqual('(a) && a && b && c');
+  expect(util.replaceEval('eval() && a && b && c', '(a)')).toEqual('((a)) && a && b && c');
+});
+
+test('test getEvalValue', () => {
+  expect(util.getEvalValue('eval(a) && a && b && c')).isEqual(['a']);
+  expect(util.getEvalValue('a && eval(a) && b && c')).isEqual(['a']);
+  expect(util.getEvalValue('eval(a) && eval(b) && a && b && c')).isEqual(['a', 'b']);
+  expect(util.getEvalValue('a && eval(a) && eval(b) && b && c')).isEqual(['a', 'b']);
+});
