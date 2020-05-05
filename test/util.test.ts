@@ -148,8 +148,8 @@ test('test replaceEval', () => {
 });
 
 test('test getEvalValue', () => {
-  expect(util.getEvalValue('eval(a) && a && b && c')).isEqual(['a']);
-  expect(util.getEvalValue('a && eval(a) && b && c')).isEqual(['a']);
-  expect(util.getEvalValue('eval(a) && eval(b) && a && b && c')).isEqual(['a', 'b']);
-  expect(util.getEvalValue('a && eval(a) && eval(b) && b && c')).isEqual(['a', 'b']);
+  expect(util.arrayEquals(util.getEvalValue('eval(a) && a && b && c'), ['a']));
+  expect(util.arrayEquals(util.getEvalValue('a && eval(a) && b && c'), ['a']));
+  expect(util.arrayEquals(util.getEvalValue('eval(a) && eval(b) && a && b && c'), ['a', 'b']));
+  expect(util.arrayEquals(util.getEvalValue('a && eval(a) && eval(b) && b && c'), ['a', 'b']));
 });
