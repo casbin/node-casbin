@@ -100,7 +100,7 @@ function getEvalValue(s: string): string[] {
   const subMatch: string[] = s.match(evalReg) as string[];
   const rules: string[] = [];
   for (const rule of subMatch) {
-    const index: number = rule.search('(');
+    const index: number = rule.indexOf('(');
     rules.push(rule.slice(index + 1, -1));
   }
   return rules;
