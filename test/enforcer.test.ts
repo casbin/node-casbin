@@ -16,7 +16,7 @@ import { readFileSync } from 'fs';
 
 import { newModel, newEnforcer, Enforcer, FileAdapter, StringAdapter, Util } from '../src';
 
-async function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: boolean): Promise<void> {
+async function testEnforce(e: Enforcer, sub: any, obj: string, act: string, res: boolean): Promise<void> {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
 }
 
@@ -534,4 +534,35 @@ describe('Unimplemented String Adapter methods', () => {
   test('removeFilteredPolicy', async () => {
     await expect(a.removeFilteredPolicy('', '', 0, '')).rejects.toThrow('not implemented');
   });
+});
+
+class TestSub {
+  Name: string;
+  Age: number;
+
+  constructor(name: string, age: number) {
+    this.Name = name;
+    this.Age = age;
+  }
+}
+
+test('test ABAC Scaling', async () => {
+  const e = await newEnforcer('examples/abac_rule_model.conf', 'examples/abac_rule_policy.csv');
+
+  const sub1 = new TestSub('alice', 16);
+  const sub2 = new TestSub('alice', 20);
+  const sub3 = new TestSub('alice', 65);
+
+  await testEnforce(e, sub1, '/data1', 'read', false);
+  await testEnforce(e, sub1, '/data2', 'read', false);
+  await testEnforce(e, sub1, '/data1', 'write', false);
+  await testEnforce(e, sub1, '/data2', 'write', true);
+  await testEnforce(e, sub2, '/data1', 'read', true);
+  await testEnforce(e, sub2, '/data2', 'read', false);
+  await testEnforce(e, sub2, '/data1', 'write', false);
+  await testEnforce(e, sub2, '/data2', 'write', true);
+  await testEnforce(e, sub3, '/data1', 'read', true);
+  await testEnforce(e, sub3, '/data2', 'read', false);
+  await testEnforce(e, sub3, '/data1', 'write', false);
+  await testEnforce(e, sub3, '/data2', 'write', false);
 });

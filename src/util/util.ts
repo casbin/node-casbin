@@ -97,8 +97,11 @@ function replaceEval(s: string, rule: string): string {
 
 // getEvalValue returns the parameters of function eval
 function getEvalValue(s: string): string[] {
-  const subMatch: string[] = s.match(evalReg) as string[];
+  const subMatch = s.match(evalReg);
   const rules: string[] = [];
+  if (!subMatch) {
+    return [];
+  }
   for (const rule of subMatch) {
     const index: number = rule.indexOf('(');
     rules.push(rule.slice(index + 1, -1));

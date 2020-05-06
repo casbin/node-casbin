@@ -18,9 +18,10 @@ import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel } from './model';
 import { Adapter, Filter, FilteredAdapter, Watcher } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
-import { generateGFunction } from './util';
+import { generateGFunction, hasEval, getEvalValue, escapeAssertion, replaceEval } from './util';
 import { getLogger, logPrint } from './log';
 
+type Matcher = ((context: object) => Promise<any>) | ((context: object) => any);
 /**
  * CoreEnforcer defines the core functionality of an enforcer.
  */
@@ -29,7 +30,7 @@ export class CoreEnforcer {
   protected model: Model;
   protected fm: FunctionMap = FunctionMap.loadFunctionMap();
   protected eft: Effector = new DefaultEffector();
-  private matcherMap: Map<string, ((context: object) => Promise<any>) | ((context: object) => any)> = new Map();
+  private matcherMap: Map<string, Matcher> = new Map();
 
   protected adapter: FilteredAdapter | Adapter;
   protected watcher: Watcher | null = null;
@@ -39,6 +40,17 @@ export class CoreEnforcer {
   protected autoSave = true;
   protected autoBuildRoleLinks = true;
   protected autoNotifyWatcher = true;
+
+  private getExpression(asyncCompile: boolean, exp: string): Matcher {
+    const matcherKey = `${asyncCompile ? 'ASYNC[' : 'SYNC['}${exp}]`;
+
+    let expression = this.matcherMap.get(matcherKey);
+    if (!expression) {
+      expression = asyncCompile ? compileAsync(exp) : compile(exp);
+      this.matcherMap.set(matcherKey, expression);
+    }
+    return expression;
+  }
 
   /**
    * loadModel reloads the model from the model CONF file.
@@ -279,12 +291,11 @@ export class CoreEnforcer {
       throw new Error('Unable to find policy_effect in model');
     }
 
-    const matcherKey = `${asyncCompile ? 'ASYNC[' : 'SYNC['}${expString}]`;
+    const HasEval: boolean = hasEval(expString);
+    let expression;
 
-    let expression = this.matcherMap.get(matcherKey);
-    if (!expression) {
-      expression = asyncCompile ? compileAsync(expString) : compile(expString);
-      this.matcherMap.set(matcherKey, expression);
+    if (!HasEval) {
+      expression = this.getExpression(asyncCompile, expString);
     }
 
     let policyEffects: Effect[];
@@ -315,8 +326,26 @@ export class CoreEnforcer {
           parameters[token] = p?.policy[i][j];
         });
 
-        const context = { ...parameters, ...functions };
-        const result = asyncCompile ? await expression(context) : expression(context);
+        if (HasEval) {
+          const ruleNames: string[] = getEvalValue(expString);
+          let expWithRule = expString;
+          for (const ruleName of ruleNames) {
+            if (ruleName in parameters) {
+              const rule = escapeAssertion(parameters[ruleName]);
+              expWithRule = replaceEval(expWithRule, rule);
+            } else {
+              return false;
+            }
+
+            expression = this.getExpression(asyncCompile, expWithRule);
+          }
+        }
+
+        let result;
+        if (expression != undefined) {
+          const context = { ...parameters, ...functions };
+          result = asyncCompile ? await expression(context) : expression(context);
+        }
 
         switch (typeof result) {
           case 'boolean':
@@ -368,8 +397,12 @@ export class CoreEnforcer {
         parameters[token] = '';
       });
 
-      const context = { ...parameters, ...functions };
-      const result = asyncCompile ? await expression(context) : expression(context);
+      let result = false;
+
+      if (expression != undefined) {
+        const context = { ...parameters, ...functions };
+        result = asyncCompile ? await expression(context) : expression(context);
+      }
 
       if (result) {
         policyEffects[0] = Effect.Allow;
