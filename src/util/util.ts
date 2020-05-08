@@ -83,6 +83,32 @@ function writeFile(path: string, file: string, encoding?: string): any {
   });
 }
 
+const evalReg = new RegExp(/\beval\(([^),]*)\)/g);
+
+// hasEval determine whether matcher contains function eval
+function hasEval(s: string): boolean {
+  return evalReg.test(s);
+}
+
+// replaceEval replace function eval with the value of its parameters
+function replaceEval(s: string, rule: string): string {
+  return s.replace(evalReg, '(' + rule + ')');
+}
+
+// getEvalValue returns the parameters of function eval
+function getEvalValue(s: string): string[] {
+  const subMatch = s.match(evalReg);
+  const rules: string[] = [];
+  if (!subMatch) {
+    return [];
+  }
+  for (const rule of subMatch) {
+    const index: number = rule.indexOf('(');
+    rules.push(rule.slice(index + 1, -1));
+  }
+  return rules;
+}
+
 export {
   escapeAssertion,
   removeComments,
@@ -93,5 +119,8 @@ export {
   paramsToString,
   setEquals,
   readFile,
-  writeFile
+  writeFile,
+  hasEval,
+  replaceEval,
+  getEvalValue
 };
