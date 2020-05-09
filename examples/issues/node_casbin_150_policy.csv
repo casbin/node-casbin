@@ -1,0 +1,5 @@
+p, book_admin , /book/1, GET
+p, pen_admin , /pen/1, GET
+
+g, *, book_admin
+g, *, pen_admin

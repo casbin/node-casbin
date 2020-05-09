@@ -14,7 +14,7 @@
 
 import * as _ from 'lodash';
 import { DefaultRoleManager, Enforcer, newEnforcer, newModel } from '../src';
-import { keyMatch2Func, keyMatch3Func } from '../src/util';
+import { keyMatch2Func, keyMatch3Func, keyMatchFunc } from '../src/util';
 
 async function testEnforce(e: Enforcer, sub: string, obj: any, act: string, res: boolean): Promise<void> {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
@@ -333,4 +333,14 @@ test('TestRBACModelWithPattern', async () => {
   await testEnforce(e, 'bob', '/book2/2', 'GET', false);
   await testEnforce(e, 'bob', '/pen2/1', 'GET', true);
   await testEnforce(e, 'bob', '/pen2/2', 'GET', true);
+});
+
+test('TestNodeCasbin150', async () => {
+  const e = await newEnforcer('examples/issues/node_casbin_150_model.conf', 'examples/issues/node_casbin_150_policy.csv');
+
+  const rm = e.getRoleManager() as DefaultRoleManager;
+  await rm.addMatchingFunc('KeyMatch', keyMatchFunc);
+  await e.buildRoleLinks();
+
+  await e.getImplicitRolesForUser('alice');
 });
