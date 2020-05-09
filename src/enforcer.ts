@@ -280,16 +280,20 @@ export class Enforcer extends ManagementEnforcer {
    * But getImplicitRolesForUser("alice") will get: ["role:admin", "role:user"].
    */
   public async getImplicitRolesForUser(name: string, ...domain: string[]): Promise<string[]> {
-    const res: string[] = [];
-    const roles = await this.rm.getRoles(name, ...domain);
-    res.push(...roles);
-
-    for (const n of roles) {
-      const role = await this.getImplicitRolesForUser(n, ...domain);
-      res.push(...role);
+    const res = new Set<string>();
+    const q = [name];
+    let n: string | undefined;
+    while ((n = q.shift()) != undefined) {
+      const role = await this.getRoleManager().getRoles(n, ...domain);
+      role.forEach(r => {
+        if (!res.has(r)) {
+          res.add(r);
+          q.push(r);
+        }
+      });
     }
 
-    return res;
+    return Array.from(res);
   }
 
   /**
