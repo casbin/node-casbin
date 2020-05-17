@@ -14,6 +14,8 @@
 
 // Effect is the result for a policy rule.
 // Values for policy effect.
+import { EffectorStream } from './effectorStream';
+
 export enum Effect {
   Allow = 1,
   Indeterminate,
@@ -22,6 +24,5 @@ export enum Effect {
 
 // Effector is the interface for Casbin effectors.
 export interface Effector {
-  // mergeEffects merges all matching results collected by the enforcer into a single decision.
-  mergeEffects(expr: string, effects: Effect[], results: number[]): boolean;
+  newStream(expr: string): EffectorStream;
 }
