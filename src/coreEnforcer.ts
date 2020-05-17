@@ -15,7 +15,7 @@
 import { compile, compileAsync } from 'expression-eval';
 
 import { DefaultEffector, Effect, Effector } from './effect';
-import { FunctionMap, Model, newModel } from './model';
+import { FunctionMap, Model, newModel, PolicyOp } from './model';
 import { Adapter, Filter, FilteredAdapter, Watcher } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval } from './util';
@@ -258,6 +258,16 @@ export class CoreEnforcer {
    */
   public async buildRoleLinks(): Promise<void> {
     return this.buildRoleLinksInternal();
+  }
+
+  /**
+   * buildIncrementalRoleLinks provides incremental build the role inheritance relations.
+   * @param op policy operation
+   * @param ptype g
+   * @param rules policies
+   */
+  public async buildIncrementalRoleLinks(op: PolicyOp, ptype: string, rules: string[][]): Promise<void> {
+    await this.model.buildIncrementalRoleLinks(this.rm, op, 'g', ptype, rules);
   }
 
   protected async buildRoleLinksInternal(): Promise<void> {

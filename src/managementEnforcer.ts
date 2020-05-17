@@ -397,13 +397,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async addNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    const ruleadded = await this.addPolicyInternal('g', ptype, params);
-
-    if (this.autoBuildRoleLinks) {
-      await this.buildRoleLinksInternal();
-    }
-
-    return ruleadded;
+    return this.addPolicyInternal('g', ptype, params);
   }
 
   /**
@@ -416,13 +410,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async addNamedGroupingPolicies(ptype: string, rules: string[][]): Promise<boolean> {
-    const rulesAdded = await this.addPoliciesInternal('g', ptype, rules);
-
-    if (this.autoBuildRoleLinks) {
-      await this.buildRoleLinksInternal();
-    }
-
-    return rulesAdded;
+    return this.addPoliciesInternal('g', ptype, rules);
   }
 
   /**
@@ -465,13 +453,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    const ruleRemoved = await this.removePolicyInternal('g', ptype, params);
-
-    if (this.autoBuildRoleLinks) {
-      await this.buildRoleLinksInternal();
-    }
-
-    return ruleRemoved;
+    return this.removePolicyInternal('g', ptype, params);
   }
 
   /**
@@ -482,13 +464,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeNamedGroupingPolicies(ptype: string, rules: string[][]): Promise<boolean> {
-    const rulesRemoved = this.removePoliciesInternal('g', ptype, rules);
-
-    if (this.autoBuildRoleLinks) {
-      await this.buildRoleLinksInternal();
-    }
-
-    return rulesRemoved;
+    return this.removePoliciesInternal('g', ptype, rules);
   }
 
   /**
@@ -501,13 +477,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
-    const ruleRemoved = await this.removeFilteredPolicyInternal('g', ptype, fieldIndex, fieldValues);
-
-    if (this.autoBuildRoleLinks) {
-      await this.buildRoleLinksInternal();
-    }
-
-    return ruleRemoved;
+    return this.removeFilteredPolicyInternal('g', ptype, fieldIndex, fieldValues);
   }
 
   /**

@@ -14,6 +14,7 @@
 
 import { CoreEnforcer } from './coreEnforcer';
 import { BatchAdapter } from './persist/batchAdapter';
+import { PolicyOp } from './model';
 
 /**
  * InternalEnforcer = CoreEnforcer + Internal API.
@@ -42,7 +43,11 @@ export class InternalEnforcer extends CoreEnforcer {
       this.watcher.update();
     }
 
-    return this.model.addPolicy(sec, ptype, rule);
+    const ok = this.model.addPolicy(sec, ptype, rule);
+    if (sec === 'g' && ok) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, [rule]);
+    }
+    return ok;
   }
 
   // addPolicies adds rules to the current policy.
@@ -70,7 +75,11 @@ export class InternalEnforcer extends CoreEnforcer {
       this.watcher.update();
     }
 
-    return this.model.addPolicies(sec, ptype, rules);
+    const [ok, effects] = await this.model.addPolicies(sec, ptype, rules);
+    if (sec === 'g' && ok && effects?.length) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, effects);
+    }
+    return ok;
   }
 
   /**
@@ -96,7 +105,11 @@ export class InternalEnforcer extends CoreEnforcer {
       this.watcher.update();
     }
 
-    return this.model.removePolicy(sec, ptype, rule);
+    const ok = await this.model.removePolicy(sec, ptype, rule);
+    if (sec === 'g' && ok) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, [rule]);
+    }
+    return ok;
   }
 
   // removePolicies removes rules from the current policy.
@@ -123,7 +136,11 @@ export class InternalEnforcer extends CoreEnforcer {
       this.watcher.update();
     }
 
-    return this.model.removePolicies(sec, ptype, rules);
+    const [ok, effects] = this.model.removePolicies(sec, ptype, rules);
+    if (sec === 'g' && ok && effects?.length) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, effects);
+    }
+    return ok;
   }
 
   /**
@@ -145,6 +162,10 @@ export class InternalEnforcer extends CoreEnforcer {
       this.watcher.update();
     }
 
-    return this.model.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
+    const [ok, effects] = this.model.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
+    if (sec === 'g' && ok && effects?.length) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, effects);
+    }
+    return ok;
   }
 }

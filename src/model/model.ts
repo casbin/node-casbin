@@ -27,6 +27,11 @@ export const sectionNameMap: { [index: string]: string } = {
   m: 'matchers'
 };
 
+export enum PolicyOp {
+  PolicyAdd,
+  PolicyRemove
+}
+
 export const requiredSections = ['r', 'p', 'e', 'm'];
 
 export class Model {
@@ -160,6 +165,16 @@ export class Model {
     });
   }
 
+  // buildIncrementalRoleLinks provides incremental build the role inheritance relations.
+  public async buildIncrementalRoleLinks(rm: rbac.RoleManager, op: PolicyOp, sec: string, ptype: string, rules: string[][]): Promise<void> {
+    if (sec === 'g') {
+      await this.model
+        .get(sec)
+        ?.get(ptype)
+        ?.buildIncrementalRoleLinks(rm, op, rules);
+    }
+  }
+
   // buildRoleLinks initializes the roles in RBAC.
   public async buildRoleLinks(rm: rbac.RoleManager): Promise<void> {
     const astMap = this.model.get('g');
@@ -217,21 +232,21 @@ export class Model {
   }
 
   // addPolicies adds policy rules to the model.
-  public addPolicies(sec: string, ptype: string, rules: string[][]): boolean {
+  public addPolicies(sec: string, ptype: string, rules: string[][]): [boolean, string[][]] {
     const ast = this.model.get(sec)?.get(ptype);
     if (!ast) {
-      return false;
+      return [false, []];
     }
 
     for (const rule of rules) {
       if (this.hasPolicy(sec, ptype, rule)) {
-        return false;
+        return [false, []];
       }
     }
 
     ast.policy = ast.policy.concat(rules);
 
-    return true;
+    return [true, rules];
   }
 
   // removePolicy removes a policy rule from the model.
@@ -249,23 +264,30 @@ export class Model {
   }
 
   // removePolicies removes policy rules from the model.
-  public removePolicies(sec: string, ptype: string, rules: string[][]): boolean {
+  public removePolicies(sec: string, ptype: string, rules: string[][]): [boolean, string[][]] {
+    const effects: string[][] = [];
     const ast = this.model.get(sec)?.get(ptype);
     if (!ast) {
-      return false;
+      return [false, []];
     }
 
     for (const rule of rules) {
       if (!this.hasPolicy(sec, ptype, rule)) {
-        return false;
+        return [false, []];
       }
     }
 
     for (const rule of rules) {
-      ast.policy = _.filter(ast.policy, r => !util.arrayEquals(rule, r));
+      ast.policy = _.filter(ast.policy, (r: string[]) => {
+        const equals = util.arrayEquals(rule, r);
+        if (equals) {
+          effects.push(r);
+        }
+        return !equals;
+      });
     }
 
-    return true;
+    return [true, effects];
   }
 
   // getFilteredPolicy gets rules based on field filters from a policy.
@@ -294,12 +316,13 @@ export class Model {
   }
 
   // removeFilteredPolicy removes policy rules based on field filters from the model.
-  public removeFilteredPolicy(sec: string, key: string, fieldIndex: number, ...fieldValues: string[]): boolean {
+  public removeFilteredPolicy(sec: string, key: string, fieldIndex: number, ...fieldValues: string[]): [boolean, string[][]] {
     const res = [];
+    const effects = [];
     let bool = false;
     const ast = this.model.get(sec)?.get(key);
     if (!ast) {
-      return bool;
+      return [false, []];
     }
     for (const rule of ast.policy) {
       let matched = true;
@@ -313,13 +336,14 @@ export class Model {
 
       if (matched) {
         bool = true;
+        effects.push(rule);
       } else {
         res.push(rule);
       }
     }
     ast.policy = res;
 
-    return bool;
+    return [bool, effects];
   }
 
   // getValuesForFieldInPolicy gets all values for a field for all rules in a policy, duplicated values are removed.
