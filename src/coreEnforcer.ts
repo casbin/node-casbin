@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { compileAsync, compile } from 'expression-eval';
+import { compile, compileAsync } from 'expression-eval';
 
 import { DefaultEffector, Effect, Effector } from './effect';
-import { FunctionMap, Model, newModel } from './model';
+import { FunctionMap, Model, newModel, PolicyOp } from './model';
 import { Adapter, Filter, FilteredAdapter, Watcher } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
-import { generateGFunction, hasEval, getEvalValue, escapeAssertion, replaceEval } from './util';
+import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval } from './util';
 import { getLogger, logPrint } from './log';
 
 type Matcher = ((context: object) => Promise<any>) | ((context: object) => any);
+
 /**
  * CoreEnforcer defines the core functionality of an enforcer.
  */
@@ -259,6 +260,16 @@ export class CoreEnforcer {
     return this.buildRoleLinksInternal();
   }
 
+  /**
+   * buildIncrementalRoleLinks provides incremental build the role inheritance relations.
+   * @param op policy operation
+   * @param ptype g
+   * @param rules policies
+   */
+  public async buildIncrementalRoleLinks(op: PolicyOp, ptype: string, rules: string[][]): Promise<void> {
+    await this.model.buildIncrementalRoleLinks(this.rm, op, 'g', ptype, rules);
+  }
+
   protected async buildRoleLinksInternal(): Promise<void> {
     await this.rm.clear();
     await this.model.buildRoleLinks(this.rm);
@@ -286,8 +297,8 @@ export class CoreEnforcer {
       throw new Error('Unable to find matchers in model');
     }
 
-    const effect = this.model.model.get('e')?.get('e')?.value;
-    if (!effect) {
+    const effectExpr = this.model.model.get('e')?.get('e')?.value;
+    if (!effectExpr) {
       throw new Error('Unable to find policy_effect in model');
     }
 
@@ -298,19 +309,15 @@ export class CoreEnforcer {
       expression = this.getExpression(asyncCompile, expString);
     }
 
-    let policyEffects: Effect[];
-    let matcherResults: number[];
-
     const p = this.model.model.get('p')?.get('p');
     const policyLen = p?.policy?.length;
 
     const rTokens = this.model.model.get('r')?.get('r')?.tokens;
     const rTokensLen = rTokens?.length;
 
-    if (policyLen && policyLen !== 0) {
-      policyEffects = new Array(policyLen);
-      matcherResults = new Array(policyLen);
+    const effectStream = this.eft.newStream(effectExpr);
 
+    if (policyLen && policyLen !== 0) {
       for (let i = 0; i < policyLen; i++) {
         const parameters: { [key: string]: any } = {};
 
@@ -347,19 +354,16 @@ export class CoreEnforcer {
           result = asyncCompile ? await expression(context) : expression(context);
         }
 
+        let eftRes: Effect;
         switch (typeof result) {
           case 'boolean':
-            if (!result) {
-              policyEffects[i] = Effect.Indeterminate;
-              continue;
-            }
+            eftRes = result ? Effect.Allow : Effect.Indeterminate;
             break;
           case 'number':
             if (result === 0) {
-              policyEffects[i] = Effect.Indeterminate;
-              continue;
+              eftRes = Effect.Indeterminate;
             } else {
-              matcherResults[i] = result;
+              eftRes = result;
             }
             break;
           default:
@@ -367,26 +371,23 @@ export class CoreEnforcer {
         }
 
         const eft = parameters['p_eft'];
-        if (eft) {
+        if (eft && eftRes === Effect.Allow) {
           if (eft === 'allow') {
-            policyEffects[i] = Effect.Allow;
+            eftRes = Effect.Allow;
           } else if (eft === 'deny') {
-            policyEffects[i] = Effect.Deny;
+            eftRes = Effect.Deny;
           } else {
-            policyEffects[i] = Effect.Indeterminate;
+            eftRes = Effect.Indeterminate;
           }
-        } else {
-          policyEffects[i] = Effect.Allow;
         }
 
-        if (effect === 'priority(p_eft) || deny') {
+        const [res, done] = effectStream.pushEffect(eftRes);
+
+        if (done) {
           break;
         }
       }
     } else {
-      policyEffects = new Array(1);
-      matcherResults = new Array(1);
-
       const parameters: { [key: string]: any } = {};
 
       rTokens?.forEach((token, j): void => {
@@ -405,13 +406,13 @@ export class CoreEnforcer {
       }
 
       if (result) {
-        policyEffects[0] = Effect.Allow;
+        effectStream.pushEffect(Effect.Allow);
       } else {
-        policyEffects[0] = Effect.Indeterminate;
+        effectStream.pushEffect(Effect.Indeterminate);
       }
     }
 
-    const res = this.eft.mergeEffects(effect, policyEffects, matcherResults);
+    const res = effectStream.current();
 
     // only generate the request --> result string if the message
     // is going to be logged.

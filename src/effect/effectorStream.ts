@@ -1,4 +1,4 @@
-// Copyright 2018 The Casbin Authors. All Rights Reserved.
+// Copyright 2020 The Casbin Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,15 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Effector } from './effector';
-import { EffectorStream } from './effectorStream';
-import { DefaultEffectorStream } from './defaultEffectorStream';
+import { Effect } from './effector';
 
-/**
- * DefaultEffector is default effector for Casbin.
- */
-export class DefaultEffector implements Effector {
-  newStream(expr: string): EffectorStream {
-    return new DefaultEffectorStream(expr);
-  }
+// EffectorStream provides a stream interface
+export interface EffectorStream {
+  current(): boolean;
+
+  pushEffect(eft: Effect): [boolean, boolean];
 }
