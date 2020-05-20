@@ -22,4 +22,11 @@ describe('multi-line test', () => {
   it('should config.get("multi5::name") to equal r.sub==p.sub&&r.obj==p.obj', function() {
     expect(config.get('multi5::name')).toEqual('r.sub==p.sub&&r.obj==p.obj');
   });
+
+  it('should config.get("mysql::mysql.master.host") to equal 10.0.0.1', function() {
+    expect(config.get('mysql::mysql.master.host')).toEqual('10.0.0.1');
+  });
+  it('should config.get("mysql::mysql.master.user") to equal root', function() {
+    expect(config.get('mysql::mysql.master.user')).toEqual('root');
+  });
 });
