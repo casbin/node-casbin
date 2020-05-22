@@ -12,14 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { readFileSync } from 'fs';
+import { removeComments } from './util';
 
 // ConfigInterface defines the behavior of a Config implementation
 export interface ConfigInterface {
   getString(key: string): string;
+
   getStrings(key: string): string[];
+
   getBool(key: string): boolean;
+
   getInt(key: string): number;
+
   getFloat(key: string): number;
+
   set(key: string, value: string): void;
 }
 
@@ -92,15 +98,23 @@ export class Config implements ConfigInterface {
     let currentLine = '';
 
     lines.forEach((n, index) => {
+      let commentPos = n.indexOf(Config.DEFAULT_COMMENT);
+      if (commentPos > -1) {
+        n = n.slice(0, commentPos);
+      }
+      commentPos = n.indexOf(Config.DEFAULT_COMMENT_SEM);
+      if (commentPos > -1) {
+        n = n.slice(0, commentPos);
+      }
+
       const line = n.trim();
-      const lineNumber = index + 1;
       if (!line) {
         return;
       }
 
-      if (line.startsWith(Config.DEFAULT_COMMENT) || line.startsWith(Config.DEFAULT_COMMENT_SEM)) {
-        return;
-      } else if (line.startsWith('[') && line.endsWith(']')) {
+      const lineNumber = index + 1;
+
+      if (line.startsWith('[') && line.endsWith(']')) {
         if (currentLine.length !== 0) {
           this.write(section, lineNumber - 1, currentLine);
           currentLine = '';

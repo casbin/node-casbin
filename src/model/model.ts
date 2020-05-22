@@ -96,7 +96,7 @@ export class Model {
         value = value.replace(n, `$<${index}>`);
       });
 
-      value = util.removeComments(util.escapeAssertion(value));
+      value = util.escapeAssertion(value);
 
       stringArguments.forEach((n, index) => {
         value = value.replace(`$<${index}>`, n);
@@ -104,7 +104,7 @@ export class Model {
 
       ast.value = value;
     } else {
-      ast.value = util.removeComments(util.escapeAssertion(value));
+      ast.value = util.escapeAssertion(value);
     }
 
     const nodeMap = this.model.get(sec);
