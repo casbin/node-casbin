@@ -16,7 +16,7 @@ import { compile, compileAsync } from 'expression-eval';
 
 import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
-import { Adapter, Filter, FilteredAdapter, Watcher } from './persist';
+import { Adapter, Filter, FilteredAdapter, Watcher, BatchAdapter } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval } from './util';
 import { getLogger, logPrint } from './log';
@@ -33,7 +33,7 @@ export class CoreEnforcer {
   protected eft: Effector = new DefaultEffector();
   private matcherMap: Map<string, Matcher> = new Map();
 
-  protected adapter: FilteredAdapter | Adapter;
+  protected adapter: FilteredAdapter | Adapter | BatchAdapter;
   protected watcher: Watcher | null = null;
   protected rm: RoleManager = new DefaultRoleManager(10);
 
