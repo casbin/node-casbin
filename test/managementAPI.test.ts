@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { newEnforcer, Enforcer, Util } from '../src';
+import { BatchFileAdapter } from '../src/persist';
 
 let e = {} as Enforcer;
 
@@ -145,6 +146,22 @@ test('addPolicy', async () => {
   expect(await e.hasPolicy(...p)).toBe(true);
 });
 
+test('addPolicies', async () => {
+  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['jack', 'data4', 'read'],
+    ['katy', 'data4', 'write'],
+    ['leyo', 'data4', 'read'],
+    ['ham', 'data4', 'write']
+  ];
+  const added = await e.addPolicies(rules);
+  expect(added).toBe(true);
+  for (const rule of rules) {
+    expect(await e.hasPolicy(...rule)).toBe(true);
+  }
+});
+
 test('addNamedPolicy', async () => {
   const p = ['eve', 'data3', 'read'];
   const added = await e.addNamedPolicy('p', ...p);
@@ -152,11 +169,45 @@ test('addNamedPolicy', async () => {
   expect(await e.hasPolicy(...p)).toBe(true);
 });
 
+test('addNamedPolicies', async () => {
+  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['jack', 'data4', 'read'],
+    ['katy', 'data4', 'write'],
+    ['leyo', 'data4', 'read'],
+    ['ham', 'data4', 'write']
+  ];
+  const added = await e.addNamedPolicies('p', rules);
+  expect(added).toBe(true);
+  for (const rule of rules) {
+    expect(await e.hasPolicy(...rule)).toBe(true);
+  }
+});
+
 test('removePolicy', async () => {
   const p = ['alice', 'data1', 'read'];
   const removed = await e.removePolicy(...p);
   expect(removed).toBe(true);
   expect(await e.hasPolicy(...p)).toBe(false);
+});
+
+test('removePolicies', async () => {
+  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['jack', 'data4', 'read'],
+    ['katy', 'data4', 'write'],
+    ['leyo', 'data4', 'read'],
+    ['ham', 'data4', 'write']
+  ];
+  const added = await e.addPolicies(rules);
+  expect(added).toBe(true);
+  const removed = await e.removePolicies(rules);
+  expect(removed).toBe(true);
+  for (const rule of rules) {
+    expect(await e.hasPolicy(...rule)).toBe(false);
+  }
 });
 
 test('removeFilteredPolicy', async () => {
@@ -171,6 +222,24 @@ test('removeNamedPolicy', async () => {
   const removed = await e.removeNamedPolicy('p', ...p);
   expect(removed).toBe(true);
   expect(await e.hasPolicy(...p)).toBe(false);
+});
+
+test('removeNamedPolicies', async () => {
+  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['jack', 'data4', 'read'],
+    ['katy', 'data4', 'write'],
+    ['leyo', 'data4', 'read'],
+    ['ham', 'data4', 'write']
+  ];
+  const added = await e.addPolicies(rules);
+  expect(added).toBe(true);
+  const removed = await e.removeNamedPolicies('p', rules);
+  expect(removed).toBe(true);
+  for (const rule of rules) {
+    expect(await e.hasPolicy(...rule)).toBe(false);
+  }
 });
 
 test('removeFilteredNamedPolicy', async () => {
@@ -195,13 +264,48 @@ test('addGroupingPolicy', async () => {
   expect(added).toBe(true);
 });
 
-test('addNamedGroupingPolicy ', async () => {
+test('addGroupingPolicies', async () => {
+  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['ham', 'data4_admin'],
+    ['jack', 'data5_admin']
+  ];
+  const added = await e.addGroupingPolicies(groupingRules);
+  expect(added).toBe(true);
+});
+
+test('addNamedGroupingPolicy', async () => {
   const added = await e.addNamedGroupingPolicy('g', 'group1', 'data2_admin');
+  expect(added).toBe(true);
+});
+
+test('addNamedGroupingPolicies', async () => {
+  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['ham', 'data4_admin'],
+    ['jack', 'data5_admin']
+  ];
+  const added = await e.addNamedGroupingPolicies('g', groupingRules);
   expect(added).toBe(true);
 });
 
 test('removeGroupingPolicy', async () => {
   const removed = await e.removeGroupingPolicy('alice', 'data2_admin');
+  expect(removed).toBe(true);
+});
+
+test('removeGroupingPolicies', async () => {
+  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['ham', 'data4_admin'],
+    ['jack', 'data5_admin']
+  ];
+  const added = await e.addGroupingPolicies(groupingRules);
+  expect(added).toBe(true);
+  const removed = await e.removeGroupingPolicies(groupingRules);
   expect(removed).toBe(true);
 });
 
@@ -212,5 +316,18 @@ test('removeFilteredGroupingPolicy', async () => {
 
 test('removeFilteredNamedGroupingPolicy', async () => {
   const removed = await e.removeFilteredNamedGroupingPolicy('g', 0, 'alice');
+  expect(removed).toBe(true);
+});
+
+test('removeNamedGroupingPolicies', async () => {
+  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['ham', 'data4_admin'],
+    ['jack', 'data5_admin']
+  ];
+  const added = await e.addGroupingPolicies(groupingRules);
+  expect(added).toBe(true);
+  const removed = await e.removeNamedGroupingPolicies('g', groupingRules);
   expect(removed).toBe(true);
 });
