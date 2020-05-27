@@ -16,7 +16,7 @@ import { compile, compileAsync } from 'expression-eval';
 
 import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
-import { Adapter, Filter, FilteredAdapter, Watcher, BatchAdapter } from './persist';
+import { Adapter, FilteredAdapter, Watcher, BatchAdapter } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval } from './util';
 import { getLogger, logPrint } from './log';
@@ -160,11 +160,11 @@ export class CoreEnforcer {
    *
    * @param filter the filter used to specify which type of policy should be loaded.
    */
-  public async loadFilteredPolicy(filter: Filter): Promise<boolean> {
+  public async loadFilteredPolicy(filter: any): Promise<boolean> {
     this.model.clearPolicy();
 
-    if ((this.adapter as FilteredAdapter).isFiltered()) {
-      await (this.adapter as FilteredAdapter).loadFilteredPolicy(this.model, filter);
+    if ('isFiltered' in this.adapter) {
+      await this.adapter.loadFilteredPolicy(this.model, filter);
     } else {
       throw new Error('filtered policies are not supported by this adapter');
     }
@@ -182,8 +182,8 @@ export class CoreEnforcer {
    * @return if the loaded policy has been filtered.
    */
   public isFiltered(): boolean {
-    if ((this.adapter as FilteredAdapter).isFiltered) {
-      return (this.adapter as FilteredAdapter).isFiltered();
+    if ('isFiltered' in this.adapter) {
+      return this.adapter.isFiltered();
     }
     return false;
   }
