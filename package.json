@@ -10,6 +10,7 @@
     "build": "rimraf lib && tsc",
     "test": "jest",
     "lint": "eslint . --ext .js,.ts",
+    "fmt": "eslint . --ext .js,.ts --fix",
     "semantic-release": "semantic-release",
     "commit": "git-cz"
   },
@@ -43,7 +44,6 @@
     "await-lock": "^2.0.1",
     "expression-eval": "^2.0.0",
     "ip": "^1.1.5",
-    "lodash": "^4.17.15",
     "micromatch": "^4.0.2"
   },
   "files": [
@@ -64,7 +64,7 @@
   "husky": {
     "hooks": {
       "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true",
-      "pre-commit": "yarn lint && pretty-quick --staged"
+      "pre-commit": "yarn fmt && pretty-quick --staged"
     }
   },
   "config": {

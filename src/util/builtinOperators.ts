@@ -14,7 +14,6 @@
 
 import * as rbac from '../rbac';
 import * as ip from 'ip';
-import * as _ from 'lodash';
 import { isMatch } from 'micromatch';
 
 // regexMatch determines whether key1 matches the pattern of key2 in regular expression.
@@ -40,8 +39,9 @@ function keyMatch(key1: string, key2: string): boolean {
 
 // keyMatchFunc is the wrapper for keyMatch.
 function keyMatchFunc(...args: any[]): boolean {
-  const name1: string = _.toString(args[0]);
-  const name2: string = _.toString(args[1]);
+  const [arg0, arg1] = args;
+  const name1: string = (arg0 || '').toString();
+  const name2: string = (arg1 || '').toString();
 
   return keyMatch(name1, name2);
 }
@@ -54,7 +54,7 @@ function keyMatch2(key1: string, key2: string): boolean {
 
   const regexp = new RegExp(/(.*):[^/]+(.*)/g);
   for (;;) {
-    if (!_.includes(key2, '/:')) {
+    if (!key2.includes('/:')) {
       break;
     }
     key2 = key2.replace(regexp, '$1[^/]+$2');
@@ -65,8 +65,9 @@ function keyMatch2(key1: string, key2: string): boolean {
 
 // keyMatch2Func is the wrapper for keyMatch2.
 function keyMatch2Func(...args: any[]): boolean {
-  const name1: string = _.toString(args[0]);
-  const name2: string = _.toString(args[1]);
+  const [arg0, arg1] = args;
+  const name1: string = (arg0 || '').toString();
+  const name2: string = (arg1 || '').toString();
 
   return keyMatch2(name1, name2);
 }
@@ -78,7 +79,7 @@ function keyMatch3(key1: string, key2: string): boolean {
 
   const regexp = new RegExp(/(.*){[^/]+}(.*)/g);
   for (;;) {
-    if (!_.includes(key2, '/{')) {
+    if (!key2.includes('/{')) {
       break;
     }
     key2 = key2.replace(regexp, '$1[^/]+$2');
@@ -89,8 +90,9 @@ function keyMatch3(key1: string, key2: string): boolean {
 
 // keyMatch3Func is the wrapper for keyMatch3.
 function keyMatch3Func(...args: any[]): boolean {
-  const name1: string = _.toString(args[0]);
-  const name2: string = _.toString(args[1]);
+  const [arg0, arg1] = args;
+  const name1: string = (arg0 || '').toString();
+  const name2: string = (arg1 || '').toString();
 
   return keyMatch3(name1, name2);
 }
@@ -166,16 +168,18 @@ function keyMatch4(key1: string, key2: string): boolean {
 
 // keyMatch4Func is the wrapper for keyMatch4.
 function keyMatch4Func(...args: any[]): boolean {
-  const name1: string = _.toString(args[0]);
-  const name2: string = _.toString(args[1]);
+  const [arg0, arg1] = args;
+  const name1: string = (arg0 || '').toString();
+  const name2: string = (arg1 || '').toString();
 
   return keyMatch4(name1, name2);
 }
 
 // regexMatchFunc is the wrapper for regexMatch.
 function regexMatchFunc(...args: any[]): boolean {
-  const name1: string = _.toString(args[0]);
-  const name2: string = _.toString(args[1]);
+  const [arg0, arg1] = args;
+  const name1: string = (arg0 || '').toString();
+  const name2: string = (arg1 || '').toString();
 
   return regexMatch(name1, name2);
 }
@@ -203,8 +207,9 @@ function ipMatch(ip1: string, ip2: string): boolean {
 
 // ipMatchFunc is the wrapper for ipMatch.
 function ipMatchFunc(...args: any[]): boolean {
-  const ip1: string = _.toString(args[0]);
-  const ip2: string = _.toString(args[1]);
+  const [arg0, arg1] = args;
+  const ip1: string = (arg0 || '').toString();
+  const ip2: string = (arg1 || '').toString();
 
   return ipMatch(ip1, ip2);
 }
@@ -229,15 +234,16 @@ function globMatch(string: string, pattern: string): boolean {
 // generateGFunction is the factory method of the g(_, _) function.
 function generateGFunction(rm: rbac.RoleManager): any {
   return async function func(...args: any[]): Promise<boolean> {
-    const name1: string = _.toString(args[0]);
-    const name2: string = _.toString(args[1]);
+    const [arg0, arg1] = args;
+    const name1: string = (arg0 || '').toString();
+    const name2: string = (arg1 || '').toString();
 
     if (!rm) {
       return name1 === name2;
     } else if (args.length === 2) {
       return await rm.hasLink(name1, name2);
     } else {
-      const domain: string = _.toString(args[2]);
+      const domain: string = args[2].toString();
       return await rm.hasLink(name1, name2, domain);
     }
   };

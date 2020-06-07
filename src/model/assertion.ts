@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import * as rbac from '../rbac';
-import * as _ from 'lodash';
 import { logPrint } from '../log';
 import { PolicyOp } from './model';
 
@@ -39,7 +38,7 @@ export class Assertion {
 
   public async buildIncrementalRoleLinks(rm: rbac.RoleManager, op: PolicyOp, rules: string[][]): Promise<void> {
     this.rm = rm;
-    const count = _.words(this.value, /_/g).length;
+    const count = (this.value.match(/_/g) || []).length;
     if (count < 2) {
       throw new Error('the number of "_" in role definition should be at least 2');
     }
@@ -65,7 +64,7 @@ export class Assertion {
 
   public async buildRoleLinks(rm: rbac.RoleManager): Promise<void> {
     this.rm = rm;
-    const count = _.words(this.value, /_/g).length;
+    const count = (this.value.match(/_/g) || []).length;
     if (count < 2) {
       throw new Error('the number of "_" in role definition should be at least 2');
     }
