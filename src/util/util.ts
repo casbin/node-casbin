@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as _ from 'lodash';
 import * as fs from 'fs';
 
 // escapeAssertion escapes the dots in the assertion,
@@ -26,37 +25,59 @@ function escapeAssertion(s: string): string {
 // removeComments removes the comments starting with # in the text.
 function removeComments(s: string): string {
   const pos = s.indexOf('#');
-  return pos > -1 ? _.trim(s.slice(0, pos)) : s;
+  return pos > -1 ? s.slice(0, pos).trim() : s;
 }
 
 // arrayEquals determines whether two string arrays are identical.
-function arrayEquals(a: string[], b: string[]): boolean {
-  return _.isEqual(a, b);
+function arrayEquals(a: string[] = [], b: string[] = []): boolean {
+  const aLen = a.length;
+  const bLen = b.length;
+  if (aLen !== bLen) {
+    return false;
+  }
+
+  for (let i = 0; i < aLen; i++) {
+    if (a[i] != b[i]) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // array2DEquals determines whether two 2-dimensional string arrays are identical.
-function array2DEquals(a: string[][], b: string[][]): boolean {
-  return _.isEqual(a, b);
+function array2DEquals(a: string[][] = [], b: string[][] = []): boolean {
+  const aLen = a.length;
+  const bLen = a.length;
+  if (aLen != bLen) {
+    return false;
+  }
+
+  for (let i = 0; i < aLen; i++) {
+    if (!arrayEquals(a[i], b[i])) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // arrayRemoveDuplicates removes any duplicated elements in a string array.
 function arrayRemoveDuplicates(s: string[]): string[] {
-  return _.uniq(s);
+  return [...new Set(s)];
 }
 
 // arrayToString gets a printable string for a string array.
 function arrayToString(a: string[]): string {
-  return _.join(a, ', ');
+  return a.join(', ');
 }
 
 // paramsToString gets a printable string for variable number of parameters.
 function paramsToString(...v: string[]): string {
-  return _.join(v, ', ');
+  return v.join(', ');
 }
 
 // setEquals determines whether two string sets are identical.
 function setEquals(a: string[], b: string[]): boolean {
-  return _.isEqual(_.sortedUniq(a), _.sortedUniq(b));
+  return arrayEquals(a.sort(), b.sort());
 }
 
 // readFile return a promise for readFile.

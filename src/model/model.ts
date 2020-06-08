@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as _ from 'lodash';
 import * as rbac from '../rbac';
 import * as util from '../util';
 import { Config, ConfigInterface } from '../config';
@@ -57,7 +56,7 @@ export class Model {
       return '';
     }
 
-    return _.toString(i);
+    return i.toString();
   }
 
   private loadSection(cfg: ConfigInterface, sec: string): void {
@@ -256,7 +255,7 @@ export class Model {
       if (!ast) {
         return false;
       }
-      ast.policy = _.filter(ast.policy, r => !util.arrayEquals(rule, r));
+      ast.policy = ast.policy.filter(r => !util.arrayEquals(rule, r));
       return true;
     }
 
@@ -278,7 +277,7 @@ export class Model {
     }
 
     for (const rule of rules) {
-      ast.policy = _.filter(ast.policy, (r: string[]) => {
+      ast.policy = ast.policy.filter((r: string[]) => {
         const equals = util.arrayEquals(rule, r);
         if (equals) {
           effects.push(r);
