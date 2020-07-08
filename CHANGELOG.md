@@ -1,3 +1,10 @@
+## [5.0.5](https://github.com/casbin/node-casbin/compare/v5.0.4...v5.0.5) (2020-07-08)
+
+
+### Bug Fixes
+
+* improve tokens separator ([687e96f](https://github.com/casbin/node-casbin/commit/687e96f1495de12bc7acd37bf56af57af490b0b6))
+
 ## [5.0.4](https://github.com/casbin/node-casbin/compare/v5.0.3...v5.0.4) (2020-06-08)
 
 ### Bug Fixes
