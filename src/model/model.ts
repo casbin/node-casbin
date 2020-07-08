@@ -81,7 +81,7 @@ export class Model {
     ast.value = value;
 
     if (sec === 'r' || sec === 'p') {
-      const tokens = value.split(', ');
+      const tokens = value.split(',').map(n => n.trim());
 
       for (let i = 0; i < tokens.length; i++) {
         tokens[i] = key + '_' + tokens[i];
