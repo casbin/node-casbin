@@ -1,3 +1,10 @@
+## [5.0.6](https://github.com/casbin/node-casbin/compare/v5.0.5...v5.0.6) (2020-07-16)
+
+
+### Bug Fixes
+
+* add casbin-cpp to supported languages. ([b856734](https://github.com/casbin/node-casbin/commit/b85673432f8a150490fd5134797508ccd368b81f))
+
 ## [5.0.5](https://github.com/casbin/node-casbin/compare/v5.0.4...v5.0.5) (2020-07-08)
 
 
