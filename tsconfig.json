@@ -1,15 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "target": "ES6",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "strict": true,
     "strictPropertyInitialization": false,
     "declaration": true,
-    "declarationDir": "lib",
-    "outDir": "lib"
+    "downlevelIteration": true
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"]
 }
