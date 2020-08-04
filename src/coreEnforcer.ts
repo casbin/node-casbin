@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { compile, compileAsync } from 'expression-eval';
+import AwaitLock from 'await-lock';
 
 import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
@@ -41,6 +42,7 @@ export class CoreEnforcer {
   protected autoSave = true;
   protected autoBuildRoleLinks = true;
   protected autoNotifyWatcher = true;
+  private lock = new AwaitLock();
 
   private getExpression(asyncCompile: boolean, exp: string): Matcher {
     const matcherKey = `${asyncCompile ? 'ASYNC[' : 'SYNC['}${exp}]`;
@@ -138,21 +140,31 @@ export class CoreEnforcer {
   /**
    * clearPolicy clears all policy.
    */
-  public clearPolicy(): void {
+  public async clearPolicy(): Promise<void> {
     this.model.clearPolicy();
+    if (this.autoSave) {
+      await this.savePolicy();
+    }
   }
 
   /**
    * loadPolicy reloads the policy from file/database.
    */
   public async loadPolicy(): Promise<void> {
-    this.model.clearPolicy();
-    await this.adapter.loadPolicy(this.model);
+    await this.lock
+      .acquireAsync()
+      .then(async () => {
+        this.model.clearPolicy();
+        await this.adapter.loadPolicy(this.model);
 
-    this.model.printPolicy();
-    if (this.autoBuildRoleLinks) {
-      await this.buildRoleLinksInternal();
-    }
+        this.model.printPolicy();
+        if (this.autoBuildRoleLinks) {
+          await this.buildRoleLinksInternal();
+        }
+      })
+      .finally(() => {
+        this.lock.release();
+      });
   }
 
   /**

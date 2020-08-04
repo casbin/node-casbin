@@ -166,7 +166,9 @@ test('test getImplicitPermissionsForUser', async () => {
   expect(await e.getImplicitUsersForPermission('data2', 'read')).toEqual(['alice']);
   expect(await e.getImplicitUsersForPermission('data2', 'write')).toEqual(['alice', 'bob']);
 
-  e.clearPolicy();
+  e.enableAutoSave(false);
+  await e.clearPolicy();
+  e.enableAutoSave(true);
 
   await e.addPolicy('admin', 'data1', 'read');
   await e.addPolicy('bob', 'data1', 'read');

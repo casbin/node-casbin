@@ -272,7 +272,9 @@ test('TestSavePolicy', async () => {
 test('TestClearPolicy', async () => {
   const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
 
-  e.clearPolicy();
+  e.enableAutoSave(false);
+  await e.clearPolicy();
+  await testGetPolicy(e, []);
 });
 
 test('TestEnableEnforce', async () => {
