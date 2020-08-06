@@ -159,7 +159,7 @@ test('test deleteUser', async () => {
   expect(await e.getImplicitPermissionsForUser('bob')).toEqual([]);
 });
 
-test('test getImplicitPermissionsForUser', async () => {
+test('test getImplicitUsersForPermission', async () => {
   const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
   expect(await e.getImplicitUsersForPermission('data1', 'read')).toEqual(['alice']);
   expect(await e.getImplicitUsersForPermission('data1', 'write')).toEqual(['alice']);
