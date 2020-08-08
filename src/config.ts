@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { readFileSync } from 'fs';
-import { removeComments } from './util';
 
 // ConfigInterface defines the behavior of a Config implementation
 export interface ConfigInterface {
