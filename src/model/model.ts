@@ -317,8 +317,11 @@ export class Model {
   // removeFilteredPolicy removes policy rules based on field filters from the model.
   public removeFilteredPolicy(sec: string, key: string, fieldIndex: number, ...fieldValues: string[]): [boolean, string[][]] {
     const res = [];
-    const effects = [];
+    const effects: string[][] = [];
     let bool = false;
+    if (fieldValues.length == 0) {
+      return [false, effects];
+    }
     const ast = this.model.get(sec)?.get(key);
     if (!ast) {
       return [false, []];
@@ -340,7 +343,10 @@ export class Model {
         res.push(rule);
       }
     }
-    ast.policy = res;
+
+    if (effects.length != 0) {
+      ast.policy = res;
+    }
 
     return [bool, effects];
   }
