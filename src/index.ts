@@ -23,4 +23,5 @@ export * from './model';
 export * from './persist';
 export * from './rbac';
 export * from './log';
+export * from './frontend';
 export { Util };
