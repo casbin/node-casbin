@@ -1,3 +1,10 @@
+# [5.1.0](https://github.com/casbin/node-casbin/compare/v5.0.7...v5.1.0) (2020-08-11)
+
+
+### Features
+
+* add casbinJsGetPermissionForUser ([30ae126](https://github.com/casbin/node-casbin/commit/30ae126b962df6fc580ce943f20e8bf0ce5349c3))
+
 ## [5.0.6](https://github.com/casbin/node-casbin/compare/v5.0.5...v5.0.6) (2020-07-16)
 
 
