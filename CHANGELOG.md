@@ -1,3 +1,10 @@
+## [5.1.1](https://github.com/casbin/node-casbin/compare/v5.1.0...v5.1.1) (2020-08-12)
+
+
+### Bug Fixes
+
+* add check if the adapter implements BatchAdapter ([a415838](https://github.com/casbin/node-casbin/commit/a415838a514706af8a9399c899959bdb069619d4))
+
 # [5.1.0](https://github.com/casbin/node-casbin/compare/v5.0.7...v5.1.0) (2020-08-11)
 
 
