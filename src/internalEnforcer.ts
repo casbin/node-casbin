@@ -59,14 +59,17 @@ export class InternalEnforcer extends CoreEnforcer {
       }
     }
 
-    const batchAdapter = this.adapter as BatchAdapter;
-    if (batchAdapter && this.autoSave) {
-      try {
-        await batchAdapter.addPolicies(sec, ptype, rules);
-      } catch (e) {
-        if (e.message !== 'not implemented') {
-          throw e;
+    if (this.autoSave) {
+      if ('addPolicies' in this.adapter) {
+        try {
+          await this.adapter.addPolicies(sec, ptype, rules);
+        } catch (e) {
+          if (e.message !== 'not implemented') {
+            throw e;
+          }
         }
+      } else {
+        throw new Error('cannot to save policy, the adapter does not implement the BatchAdapter');
       }
     }
 
@@ -120,14 +123,17 @@ export class InternalEnforcer extends CoreEnforcer {
       }
     }
 
-    const batchAdapter = this.adapter as BatchAdapter;
-    if (batchAdapter && this.autoSave) {
-      try {
-        await batchAdapter.removePolicies(sec, ptype, rules);
-      } catch (e) {
-        if (e.message !== 'not implemented') {
-          throw e;
+    if (this.autoSave) {
+      if ('removePolicies' in this.adapter) {
+        try {
+          await this.adapter.removePolicies(sec, ptype, rules);
+        } catch (e) {
+          if (e.message !== 'not implemented') {
+            throw e;
+          }
         }
+      } else {
+        throw new Error('cannot to save policy, the adapter does not implement the BatchAdapter');
       }
     }
 
