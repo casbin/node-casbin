@@ -1,3 +1,10 @@
+## [5.1.2](https://github.com/casbin/node-casbin/compare/v5.1.1...v5.1.2) (2020-08-12)
+
+
+### Bug Fixes
+
+* add checks fieldValues to remove filtered policy ([6e144fb](https://github.com/casbin/node-casbin/commit/6e144fb9a895332245006ef3a28c47d022654895))
+
 ## [5.1.1](https://github.com/casbin/node-casbin/compare/v5.1.0...v5.1.1) (2020-08-12)
 
 
