@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { readFileSync } from 'fs';
 import { newEnforcer } from '../src/index';
 import { casbinJsGetPermissionForUser } from '../src/frontend';
 
 test('TestCasbinJsGetPermissionForUser', async () => {
   const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
-  let permStr = await casbinJsGetPermissionForUser(e, 'alice');
-  let perm = JSON.parse(permStr);
-  expect(perm['read']).toContain('data1');
-  expect(perm['write']).toContain('data1');
-  expect(perm['read']).toContain('data2');
-  expect(perm['write']).toContain('data2');
-
-  permStr = await casbinJsGetPermissionForUser(e, 'bob');
-  perm = JSON.parse(permStr);
-  expect(perm['write']).toContain('data2');
-  expect(perm['write']).not.toContain('data1');
-  expect(perm['read']).not.toBeNull;
-  expect(perm['rm_rf']).toBeNull;
+  const received = JSON.parse(await casbinJsGetPermissionForUser(e, 'alice'));
+  const expectedModelStr = readFileSync('examples/rbac_model.conf').toString();
+  expect(received['m']).toBe(expectedModelStr.replace(/\n\n/g, '\n'));
+  const expectedPoliciesStr = readFileSync('examples/rbac_with_hierarchy_policy.csv').toString();
+  const expectedPolicyItem = expectedPoliciesStr.split(RegExp(',|\n'));
+  let i = 0;
+  for (const sArr of received['p']) {
+    for (const s of sArr) {
+      expect(s.trim()).toEqual(expectedPolicyItem[i].trim());
+      i = i + 1;
+    }
+  }
 });
