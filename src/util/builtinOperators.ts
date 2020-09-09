@@ -233,19 +233,29 @@ function globMatch(string: string, pattern: string): boolean {
 
 // generateGFunction is the factory method of the g(_, _) function.
 function generateGFunction(rm: rbac.RoleManager): any {
+  const memorized = new Map<string, boolean>();
   return async function func(...args: any[]): Promise<boolean> {
+    const key = args.toString();
+    let value = memorized.get(key);
+    if (value) {
+      return value;
+    }
+
     const [arg0, arg1] = args;
     const name1: string = (arg0 || '').toString();
     const name2: string = (arg1 || '').toString();
 
     if (!rm) {
-      return name1 === name2;
+      value = name1 === name2;
     } else if (args.length === 2) {
-      return await rm.hasLink(name1, name2);
+      value = await rm.hasLink(name1, name2);
     } else {
       const domain: string = args[2].toString();
-      return await rm.hasLink(name1, name2, domain);
+      value = await rm.hasLink(name1, name2, domain);
     }
+
+    memorized.set(key, value);
+    return value;
   };
 }
 
