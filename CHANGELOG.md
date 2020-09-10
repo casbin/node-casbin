@@ -1,3 +1,10 @@
+## [5.1.4](https://github.com/casbin/node-casbin/compare/v5.1.3...v5.1.4) (2020-09-10)
+
+
+### Bug Fixes
+
+* add cache to generateGFunction ([e90bed2](https://github.com/casbin/node-casbin/commit/e90bed24f6e6e3cd5b33a433c4fe7a27e494cabe))
+
 ## [5.1.3](https://github.com/casbin/node-casbin/compare/v5.1.2...v5.1.3) (2020-08-30)
 
 
