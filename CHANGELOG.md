@@ -1,3 +1,10 @@
+## [5.1.5](https://github.com/casbin/node-casbin/compare/v5.1.4...v5.1.5) (2020-09-14)
+
+
+### Bug Fixes
+
+* ignore print model ([f426131](https://github.com/casbin/node-casbin/commit/f426131e752143251db6c11a7352d91d959cb503))
+
 ## [5.1.4](https://github.com/casbin/node-casbin/compare/v5.1.3...v5.1.4) (2020-09-10)
 
 
