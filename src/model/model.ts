@@ -16,7 +16,7 @@ import * as rbac from '../rbac';
 import * as util from '../util';
 import { Config, ConfigInterface } from '../config';
 import { Assertion } from './assertion';
-import { logPrint } from '../log';
+import { getLogger, logPrint } from '../log';
 
 export const sectionNameMap: { [index: string]: string } = {
   r: 'request_definition',
@@ -379,6 +379,9 @@ export class Model {
 
   // printPolicy prints the policy to log.
   public printPolicy(): void {
+    if (!getLogger().isEnable()) {
+      return;
+    }
     logPrint('Policy:');
     this.model.forEach((map, key) => {
       if (key === 'p' || key === 'g') {

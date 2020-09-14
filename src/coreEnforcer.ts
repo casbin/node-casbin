@@ -149,7 +149,6 @@ export class CoreEnforcer {
     this.model.clearPolicy();
     await this.adapter.loadPolicy(this.model);
 
-    this.model.printPolicy();
     if (this.autoBuildRoleLinks) {
       await this.buildRoleLinksInternal();
     }
@@ -169,7 +168,6 @@ export class CoreEnforcer {
       throw new Error('filtered policies are not supported by this adapter');
     }
 
-    this.model.printPolicy();
     if (this.autoBuildRoleLinks) {
       await this.buildRoleLinksInternal();
     }
