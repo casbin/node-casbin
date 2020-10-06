@@ -49,7 +49,8 @@
     "await-lock": "^2.0.1",
     "expression-eval": "^2.0.0",
     "ip": "^1.1.5",
-    "micromatch": "^4.0.2"
+    "micromatch": "^4.0.2",
+    "path-to-regexp": "^6.2.0"
   },
   "files": [
     "lib",

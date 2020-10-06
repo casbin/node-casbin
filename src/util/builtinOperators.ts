@@ -15,6 +15,7 @@
 import * as rbac from '../rbac';
 import * as ip from 'ip';
 import { isMatch } from 'micromatch';
+import { pathToRegexp } from 'path-to-regexp';
 
 // regexMatch determines whether key1 matches the pattern of key2 in regular expression.
 function regexMatch(key1: string, key2: string): boolean {
@@ -25,16 +26,20 @@ function regexMatch(key1: string, key2: string): boolean {
 // key2 can contain a *.
 // For example, '/foo/bar' matches '/foo/*'
 function keyMatch(key1: string, key2: string): boolean {
-  const pos: number = key2.indexOf('*');
-  if (pos === -1) {
-    return key1 === key2;
+  if (key1 === key2) {
+    return true;
   }
 
-  if (key1.length > pos) {
-    return key1.slice(0, pos) === key2.slice(0, pos);
+  if (!key1.startsWith('/')) {
+    key1 = '/' + key1;
   }
 
-  return key1 === key2.slice(0, pos);
+  if (!key2.startsWith('/')) {
+    key2 = '/' + key2;
+  }
+  key2 = key2.replace(/\/\*/g, '/(.*)');
+
+  return pathToRegexp(key2).test(key1);
 }
 
 // keyMatchFunc is the wrapper for keyMatch.
@@ -50,17 +55,7 @@ function keyMatchFunc(...args: any[]): boolean {
 // key2 can contain a *.
 // For example, '/foo/bar' matches '/foo/*', '/resource1' matches '/:resource'
 function keyMatch2(key1: string, key2: string): boolean {
-  key2 = key2.replace(/\/\*/g, '/.*');
-
-  const regexp = new RegExp(/(.*):[^/]+(.*)/g);
-  for (;;) {
-    if (!key2.includes('/:')) {
-      break;
-    }
-    key2 = key2.replace(regexp, '$1[^/]+$2');
-  }
-
-  return regexMatch(key1, '^' + key2 + '$');
+  return keyMatch(key1, key2);
 }
 
 // keyMatch2Func is the wrapper for keyMatch2.
@@ -75,17 +70,12 @@ function keyMatch2Func(...args: any[]): boolean {
 // keyMatch3 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
 // For example, '/foo/bar' matches '/foo/*', '/resource1' matches '/{resource}'
 function keyMatch3(key1: string, key2: string): boolean {
-  key2 = key2.replace(/\/\*/g, '/.*');
+  const regexp = new RegExp(/{(.*?)(\?)?}/);
 
-  const regexp = new RegExp(/(.*){[^/]+}(.*)/g);
-  for (;;) {
-    if (!key2.includes('/{')) {
-      break;
-    }
-    key2 = key2.replace(regexp, '$1[^/]+$2');
+  while (regexp.test(key2)) {
+    key2 = key2.replace(regexp, ':$1');
   }
-
-  return regexMatch(key1, key2);
+  return keyMatch(key1, key2);
 }
 
 // keyMatch3Func is the wrapper for keyMatch3.
