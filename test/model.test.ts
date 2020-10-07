@@ -310,7 +310,7 @@ test('TestRBACModelWithPattern', async () => {
   // of checking whether "/book/:id" equals the obj: "/book/1", it checks whether the pattern matches.
   // You can see it as normal RBAC: "/book/:id" == "/book/1" becomes KeyMatch2("/book/:id", "/book/1")
   const rm = e.getRoleManager() as DefaultRoleManager;
-  await rm.addMatchingFunc('KeyMatch2', keyMatch2Func);
+  await rm.addMatchingFunc(keyMatch2Func);
   await e.buildRoleLinks();
   await testEnforce(e, 'alice', '/book/1', 'GET', true);
   await testEnforce(e, 'alice', '/book/2', 'GET', true);
@@ -323,7 +323,7 @@ test('TestRBACModelWithPattern', async () => {
 
   // AddMatchingFunc() is actually setting a function because only one function is allowed,
   // so when we set "KeyMatch3", we are actually replacing "KeyMatch2" with "KeyMatch3".
-  await rm.addMatchingFunc('KeyMatch3', keyMatch3Func);
+  await rm.addMatchingFunc(keyMatch3Func);
   await e.buildRoleLinks();
   await testEnforce(e, 'alice', '/book2/1', 'GET', true);
   await testEnforce(e, 'alice', '/book2/2', 'GET', true);
@@ -339,8 +339,39 @@ test('TestNodeCasbin150', async () => {
   const e = await newEnforcer('examples/issues/node_casbin_150_model.conf', 'examples/issues/node_casbin_150_policy.csv');
 
   const rm = e.getRoleManager() as DefaultRoleManager;
-  await rm.addMatchingFunc('KeyMatch', keyMatchFunc);
+  await rm.addMatchingFunc(keyMatchFunc);
   await e.buildRoleLinks();
 
   await e.getImplicitRolesForUser('alice');
+});
+
+test('TestDomainMatchModel', async () => {
+  const e = await newEnforcer('examples/rbac_with_domain_pattern_model.conf', 'examples/rbac_with_domain_pattern_policy.csv');
+
+  const rm = e.getRoleManager() as DefaultRoleManager;
+  await rm.addDomainMatchingFunc(keyMatch2Func);
+
+  await testDomainEnforce(e, 'alice', 'domain1', 'data1', 'read', true);
+  await testDomainEnforce(e, 'alice', 'domain1', 'data1', 'write', true);
+  await testDomainEnforce(e, 'alice', 'domain1', 'data2', 'read', false);
+  await testDomainEnforce(e, 'alice', 'domain1', 'data2', 'write', false);
+  await testDomainEnforce(e, 'alice', 'domain2', 'data2', 'read', true);
+  await testDomainEnforce(e, 'alice', 'domain2', 'data2', 'write', true);
+  await testDomainEnforce(e, 'bob', 'domain2', 'data1', 'read', false);
+  await testDomainEnforce(e, 'bob', 'domain2', 'data1', 'write', false);
+  await testDomainEnforce(e, 'bob', 'domain2', 'data2', 'read', true);
+  await testDomainEnforce(e, 'bob', 'domain2', 'data2', 'write', true);
+});
+
+test('TestAllMatchModel', async () => {
+  const e = await newEnforcer('examples/rbac_with_all_pattern_model.conf', 'examples/rbac_with_all_pattern_policy.csv');
+
+  const rm = e.getRoleManager() as DefaultRoleManager;
+  await rm.addMatchingFunc(keyMatch2Func);
+  await rm.addDomainMatchingFunc(keyMatch2Func);
+
+  await testDomainEnforce(e, 'alice', 'domain1', '/book/1', 'read', true);
+  await testDomainEnforce(e, 'alice', 'domain1', '/book/1', 'write', false);
+  await testDomainEnforce(e, 'alice', 'domain2', '/book/1', 'read', false);
+  await testDomainEnforce(e, 'alice', 'domain2', '/book/1', 'write', true);
 });
