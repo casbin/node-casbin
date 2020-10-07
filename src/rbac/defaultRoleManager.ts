@@ -13,7 +13,23 @@
 // limitations under the License.
 
 import { RoleManager } from './roleManager';
-import { logPrint } from '../log';
+import { getLogger, logPrint } from '../log';
+
+type MatchingFunc = (arg1: string, arg2: string) => boolean;
+
+// DEFAULT_DOMAIN defines the default domain space.
+const DEFAULT_DOMAIN = 'casbin::default';
+
+// loadOrDefault returns the existing value for the key if present.
+// Otherwise, it stores and returns the given value.
+function loadOrDefault<K, V>(map: Map<K, V>, key: K, value: V): V {
+  const read = map.get(key);
+  if (read === undefined) {
+    map.set(key, value);
+    return value;
+  }
+  return read;
+}
 
 /**
  * Role represents the data structure for a role in RBAC.
@@ -67,14 +83,48 @@ class Role {
   }
 }
 
-type MatchingFunc = (arg1: string, arg2: string) => boolean;
+class Roles extends Map<string, Role> {
+  constructor() {
+    super();
+  }
+
+  public hasRole(name: string, matchingFunc?: MatchingFunc): boolean {
+    let ok = false;
+    if (matchingFunc) {
+      this.forEach((value, key) => {
+        if (matchingFunc(name, key)) {
+          ok = true;
+        }
+      });
+    } else {
+      return this.has(name);
+    }
+    return true;
+  }
+
+  public createRole(name: string, matchingFunc?: MatchingFunc): Role {
+    const role = loadOrDefault(this, name, new Role(name));
+    if (matchingFunc) {
+      this.forEach((value, key) => {
+        if (matchingFunc(name, key) && name !== key) {
+          // Add new role to matching role
+          const role1 = loadOrDefault(this, key, new Role(key));
+          role.addRole(role1);
+        }
+      });
+    }
+    return role;
+  }
+}
 
 // RoleManager provides a default implementation for the RoleManager interface
 export class DefaultRoleManager implements RoleManager {
-  private allRoles: Map<string, Role>;
+  private allDomains: Map<string, Roles>;
   private maxHierarchyLevel: number;
   private hasPattern = false;
+  private hasDomainPattern = false;
   private matchingFunc: MatchingFunc;
+  private domainMatchingFunc: MatchingFunc;
 
   /**
    * DefaultRoleManager is the constructor for creating an instance of the
@@ -83,21 +133,74 @@ export class DefaultRoleManager implements RoleManager {
    * @param maxHierarchyLevel the maximized allowed RBAC hierarchy level.
    */
   constructor(maxHierarchyLevel: number) {
-    this.allRoles = new Map<string, Role>();
+    this.allDomains = new Map<string, Roles>();
+    this.allDomains.set(DEFAULT_DOMAIN, new Roles());
     this.maxHierarchyLevel = maxHierarchyLevel;
   }
 
   /**
-   * e.buildRoleLinks must be called after addMatchingFunc().
-   * @param name
-   * @param fn
-   * @example ```javascript
-   * await e.GetRoleManager().addMatchingFunc('matcher', util.keyMatch); await e.buildRoleLinks();
+   * addMatchingFunc support use pattern in g
+   * @param name name
+   * @param fn matching function
+   * @deprecated
+   */
+  public async addMatchingFunc(name: string, fn: MatchingFunc): Promise<void>;
+
+  /**
+   * addMatchingFunc support use pattern in g
+   * @param fn matching function
+   */
+  public async addMatchingFunc(fn: MatchingFunc): Promise<void>;
+
+  /**
+   * addMatchingFunc support use pattern in g
+   * @param name name
+   * @param fn matching function
+   * @deprecated
+   */
+  public async addMatchingFunc(name: string | MatchingFunc, fn?: MatchingFunc): Promise<void> {
+    this.hasPattern = true;
+    if (typeof name === 'string' && fn) {
+      this.matchingFunc = fn;
+    } else if (typeof name === 'function') {
+      this.matchingFunc = name;
+    } else {
+      throw new Error('error: domain should be 1 parameter');
+    }
+  }
+
+  /**
+   * addDomainMatchingFunc support use domain pattern in g
+   * @param fn domain matching function
    * ```
    */
-  public async addMatchingFunc(name: string, fn: MatchingFunc): Promise<void> {
-    this.hasPattern = true;
-    this.matchingFunc = fn;
+  public async addDomainMatchingFunc(fn: MatchingFunc): Promise<void> {
+    this.hasDomainPattern = true;
+    this.domainMatchingFunc = fn;
+  }
+
+  private generateTempRoles(domain: string): Roles {
+    loadOrDefault(this.allDomains, domain, new Roles());
+
+    const patternDomain = new Set([domain]);
+    if (this.hasDomainPattern) {
+      this.allDomains.forEach((value, key) => {
+        if (this.domainMatchingFunc(domain, key)) {
+          patternDomain.add(key);
+        }
+      });
+    }
+
+    const allRoles = new Roles();
+    patternDomain.forEach(domain => {
+      loadOrDefault(this.allDomains, domain, new Roles()).forEach((value, key) => {
+        const role1 = allRoles.createRole(value.name, this.matchingFunc);
+        value.getRoles().forEach(n => {
+          role1.addRole(allRoles.createRole(n, this.matchingFunc));
+        });
+      });
+    });
+    return allRoles;
   }
 
   /**
@@ -106,15 +209,16 @@ export class DefaultRoleManager implements RoleManager {
    * domain is a prefix to the roles.
    */
   public async addLink(name1: string, name2: string, ...domain: string[]): Promise<void> {
-    if (domain.length === 1) {
-      name1 = domain[0] + '::' + name1;
-      name2 = domain[0] + '::' + name2;
+    if (domain.length === 0) {
+      domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
       throw new Error('error: domain should be 1 parameter');
     }
 
-    const role1 = this.createRole(name1);
-    const role2 = this.createRole(name2);
+    const allRoles = loadOrDefault(this.allDomains, domain[0], new Roles());
+
+    const role1 = loadOrDefault(allRoles, name1, new Role(name1));
+    const role2 = loadOrDefault(allRoles, name2, new Role(name2));
     role1.addRole(role2);
   }
 
@@ -122,7 +226,8 @@ export class DefaultRoleManager implements RoleManager {
    * clear clears all stored data and resets the role manager to the initial state.
    */
   public async clear(): Promise<void> {
-    this.allRoles = new Map<string, Role>();
+    this.allDomains = new Map();
+    this.allDomains.set(DEFAULT_DOMAIN, new Roles());
   }
 
   /**
@@ -131,65 +236,21 @@ export class DefaultRoleManager implements RoleManager {
    * domain is a prefix to the roles.
    */
   public async deleteLink(name1: string, name2: string, ...domain: string[]): Promise<void> {
-    if (domain.length === 1) {
-      name1 = domain[0] + '::' + name1;
-      name2 = domain[0] + '::' + name2;
+    if (domain.length === 0) {
+      domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
       throw new Error('error: domain should be 1 parameter');
     }
 
-    if (!this.hasRole(name1) || !this.hasRole(name2)) {
+    const allRoles = loadOrDefault(this.allDomains, domain[0], new Roles());
+
+    if (!allRoles.has(name1) || !allRoles.has(name2)) {
       return;
     }
 
-    const role1 = this.createRole(name1);
-    const role2 = this.createRole(name2);
+    const role1 = loadOrDefault(allRoles, name1, new Role(name1));
+    const role2 = loadOrDefault(allRoles, name2, new Role(name2));
     role1.deleteRole(role2);
-  }
-
-  /**
-   * getRoles gets the roles that a subject inherits.
-   * domain is a prefix to the roles.
-   */
-  public async getRoles(name: string, ...domain: string[]): Promise<string[]> {
-    if (domain.length === 1) {
-      name = domain[0] + '::' + name;
-    } else if (domain.length > 1) {
-      throw new Error('error: domain should be 1 parameter');
-    }
-
-    if (!this.hasRole(name)) {
-      return [];
-    }
-
-    let roles = this.createRole(name).getRoles();
-    if (domain.length === 1) {
-      roles = roles.map(n => n.substring(domain[0].length + 2, n.length));
-    }
-
-    return roles;
-  }
-
-  /**
-   * getUsers gets the users that inherits a subject.
-   * domain is an unreferenced parameter here, may be used in other implementations.
-   */
-  public async getUsers(name: string, ...domain: string[]): Promise<string[]> {
-    if (domain.length === 1) {
-      name = domain[0] + '::' + name;
-    } else if (domain.length > 1) {
-      throw new Error('error: domain should be 1 parameter');
-    }
-
-    if (!this.hasRole(name)) {
-      return [];
-    }
-
-    let users = [...this.allRoles.values()].filter(n => n.hasDirectRole(name)).map(n => n.name);
-    if (domain.length === 1) {
-      users = users.map(n => n.substring(domain[0].length + 2, n.length));
-    }
-    return users;
   }
 
   /**
@@ -197,9 +258,8 @@ export class DefaultRoleManager implements RoleManager {
    * domain is a prefix to the roles.
    */
   public async hasLink(name1: string, name2: string, ...domain: string[]): Promise<boolean> {
-    if (domain.length === 1) {
-      name1 = domain[0] + '::' + name1;
-      name2 = domain[0] + '::' + name2;
+    if (domain.length === 0) {
+      domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
       throw new Error('error: domain should be 1 parameter');
     }
@@ -208,61 +268,79 @@ export class DefaultRoleManager implements RoleManager {
       return true;
     }
 
-    if (!this.hasRole(name1) || !this.hasRole(name2)) {
+    let allRoles: Roles;
+    if (this.hasPattern || this.hasDomainPattern) {
+      allRoles = this.generateTempRoles(domain[0]);
+    } else {
+      allRoles = loadOrDefault(this.allDomains, domain[0], new Roles());
+    }
+
+    if (!allRoles.hasRole(name1, this.matchingFunc) || !allRoles.hasRole(name2, this.matchingFunc)) {
       return false;
     }
 
-    const role1 = this.createRole(name1);
-
+    const role1 = allRoles.createRole(name1, this.matchingFunc);
     return role1.hasRole(name2, this.maxHierarchyLevel);
+  }
+
+  /**
+   * getRoles gets the roles that a subject inherits.
+   * domain is a prefix to the roles.
+   */
+  public async getRoles(name: string, ...domain: string[]): Promise<string[]> {
+    if (domain.length === 0) {
+      domain = [DEFAULT_DOMAIN];
+    } else if (domain.length > 1) {
+      throw new Error('error: domain should be 1 parameter');
+    }
+
+    let allRoles: Roles;
+    if (this.hasPattern || this.hasDomainPattern) {
+      allRoles = this.generateTempRoles(domain[0]);
+    } else {
+      allRoles = loadOrDefault(this.allDomains, domain[0], new Roles());
+    }
+
+    if (!allRoles.hasRole(name, this.matchingFunc)) {
+      return [];
+    }
+
+    return allRoles.createRole(name, this.matchingFunc).getRoles();
+  }
+
+  /**
+   * getUsers gets the users that inherits a subject.
+   * domain is an unreferenced parameter here, may be used in other implementations.
+   */
+  public async getUsers(name: string, ...domain: string[]): Promise<string[]> {
+    if (domain.length === 0) {
+      domain = [DEFAULT_DOMAIN];
+    } else if (domain.length > 1) {
+      throw new Error('error: domain should be 1 parameter');
+    }
+
+    let allRoles: Roles;
+    if (this.hasPattern || this.hasDomainPattern) {
+      allRoles = this.generateTempRoles(domain[0]);
+    } else {
+      allRoles = loadOrDefault(this.allDomains, domain[0], new Roles());
+    }
+
+    if (!allRoles.hasRole(name, this.matchingFunc)) {
+      return [];
+    }
+
+    return [...allRoles.values()].filter(n => n.hasDirectRole(name)).map(n => n.name);
   }
 
   /**
    * printRoles prints all the roles to log.
    */
   public async printRoles(): Promise<void> {
-    [...this.allRoles.values()].forEach(n => {
-      logPrint(n.toString());
-    });
-  }
-
-  private createRole(name: string): Role {
-    let role = this.allRoles.get(name);
-    if (!role) {
-      const newRole = new Role(name);
-      role = newRole;
-      this.allRoles.set(name, newRole);
+    if (getLogger().isEnable()) {
+      [...this.allDomains.values()].forEach(n => {
+        logPrint(n.toString());
+      });
     }
-
-    if (!this.hasPattern) {
-      return role;
-    }
-
-    for (const roleName of this.allRoles.keys()) {
-      if (!(this.matchingFunc(name, roleName) && name !== roleName)) {
-        continue;
-      }
-
-      const inherit = this.allRoles.get(roleName);
-      if (inherit) {
-        role.addRole(inherit);
-      }
-    }
-
-    return role;
-  }
-
-  private hasRole(name: string): boolean {
-    if (!this.hasPattern) {
-      return this.allRoles.has(name);
-    } else {
-      for (const role of this.allRoles.keys()) {
-        if (this.matchingFunc(name, role)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
   }
 }
