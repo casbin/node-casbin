@@ -1,3 +1,10 @@
+## [5.1.6](https://github.com/casbin/node-casbin/compare/v5.1.5...v5.1.6) (2020-10-07)
+
+
+### Bug Fixes
+
+* support pattern function in 3rd args of g ([#199](https://github.com/casbin/node-casbin/issues/199)) ([27005f8](https://github.com/casbin/node-casbin/commit/27005f85829f11193cb4ecfd14be5ed6e64ad63c))
+
 ## [5.1.5](https://github.com/casbin/node-casbin/compare/v5.1.4...v5.1.5) (2020-09-14)
 
 
