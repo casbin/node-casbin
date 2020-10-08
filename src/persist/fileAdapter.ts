@@ -52,8 +52,8 @@ export class FileAdapter implements Adapter {
     if (!pList) {
       return false;
     }
-    pList.forEach(n => {
-      n.policy.forEach(m => {
+    pList.forEach((n) => {
+      n.policy.forEach((m) => {
         result += n.key + ', ';
         result += arrayToString(m);
         result += '\n';
@@ -64,8 +64,8 @@ export class FileAdapter implements Adapter {
     if (!gList) {
       return false;
     }
-    gList.forEach(n => {
-      n.policy.forEach(m => {
+    gList.forEach((n) => {
+      n.policy.forEach((m) => {
         result += n.key + ', ';
         result += arrayToString(m);
         result += '\n';

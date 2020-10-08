@@ -81,7 +81,7 @@ test('getPolicy', async () => {
     ['alice', 'data1', 'read'],
     ['bob', 'data2', 'write'],
     ['data2_admin', 'data2', 'read'],
-    ['data2_admin', 'data2', 'write']
+    ['data2_admin', 'data2', 'write'],
   ]);
 });
 
@@ -98,7 +98,7 @@ test('getNamedPolicy', async () => {
     ['alice', 'data1', 'read'],
     ['bob', 'data2', 'write'],
     ['data2_admin', 'data2', 'read'],
-    ['data2_admin', 'data2', 'write']
+    ['data2_admin', 'data2', 'write'],
   ]);
   namedPolicy = await e.getNamedPolicy('p1');
   testArray2DEquals(namedPolicy, []);
@@ -153,7 +153,7 @@ test('addPolicies', async () => {
     ['jack', 'data4', 'read'],
     ['katy', 'data4', 'write'],
     ['leyo', 'data4', 'read'],
-    ['ham', 'data4', 'write']
+    ['ham', 'data4', 'write'],
   ];
   const added = await e.addPolicies(rules);
   expect(added).toBe(true);
@@ -176,7 +176,7 @@ test('addNamedPolicies', async () => {
     ['jack', 'data4', 'read'],
     ['katy', 'data4', 'write'],
     ['leyo', 'data4', 'read'],
-    ['ham', 'data4', 'write']
+    ['ham', 'data4', 'write'],
   ];
   const added = await e.addNamedPolicies('p', rules);
   expect(added).toBe(true);
@@ -199,7 +199,7 @@ test('removePolicies', async () => {
     ['jack', 'data4', 'read'],
     ['katy', 'data4', 'write'],
     ['leyo', 'data4', 'read'],
-    ['ham', 'data4', 'write']
+    ['ham', 'data4', 'write'],
   ];
   const added = await e.addPolicies(rules);
   expect(added).toBe(true);
@@ -231,7 +231,7 @@ test('removeNamedPolicies', async () => {
     ['jack', 'data4', 'read'],
     ['katy', 'data4', 'write'],
     ['leyo', 'data4', 'read'],
-    ['ham', 'data4', 'write']
+    ['ham', 'data4', 'write'],
   ];
   const added = await e.addPolicies(rules);
   expect(added).toBe(true);
@@ -269,7 +269,7 @@ test('addGroupingPolicies', async () => {
   e.setAdapter(a);
   const groupingRules = [
     ['ham', 'data4_admin'],
-    ['jack', 'data5_admin']
+    ['jack', 'data5_admin'],
   ];
   const added = await e.addGroupingPolicies(groupingRules);
   expect(added).toBe(true);
@@ -285,7 +285,7 @@ test('addNamedGroupingPolicies', async () => {
   e.setAdapter(a);
   const groupingRules = [
     ['ham', 'data4_admin'],
-    ['jack', 'data5_admin']
+    ['jack', 'data5_admin'],
   ];
   const added = await e.addNamedGroupingPolicies('g', groupingRules);
   expect(added).toBe(true);
@@ -301,7 +301,7 @@ test('removeGroupingPolicies', async () => {
   e.setAdapter(a);
   const groupingRules = [
     ['ham', 'data4_admin'],
-    ['jack', 'data5_admin']
+    ['jack', 'data5_admin'],
   ];
   const added = await e.addGroupingPolicies(groupingRules);
   expect(added).toBe(true);
@@ -324,7 +324,7 @@ test('removeNamedGroupingPolicies', async () => {
   e.setAdapter(a);
   const groupingRules = [
     ['ham', 'data4_admin'],
-    ['jack', 'data5_admin']
+    ['jack', 'data5_admin'],
   ];
   const added = await e.addGroupingPolicies(groupingRules);
   expect(added).toBe(true);

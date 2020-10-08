@@ -29,29 +29,17 @@ export async function casbinJsGetPermissionForUser(e: Enforcer, user: string): P
   const m = e.getModel().model;
   let s = '';
   s += '[request_definition]\n';
-  s += `r = ${m
-    .get('r')
-    ?.get('r')
-    ?.value.replace(/_/g, '.')}\n`;
+  s += `r = ${m.get('r')?.get('r')?.value.replace(/_/g, '.')}\n`;
   s += '[policy_definition]\n';
-  s += `p = ${m
-    .get('p')
-    ?.get('p')
-    ?.value.replace(/_/g, '.')}\n`;
+  s += `p = ${m.get('p')?.get('p')?.value.replace(/_/g, '.')}\n`;
   if (m.get('g')?.get('g') !== undefined) {
     s += '[role_definition]\n';
     s += `g = ${m.get('g')?.get('g')?.value}\n`;
   }
   s += '[policy_effect]\n';
-  s += `e = ${m
-    .get('e')
-    ?.get('e')
-    ?.value.replace(/_/g, '.')}\n`;
+  s += `e = ${m.get('e')?.get('e')?.value.replace(/_/g, '.')}\n`;
   s += '[matchers]\n';
-  s += `m = ${m
-    .get('m')
-    ?.get('m')
-    ?.value.replace(/_/g, '.')}`;
+  s += `m = ${m.get('m')?.get('m')?.value.replace(/_/g, '.')}`;
   obj['m'] = s;
   obj['p'] = await e.getPolicy();
   for (const arr of obj['p']) {

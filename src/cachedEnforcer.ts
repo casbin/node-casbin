@@ -30,7 +30,7 @@ export class CachedEnforcer extends Enforcer {
   }
 
   private static canCache(...rvals: any[]): boolean {
-    return rvals.every(n => typeof n === 'string');
+    return rvals.every((n) => typeof n === 'string');
   }
 
   private static getCacheKey(...rvals: string[]): string {
@@ -59,7 +59,7 @@ export class CachedEnforcer extends Enforcer {
       key = CachedEnforcer.getCacheKey(...rvals);
       const res = this.getCache(key);
 
-      if (res != undefined) {
+      if (res !== undefined) {
         return res;
       }
     }

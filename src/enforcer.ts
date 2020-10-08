@@ -80,7 +80,7 @@ export class Enforcer extends ManagementEnforcer {
    * @return the roles that the user has.
    */
   public async getRolesForUser(name: string, domain?: string): Promise<string[]> {
-    if (domain == null) {
+    if (domain === undefined) {
       return this.rm.getRoles(name);
     } else {
       return this.rm.getRoles(name, domain);
@@ -95,7 +95,7 @@ export class Enforcer extends ManagementEnforcer {
    * @return the users that has the role.
    */
   public async getUsersForRole(name: string, domain?: string): Promise<string[]> {
-    if (domain == null) {
+    if (domain === undefined) {
       return this.rm.getUsers(name);
     } else {
       return this.rm.getUsers(name, domain);
@@ -133,7 +133,7 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async addRoleForUser(user: string, role: string, domain?: string): Promise<boolean> {
-    if (domain == null) {
+    if (domain === undefined) {
       return this.addGroupingPolicy(user, role);
     } else {
       return this.addGroupingPolicy(user, role, domain);
@@ -150,7 +150,7 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deleteRoleForUser(user: string, role: string, domain?: string): Promise<boolean> {
-    if (domain == null) {
+    if (domain === undefined) {
       return this.removeGroupingPolicy(user, role);
     } else {
       return this.removeGroupingPolicy(user, role, domain);
@@ -166,7 +166,7 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deleteRolesForUser(user: string, domain?: string): Promise<boolean> {
-    if (domain == null) {
+    if (domain === undefined) {
       return this.removeFilteredGroupingPolicy(0, user);
     } else {
       return this.removeFilteredGroupingPolicy(0, user, '', domain);
@@ -283,9 +283,9 @@ export class Enforcer extends ManagementEnforcer {
     const res = new Set<string>();
     const q = [name];
     let n: string | undefined;
-    while ((n = q.shift()) != undefined) {
+    while ((n = q.shift()) !== undefined) {
       const role = await this.getRoleManager().getRoles(n, ...domain);
-      role.forEach(r => {
+      role.forEach((r) => {
         if (!res.has(r)) {
           res.add(r);
           q.push(r);
@@ -349,7 +349,7 @@ export class Enforcer extends ManagementEnforcer {
       }
     }
 
-    return res.filter(n => !inherits.some(m => n === m));
+    return res.filter((n) => !inherits.some((m) => n === m));
   }
 }
 

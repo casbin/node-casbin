@@ -14,6 +14,8 @@
 
 import * as util from '../util';
 
+export type MatchingFunction = (...arg: any[]) => boolean | number | Promise<boolean> | Promise<number>;
+
 // FunctionMap represents the collection of Function.
 export class FunctionMap {
   private functions: Map<string, any>;
@@ -41,7 +43,7 @@ export class FunctionMap {
   }
 
   // addFunction adds an expression function.
-  public addFunction(name: string, func: any): void {
+  public addFunction(name: string, func: MatchingFunction): void {
     if (!this.functions.get(name)) {
       this.functions.set(name, func);
     }

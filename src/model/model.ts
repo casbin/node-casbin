@@ -23,12 +23,12 @@ export const sectionNameMap: { [index: string]: string } = {
   p: 'policy_definition',
   g: 'role_definition',
   e: 'policy_effect',
-  m: 'matchers'
+  m: 'matchers',
 };
 
 export enum PolicyOp {
   PolicyAdd,
-  PolicyRemove
+  PolicyRemove,
 }
 
 export const requiredSections = ['r', 'p', 'e', 'm'];
@@ -81,7 +81,7 @@ export class Model {
     ast.value = value;
 
     if (sec === 'r' || sec === 'p') {
-      const tokens = value.split(',').map(n => n.trim());
+      const tokens = value.split(',').map((n) => n.trim());
 
       for (let i = 0; i < tokens.length; i++) {
         tokens[i] = key + '_' + tokens[i];
@@ -139,7 +139,7 @@ export class Model {
     }
 
     const ms: string[] = [];
-    requiredSections.forEach(n => {
+    requiredSections.forEach((n) => {
       if (!this.hasSection(n)) {
         ms.push(sectionNameMap[n]);
       }
@@ -167,10 +167,7 @@ export class Model {
   // buildIncrementalRoleLinks provides incremental build the role inheritance relations.
   public async buildIncrementalRoleLinks(rm: rbac.RoleManager, op: PolicyOp, sec: string, ptype: string, rules: string[][]): Promise<void> {
     if (sec === 'g') {
-      await this.model
-        .get(sec)
-        ?.get(ptype)
-        ?.buildIncrementalRoleLinks(rm, op, rules);
+      await this.model.get(sec)?.get(ptype)?.buildIncrementalRoleLinks(rm, op, rules);
     }
   }
 
@@ -189,7 +186,7 @@ export class Model {
   public clearPolicy(): void {
     this.model.forEach((value, key) => {
       if (key === 'p' || key === 'g') {
-        value.forEach(ast => {
+        value.forEach((ast) => {
           ast.policy = [];
         });
       }
@@ -255,7 +252,7 @@ export class Model {
       if (!ast) {
         return false;
       }
-      ast.policy = ast.policy.filter(r => !util.arrayEquals(rule, r));
+      ast.policy = ast.policy.filter((r) => !util.arrayEquals(rule, r));
       return true;
     }
 
@@ -319,7 +316,7 @@ export class Model {
     const res = [];
     const effects: string[][] = [];
     let bool = false;
-    if (fieldValues.length == 0) {
+    if (fieldValues.length === 0) {
       return [false, effects];
     }
     const ast = this.model.get(sec)?.get(key);
@@ -344,7 +341,7 @@ export class Model {
       }
     }
 
-    if (effects.length != 0) {
+    if (effects.length !== 0) {
       ast.policy = res;
     }
 
@@ -385,7 +382,7 @@ export class Model {
     logPrint('Policy:');
     this.model.forEach((map, key) => {
       if (key === 'p' || key === 'g') {
-        map.forEach(ast => {
+        map.forEach((ast) => {
           logPrint(`key, : ${ast.value}, : , ${ast.policy}`);
         });
       }
