@@ -51,6 +51,9 @@
     "ip": "^1.1.5",
     "micromatch": "^4.0.2"
   },
+  "engines": {
+    "node": ">=12.16.1"
+  },
   "files": [
     "lib",
     "examples"
