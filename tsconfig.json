@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ES2019",
     "module": "CommonJS",
     "moduleResolution": "Node",
     "strict": true,
