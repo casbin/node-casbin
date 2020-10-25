@@ -71,7 +71,7 @@ test('test getImplicitPermissionsForUser', async () => {
     ['data1_admin', 'data1', 'read'],
     ['data1_admin', 'data1', 'write'],
     ['data2_admin', 'data2', 'read'],
-    ['data2_admin', 'data2', 'write']
+    ['data2_admin', 'data2', 'write'],
   ]);
 });
 
@@ -84,7 +84,7 @@ test('test deleteRolesForUser', async () => {
     ['data1_admin', 'data1', 'read'],
     ['data1_admin', 'data1', 'write'],
     ['data2_admin', 'data2', 'read'],
-    ['data2_admin', 'data2', 'write']
+    ['data2_admin', 'data2', 'write'],
   ]);
   expect(await e.deleteRolesForUser('alice')).toEqual(true);
   expect(await e.hasPermissionForUser('alice', 'data1', 'read')).toEqual(true);
@@ -103,18 +103,18 @@ test('test deleteRolesForUser with domain', async () => {
   expect(await e.getImplicitRolesForUser('alice', 'domain1')).toEqual(['admin']);
   expect(await e.getImplicitPermissionsForUser('alice', 'domain1')).toEqual([
     ['admin', 'domain1', 'data1', 'read'],
-    ['admin', 'domain1', 'data1', 'write']
+    ['admin', 'domain1', 'data1', 'write'],
   ]);
   expect(await e.getImplicitPermissionsForUser('bob', 'domain2')).toEqual([
     ['admin', 'domain2', 'data2', 'read'],
-    ['admin', 'domain2', 'data2', 'write']
+    ['admin', 'domain2', 'data2', 'write'],
   ]);
   expect(await e.deleteRolesForUser('alice', 'domain1')).toEqual(true);
   expect(await e.getImplicitRolesForUser('alice', 'domain1')).toEqual([]);
   expect(await e.getImplicitPermissionsForUser('alice', 'domain2')).toEqual([]);
   expect(await e.getImplicitPermissionsForUser('bob', 'domain2')).toEqual([
     ['admin', 'domain2', 'data2', 'read'],
-    ['admin', 'domain2', 'data2', 'write']
+    ['admin', 'domain2', 'data2', 'write'],
   ]);
   expect(await e.deleteRolesForUser('bob', 'domain1')).toEqual(false);
   expect(await e.getImplicitPermissionsForUser('alice', 'domain2')).toEqual([]);
@@ -129,13 +129,13 @@ test('test deleteRole', async () => {
     ['data1_admin', 'data1', 'read'],
     ['data1_admin', 'data1', 'write'],
     ['data2_admin', 'data2', 'read'],
-    ['data2_admin', 'data2', 'write']
+    ['data2_admin', 'data2', 'write'],
   ]);
   expect(await e.deleteRole('data1_admin')).toEqual(true);
   expect(await e.getImplicitPermissionsForUser('alice')).toEqual([
     ['alice', 'data1', 'read'],
     ['data2_admin', 'data2', 'read'],
-    ['data2_admin', 'data2', 'write']
+    ['data2_admin', 'data2', 'write'],
   ]);
   await e.deleteRole('data2_admin');
   expect(await e.getImplicitPermissionsForUser('alice')).toEqual([['alice', 'data1', 'read']]);
@@ -149,7 +149,7 @@ test('test deleteUser', async () => {
     ['data1_admin', 'data1', 'read'],
     ['data1_admin', 'data1', 'write'],
     ['data2_admin', 'data2', 'read'],
-    ['data2_admin', 'data2', 'write']
+    ['data2_admin', 'data2', 'write'],
   ]);
   await e.deleteUser('alice');
   expect(await e.getImplicitPermissionsForUser('alice')).toEqual([]);

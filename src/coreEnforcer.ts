@@ -21,7 +21,7 @@ import { DefaultRoleManager, RoleManager } from './rbac';
 import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval } from './util';
 import { getLogger, logPrint } from './log';
 
-type Matcher = ((context: object) => Promise<any>) | ((context: object) => any);
+type Matcher = ((context: any) => Promise<any>) | ((context: any) => any);
 
 /**
  * CoreEnforcer defines the core functionality of an enforcer.
@@ -159,6 +159,7 @@ export class CoreEnforcer {
    *
    * @param filter the filter used to specify which type of policy should be loaded.
    */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   public async loadFilteredPolicy(filter: any): Promise<boolean> {
     this.model.clearPolicy();
 
@@ -301,11 +302,7 @@ export class CoreEnforcer {
     }
 
     const HasEval: boolean = hasEval(expString);
-    let expression;
-
-    if (!HasEval) {
-      expression = this.getExpression(asyncCompile, expString);
-    }
+    let expression: Matcher | undefined = undefined;
 
     const p = this.model.model.get('p')?.get('p');
     const policyLen = p?.policy?.length;
@@ -339,18 +336,18 @@ export class CoreEnforcer {
               const rule = escapeAssertion(parameters[ruleName]);
               expWithRule = replaceEval(expWithRule, rule);
             } else {
-              return false;
+              throw new Error(`${ruleName} not in ${parameters}`);
             }
-
-            expression = this.getExpression(asyncCompile, expWithRule);
+          }
+          expression = this.getExpression(asyncCompile, expWithRule);
+        } else {
+          if (expression === undefined) {
+            expression = this.getExpression(asyncCompile, expString);
           }
         }
 
-        let result;
-        if (expression !== undefined) {
-          const context = { ...parameters, ...functions };
-          result = asyncCompile ? await expression(context) : expression(context);
-        }
+        const context = { ...parameters, ...functions };
+        const result = asyncCompile ? await expression(context) : expression(context);
 
         let eftRes: Effect;
         switch (typeof result) {
@@ -392,16 +389,13 @@ export class CoreEnforcer {
         parameters[token] = rvals[j];
       });
 
-      p?.tokens?.forEach(token => {
+      p?.tokens?.forEach((token) => {
         parameters[token] = '';
       });
 
-      let result = false;
-
-      if (expression !== undefined) {
-        const context = { ...parameters, ...functions };
-        result = asyncCompile ? await expression(context) : expression(context);
-      }
+      expression = this.getExpression(asyncCompile, expString);
+      const context = { ...parameters, ...functions };
+      const result = asyncCompile ? await expression(context) : expression(context);
 
       if (result) {
         effectStream.pushEffect(Effect.Allow);

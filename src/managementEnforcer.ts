@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { InternalEnforcer } from './internalEnforcer';
+import { MatchingFunction } from './model';
 
 /**
  * ManagementEnforcer = InternalEnforcer + Management API.
@@ -485,7 +486,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param name custom function name
    * @param func function
    */
-  public async addFunction(name: string, func: any): Promise<void> {
+  public async addFunction(name: string, func: MatchingFunction): Promise<void> {
     this.fm.addFunction(name, func);
   }
 }

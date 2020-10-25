@@ -44,14 +44,14 @@ class Role {
   }
 
   public addRole(role: Role): void {
-    if (this.roles.some(n => n.name === role.name)) {
+    if (this.roles.some((n) => n.name === role.name)) {
       return;
     }
     this.roles.push(role);
   }
 
   public deleteRole(role: Role): void {
-    this.roles = this.roles.filter(n => n.name !== role.name);
+    this.roles = this.roles.filter((n) => n.name !== role.name);
   }
 
   public hasRole(name: string, hierarchyLevel: number): boolean {
@@ -71,7 +71,7 @@ class Role {
   }
 
   public hasDirectRole(name: string): boolean {
-    return this.roles.some(n => n.name === name);
+    return this.roles.some((n) => n.name === name);
   }
 
   public toString(): string {
@@ -79,7 +79,7 @@ class Role {
   }
 
   public getRoles(): string[] {
-    return this.roles.map(n => n.name);
+    return this.roles.map((n) => n.name);
   }
 }
 
@@ -192,10 +192,10 @@ export class DefaultRoleManager implements RoleManager {
     }
 
     const allRoles = new Roles();
-    patternDomain.forEach(domain => {
+    patternDomain.forEach((domain) => {
       loadOrDefault(this.allDomains, domain, new Roles()).forEach((value, key) => {
         const role1 = allRoles.createRole(value.name, this.matchingFunc);
-        value.getRoles().forEach(n => {
+        value.getRoles().forEach((n) => {
           role1.addRole(allRoles.createRole(n, this.matchingFunc));
         });
       });
@@ -330,7 +330,7 @@ export class DefaultRoleManager implements RoleManager {
       return [];
     }
 
-    return [...allRoles.values()].filter(n => n.hasDirectRole(name)).map(n => n.name);
+    return [...allRoles.values()].filter((n) => n.hasDirectRole(name)).map((n) => n.name);
   }
 
   /**
@@ -338,7 +338,7 @@ export class DefaultRoleManager implements RoleManager {
    */
   public async printRoles(): Promise<void> {
     if (getLogger().isEnable()) {
-      [...this.allDomains.values()].forEach(n => {
+      [...this.allDomains.values()].forEach((n) => {
         logPrint(n.toString());
       });
     }

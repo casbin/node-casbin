@@ -259,7 +259,7 @@ test('TestReloadPolicy', async () => {
     ['alice', 'data1', 'read'],
     ['bob', 'data2', 'write'],
     ['data2_admin', 'data2', 'read'],
-    ['data2_admin', 'data2', 'write']
+    ['data2_admin', 'data2', 'write'],
   ]);
 });
 

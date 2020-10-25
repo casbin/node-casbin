@@ -30,7 +30,7 @@ export class CachedEnforcer extends Enforcer {
   }
 
   private static canCache(...rvals: any[]): boolean {
-    return rvals.every(n => typeof n === 'string');
+    return rvals.every((n) => typeof n === 'string');
   }
 
   private static getCacheKey(...rvals: string[]): string {

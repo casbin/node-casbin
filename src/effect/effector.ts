@@ -19,7 +19,7 @@ import { EffectorStream } from './effectorStream';
 export enum Effect {
   Allow = 1,
   Indeterminate,
-  Deny
+  Deny,
 }
 
 // Effector is the interface for Casbin effectors.
