@@ -59,7 +59,7 @@ export class CachedEnforcer extends Enforcer {
       key = CachedEnforcer.getCacheKey(...rvals);
       const res = this.getCache(key);
 
-      if (res != undefined) {
+      if (res !== undefined) {
         return res;
       }
     }

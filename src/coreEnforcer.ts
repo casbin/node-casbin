@@ -347,7 +347,7 @@ export class CoreEnforcer {
         }
 
         let result;
-        if (expression != undefined) {
+        if (expression !== undefined) {
           const context = { ...parameters, ...functions };
           result = asyncCompile ? await expression(context) : expression(context);
         }
@@ -398,7 +398,7 @@ export class CoreEnforcer {
 
       let result = false;
 
-      if (expression != undefined) {
+      if (expression !== undefined) {
         const context = { ...parameters, ...functions };
         result = asyncCompile ? await expression(context) : expression(context);
       }

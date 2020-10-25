@@ -283,7 +283,7 @@ export class Enforcer extends ManagementEnforcer {
     const res = new Set<string>();
     const q = [name];
     let n: string | undefined;
-    while ((n = q.shift()) != undefined) {
+    while ((n = q.shift()) !== undefined) {
       const role = await this.getRoleManager().getRoles(n, ...domain);
       role.forEach(r => {
         if (!res.has(r)) {

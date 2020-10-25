@@ -344,7 +344,7 @@ export class Model {
       }
     }
 
-    if (effects.length != 0) {
+    if (effects.length !== 0) {
       ast.policy = res;
     }
 

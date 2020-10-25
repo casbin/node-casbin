@@ -37,7 +37,7 @@ function arrayEquals(a: string[] = [], b: string[] = []): boolean {
   }
 
   for (let i = 0; i < aLen; i++) {
-    if (a[i] != b[i]) {
+    if (a[i] !== b[i]) {
       return false;
     }
   }
@@ -48,7 +48,7 @@ function arrayEquals(a: string[] = [], b: string[] = []): boolean {
 function array2DEquals(a: string[][] = [], b: string[][] = []): boolean {
   const aLen = a.length;
   const bLen = a.length;
-  if (aLen != bLen) {
+  if (aLen !== bLen) {
     return false;
   }
 
