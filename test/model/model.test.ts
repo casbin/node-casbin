@@ -55,7 +55,7 @@ test('TestNewModelFromString', () => {
   expect(m !== null).toBe(true);
 });
 
-test('TestLoadModelFromConfig', done => {
+test('TestLoadModelFromConfig', (done) => {
   let m = newModel();
   m.loadModelFromConfig(basicConfig);
 
@@ -71,7 +71,7 @@ test('TestLoadModelFromConfig', done => {
     }
 
     if (e instanceof Error) {
-      requiredSections.forEach(n => {
+      requiredSections.forEach((n) => {
         if (!e.message.includes(n)) {
           throw new Error(`section name: ${sectionNameMap[n]} should be in message`);
         }

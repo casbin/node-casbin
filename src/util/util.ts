@@ -37,7 +37,7 @@ function arrayEquals(a: string[] = [], b: string[] = []): boolean {
   }
 
   for (let i = 0; i < aLen; i++) {
-    if (a[i] != b[i]) {
+    if (a[i] !== b[i]) {
       return false;
     }
   }
@@ -48,7 +48,7 @@ function arrayEquals(a: string[] = [], b: string[] = []): boolean {
 function array2DEquals(a: string[][] = [], b: string[][] = []): boolean {
   const aLen = a.length;
   const bLen = a.length;
-  if (aLen != bLen) {
+  if (aLen !== bLen) {
     return false;
   }
 
@@ -95,7 +95,7 @@ function readFile(path: string, encoding?: string): any {
 // writeFile return a promise for writeFile.
 function writeFile(path: string, file: string, encoding?: string): any {
   return new Promise((resolve, reject) => {
-    fs.writeFile(path, file, encoding || 'utf8', error => {
+    fs.writeFile(path, file, encoding || 'utf8', (error) => {
       if (error) {
         reject(error);
       }
@@ -143,5 +143,5 @@ export {
   writeFile,
   hasEval,
   replaceEval,
-  getEvalValue
+  getEvalValue,
 };

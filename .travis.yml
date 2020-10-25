@@ -8,7 +8,7 @@ node_js:
   - '12'
   - 'stable'
 
-install: yarn install
+install: yarn install --ignore-engines
 
 script:
   - yarn run lint

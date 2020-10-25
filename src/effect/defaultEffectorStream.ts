@@ -34,22 +34,22 @@ export class DefaultEffectorStream implements EffectorStream {
   public pushEffect(eft: Effect): [boolean, boolean] {
     switch (this.expr) {
       case 'some(where (p_eft == allow))':
-        if (eft == Effect.Allow) {
+        if (eft === Effect.Allow) {
           this.res = true;
           this.done = true;
         }
         break;
       case '!some(where (p_eft == deny))':
         this.res = true;
-        if (eft == Effect.Deny) {
+        if (eft === Effect.Deny) {
           this.res = false;
           this.done = true;
         }
         break;
       case 'some(where (p_eft == allow)) && !some(where (p_eft == deny))':
-        if (eft == Effect.Allow) {
+        if (eft === Effect.Allow) {
           this.res = true;
-        } else if (eft == Effect.Deny) {
+        } else if (eft === Effect.Deny) {
           this.res = false;
           this.done = true;
         }
