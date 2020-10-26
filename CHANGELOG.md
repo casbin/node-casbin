@@ -1,3 +1,10 @@
+# [5.2.0](https://github.com/casbin/node-casbin/compare/v5.1.6...v5.2.0) (2020-10-26)
+
+
+### Features
+
+* changing TypeScript target from ES6 to ES2017 ([6f4f50f](https://github.com/casbin/node-casbin/commit/6f4f50f205dfb7187e34a0439f2b4f0bf6ed5a47))
+
 ## [5.1.6](https://github.com/casbin/node-casbin/compare/v5.1.5...v5.1.6) (2020-10-07)
 
 
