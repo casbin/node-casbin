@@ -99,7 +99,7 @@ class Roles extends Map<string, Role> {
     } else {
       return this.has(name);
     }
-    return true;
+    return ok;
   }
 
   public createRole(name: string, matchingFunc?: MatchingFunc): Role {
