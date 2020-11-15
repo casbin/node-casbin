@@ -1,3 +1,10 @@
+## [5.2.1](https://github.com/casbin/node-casbin/compare/v5.2.0...v5.2.1) (2020-11-15)
+
+
+### Bug Fixes
+
+* **rbac:** fix defaultRoleManager hasRole method ([#211](https://github.com/casbin/node-casbin/issues/211)) ([4f3ba65](https://github.com/casbin/node-casbin/commit/4f3ba65429f91250485b8a0b070f16cb750955cd))
+
 # [5.2.0](https://github.com/casbin/node-casbin/compare/v5.1.6...v5.2.0) (2020-10-26)
 
 
