@@ -88,7 +88,7 @@ function keyMatch3(key1: string, key2: string): boolean {
     key2 = key2.replace(regexp, '$1[^/]+$2');
   }
 
-  return regexMatch(key1, key2);
+  return regexMatch(key1, '^' + key2 + '$');
 }
 
 // keyMatch3Func is the wrapper for keyMatch3.

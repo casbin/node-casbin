@@ -54,6 +54,7 @@ test('test keyMatch2Func', () => {
   expect(util.keyMatch2Func('/foo/baz', '/foo/:bar')).toEqual(true);
   expect(util.keyMatch2Func('/foo/baz/foo', '/foo/:bar/foo')).toEqual(true);
   expect(util.keyMatch2Func('/baz', '/foo')).toEqual(false);
+  expect(util.keyMatch2Func('/foo/baz', '/foo')).toEqual(false);
 });
 
 test('test keyMatch3Func', () => {
@@ -61,6 +62,7 @@ test('test keyMatch3Func', () => {
   expect(util.keyMatch3Func('/foo/baz', '/foo/{bar}')).toEqual(true);
   expect(util.keyMatch3Func('/foo/baz/foo', '/foo/{bar}/foo')).toEqual(true);
   expect(util.keyMatch3Func('/baz', '/foo')).toEqual(false);
+  expect(util.keyMatch3Func('/foo/baz', '/foo')).toEqual(false);
 });
 
 test('test keyMatch4Func', () => {
