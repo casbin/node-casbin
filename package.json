@@ -16,7 +16,8 @@
     "fmt": "eslint . --ext .js,.ts --fix",
     "semantic-release": "semantic-release",
     "commit": "git-cz",
-    "clean": "rimraf lib"
+    "clean": "rimraf lib",
+    "coverage": "jest --coverage"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^3.0.6",
