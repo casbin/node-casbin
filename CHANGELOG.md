@@ -1,3 +1,10 @@
+## [5.2.2](https://github.com/casbin/node-casbin/compare/v5.2.1...v5.2.2) (2020-11-29)
+
+
+### Bug Fixes
+
+* **builtinoperators:** fix function keyMatch3 ([1245aa0](https://github.com/casbin/node-casbin/commit/1245aa072b47135b49cb70abeed0796908a8feb7)), closes [#214](https://github.com/casbin/node-casbin/issues/214)
+
 ## [5.2.1](https://github.com/casbin/node-casbin/compare/v5.2.0...v5.2.1) (2020-11-15)
 
 
