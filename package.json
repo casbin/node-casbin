@@ -20,8 +20,12 @@
     "coverage": "jest --coverage"
   },
   "devDependencies": {
-    "@semantic-release/changelog": "^3.0.6",
-    "@semantic-release/git": "^7.0.18",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/commit-analyzer": "^8.0.1",
+    "@semantic-release/git": "^9.0.0",
+    "@semantic-release/github": "^7.2.0",
+    "@semantic-release/npm": "^7.0.9",
+    "@semantic-release/release-notes-generator": "^9.0.1",
     "@types/ip": "^0.0.31",
     "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.113",
@@ -41,7 +45,7 @@
     "prettier": "^2.1.2",
     "pretty-quick": "^3.0.2",
     "rimraf": "^2.6.2",
-    "semantic-release": "^17.2.3",
+    "semantic-release": "^17.3.1",
     "ts-jest": "^24.0.0",
     "tslint": "^5.11.0",
     "typescript": "^3.7.2"
