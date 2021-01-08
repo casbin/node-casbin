@@ -1,3 +1,10 @@
+## [5.2.3](https://github.com/casbin/node-casbin/compare/v5.2.2...v5.2.3) (2021-01-08)
+
+
+### Bug Fixes
+
+* downgrade target from ESNext to ES2017 for building esm ([7dfcf93](https://github.com/casbin/node-casbin/commit/7dfcf93a2eb7a9c9116f55341537a4c81840e3d4))
+
 ## [5.2.3](https://github.com/casbin/node-casbin/compare/v5.2.2...v5.2.3) (2020-12-19)
 
 
