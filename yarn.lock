@@ -2708,10 +2708,10 @@ expect@^24.9.0:
     jest-message-util "^24.9.0"
     jest-regex-util "^24.9.0"
 
-expression-eval@^2.0.0:
-  version "2.1.0"
-  resolved "https://registry.npm.taobao.org/expression-eval/download/expression-eval-2.1.0.tgz#422915caa46140a7c5b5f248650dea8bf8236e62"
-  integrity sha1-QikVyqRhQKfFtfJIZQ3qi/gjbmI=
+expression-eval@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npm.taobao.org/expression-eval/download/expression-eval-4.0.0.tgz#d6a07c93e8b33e635710419d4a595d9208b9cc5e"
+  integrity sha1-1qB8k+izPmNXEEGdSlldkgi5zF4=
   dependencies:
     jsep "^0.3.0"
 
