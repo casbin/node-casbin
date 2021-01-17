@@ -144,13 +144,13 @@ export class DefaultRoleManager implements RoleManager {
    * @param fn matching function
    * @deprecated
    */
-  public async addMatchingFunc(name: string, fn: MatchingFunc): Promise<void>;
+  public addMatchingFunc(name: string, fn: MatchingFunc): void;
 
   /**
    * addMatchingFunc support use pattern in g
    * @param fn matching function
    */
-  public async addMatchingFunc(fn: MatchingFunc): Promise<void>;
+  public addMatchingFunc(fn: MatchingFunc): void;
 
   /**
    * addMatchingFunc support use pattern in g
@@ -158,7 +158,7 @@ export class DefaultRoleManager implements RoleManager {
    * @param fn matching function
    * @deprecated
    */
-  public async addMatchingFunc(name: string | MatchingFunc, fn?: MatchingFunc): Promise<void> {
+  public addMatchingFunc(name: string | MatchingFunc, fn?: MatchingFunc): void {
     this.hasPattern = true;
     if (typeof name === 'string' && fn) {
       this.matchingFunc = fn;
@@ -174,7 +174,7 @@ export class DefaultRoleManager implements RoleManager {
    * @param fn domain matching function
    * ```
    */
-  public async addDomainMatchingFunc(fn: MatchingFunc): Promise<void> {
+  public addDomainMatchingFunc(fn: MatchingFunc): void {
     this.hasDomainPattern = true;
     this.domainMatchingFunc = fn;
   }
@@ -208,7 +208,7 @@ export class DefaultRoleManager implements RoleManager {
    * aka role: name1 inherits role: name2.
    * domain is a prefix to the roles.
    */
-  public async addLink(name1: string, name2: string, ...domain: string[]): Promise<void> {
+  public addLink(name1: string, name2: string, ...domain: string[]): void {
     if (domain.length === 0) {
       domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
@@ -225,7 +225,7 @@ export class DefaultRoleManager implements RoleManager {
   /**
    * clear clears all stored data and resets the role manager to the initial state.
    */
-  public async clear(): Promise<void> {
+  public clear(): void {
     this.allDomains = new Map();
     this.allDomains.set(DEFAULT_DOMAIN, new Roles());
   }
@@ -235,7 +235,7 @@ export class DefaultRoleManager implements RoleManager {
    * aka role: name1 does not inherit role: name2 any more.
    * domain is a prefix to the roles.
    */
-  public async deleteLink(name1: string, name2: string, ...domain: string[]): Promise<void> {
+  public deleteLink(name1: string, name2: string, ...domain: string[]): void {
     if (domain.length === 0) {
       domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
@@ -257,7 +257,7 @@ export class DefaultRoleManager implements RoleManager {
    * hasLink determines whether role: name1 inherits role: name2.
    * domain is a prefix to the roles.
    */
-  public async hasLink(name1: string, name2: string, ...domain: string[]): Promise<boolean> {
+  public hasLink(name1: string, name2: string, ...domain: string[]): boolean {
     if (domain.length === 0) {
       domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
@@ -287,7 +287,7 @@ export class DefaultRoleManager implements RoleManager {
    * getRoles gets the roles that a subject inherits.
    * domain is a prefix to the roles.
    */
-  public async getRoles(name: string, ...domain: string[]): Promise<string[]> {
+  public getRoles(name: string, ...domain: string[]): string[] {
     if (domain.length === 0) {
       domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
@@ -312,7 +312,7 @@ export class DefaultRoleManager implements RoleManager {
    * getUsers gets the users that inherits a subject.
    * domain is an unreferenced parameter here, may be used in other implementations.
    */
-  public async getUsers(name: string, ...domain: string[]): Promise<string[]> {
+  public getUsers(name: string, ...domain: string[]): string[] {
     if (domain.length === 0) {
       domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
@@ -336,7 +336,7 @@ export class DefaultRoleManager implements RoleManager {
   /**
    * printRoles prints all the roles to log.
    */
-  public async printRoles(): Promise<void> {
+  public printRoles(): void {
     if (getLogger().isEnable()) {
       [...this.allDomains.values()].forEach((n) => {
         logPrint(n.toString());
