@@ -75,9 +75,8 @@ export class SyncedEnforcer extends Enforcer {
    *              of strings, can be class instances if ABAC is used.
    * @return whether to allow the request.
    */
-  public async enforceWithSyncCompile(...rvals: any[]): Promise<boolean> {
-    await this.lock.acquireAsync();
-    return super.enforceWithSyncCompile(...rvals).finally(() => this.lock.release());
+  public enforceWithSyncCompile(...rvals: any[]): boolean {
+    return super.enforceWithSyncCompile(...rvals);
   }
 
   /**

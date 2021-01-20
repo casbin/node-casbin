@@ -274,7 +274,7 @@ export class CoreEnforcer {
     await this.model.buildRoleLinks(this.rm);
   }
 
-  private async privateEnforce(asyncCompile = true, ...rvals: any[]): Promise<boolean> {
+  private *privateEnforce(asyncCompile = true, ...rvals: any[]): Generator<any> {
     if (!this.enabled) {
       return true;
     }
@@ -347,8 +347,7 @@ export class CoreEnforcer {
         }
 
         const context = { ...parameters, ...functions };
-        const result = asyncCompile ? await expression(context) : expression(context);
-
+        const result = asyncCompile ? yield expression(context) : expression(context);
         let eftRes: Effect;
         switch (typeof result) {
           case 'boolean':
@@ -395,8 +394,7 @@ export class CoreEnforcer {
 
       expression = this.getExpression(asyncCompile, expString);
       const context = { ...parameters, ...functions };
-      const result = asyncCompile ? await expression(context) : expression(context);
-
+      const result = asyncCompile ? yield expression(context) : expression(context);
       if (result) {
         effectStream.pushEffect(Effect.Allow);
       } else {
@@ -434,8 +432,13 @@ export class CoreEnforcer {
    *              of strings, can be class instances if ABAC is used.
    * @return whether to allow the request.
    */
-  public async enforceWithSyncCompile(...rvals: any[]): Promise<boolean> {
-    return this.privateEnforce(false, ...rvals);
+  public enforceWithSyncCompile(...rvals: any[]): boolean {
+    const i = this.privateEnforce(false, ...rvals);
+    return (i.next() as unknown) as boolean;
+  }
+
+  public enforceSync(...rvals: any[]): boolean {
+    return this.enforceWithSyncCompile(...rvals);
   }
 
   /**
@@ -447,6 +450,17 @@ export class CoreEnforcer {
    * @return whether to allow the request.
    */
   public async enforce(...rvals: any[]): Promise<boolean> {
-    return this.privateEnforce(true, ...rvals);
+    const i = this.privateEnforce(true, ...rvals);
+    let { value, done } = i.next();
+    while (true) {
+      if (!done) {
+        const tvalue = await value;
+        const temp = i.next(tvalue);
+        value = temp.value;
+        done = temp.done;
+      } else {
+        return value;
+      }
+    }
   }
 }
