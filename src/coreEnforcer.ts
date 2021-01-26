@@ -18,7 +18,7 @@ import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
 import { Adapter, FilteredAdapter, Watcher, BatchAdapter } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
-import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval } from './util';
+import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval, generatorRunSync, generatorRunAsync } from './util';
 import { getLogger, logPrint } from './log';
 
 type Matcher = ((context: any) => Promise<any>) | ((context: any) => any);
@@ -274,7 +274,7 @@ export class CoreEnforcer {
     await this.model.buildRoleLinks(this.rm);
   }
 
-  private async privateEnforce(asyncCompile = true, ...rvals: any[]): Promise<boolean> {
+  private *privateEnforce(asyncCompile = true, ...rvals: any[]): Generator<boolean | Promise<boolean>> {
     if (!this.enabled) {
       return true;
     }
@@ -347,7 +347,7 @@ export class CoreEnforcer {
         }
 
         const context = { ...parameters, ...functions };
-        const result = asyncCompile ? await expression(context) : expression(context);
+        const result = asyncCompile ? yield expression(context) : expression(context);
 
         let eftRes: Effect;
         switch (typeof result) {
@@ -395,7 +395,7 @@ export class CoreEnforcer {
 
       expression = this.getExpression(asyncCompile, expString);
       const context = { ...parameters, ...functions };
-      const result = asyncCompile ? await expression(context) : expression(context);
+      const result = asyncCompile ? yield expression(context) : expression(context);
 
       if (result) {
         effectStream.pushEffect(Effect.Allow);
@@ -427,15 +427,22 @@ export class CoreEnforcer {
   /**
    * If the matchers does not contain an asynchronous method, call it faster.
    *
-   * enforceWithSyncCompile decides whether a "subject" can access a "object" with
+   * enforceSync decides whether a "subject" can access a "object" with
    * the operation "action", input parameters are usually: (sub, obj, act).
    *
    * @param rvals the request needs to be mediated, usually an array
    *              of strings, can be class instances if ABAC is used.
    * @return whether to allow the request.
    */
-  public async enforceWithSyncCompile(...rvals: any[]): Promise<boolean> {
-    return this.privateEnforce(false, ...rvals);
+  public enforceSync(...rvals: any[]): boolean {
+    return generatorRunSync(this.privateEnforce(false, ...rvals));
+  }
+
+  /**
+   * Same as enforceSync. To be removed.
+   */
+  public enforceWithSyncCompile(...rvals: any[]): boolean {
+    return this.enforceSync(...rvals);
   }
 
   /**
@@ -447,6 +454,6 @@ export class CoreEnforcer {
    * @return whether to allow the request.
    */
   public async enforce(...rvals: any[]): Promise<boolean> {
-    return this.privateEnforce(true, ...rvals);
+    return generatorRunAsync(this.privateEnforce(true, ...rvals));
   }
 }
