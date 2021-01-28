@@ -20,6 +20,10 @@ async function testEnforce(e: Enforcer, sub: any, obj: string, act: string, res:
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
 }
 
+function testEnforceSync(e: Enforcer, sub: any, obj: string, act: string, res: boolean): void {
+  expect(e.enforceSync(sub, obj, act)).toBe(res);
+}
+
 async function testGetPolicy(e: Enforcer, res: string[][]): Promise<void> {
   const myRes = await e.getPolicy();
   console.log('Policy: ', myRes);
@@ -565,4 +569,19 @@ test('test ABAC Scaling', async () => {
   await testEnforce(e, sub3, '/data2', 'read', false);
   await testEnforce(e, sub3, '/data1', 'write', false);
   await testEnforce(e, sub3, '/data2', 'write', false);
+});
+
+test('TestEnforceSync', async () => {
+  const m = newModel();
+  m.addDef('r', 'r', 'sub, obj, act');
+  m.addDef('p', 'p', 'sub, obj, act');
+  m.addDef('g', 'g', '_, _');
+  m.addDef('e', 'e', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm', 'g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act');
+
+  const e = await newEnforcer(m);
+
+  await e.addPermissionForUser('alice', 'data1', 'invalid');
+
+  testEnforceSync(e, 'alice', 'data1', 'read', false);
 });

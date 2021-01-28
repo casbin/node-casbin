@@ -130,6 +130,35 @@ function getEvalValue(s: string): string[] {
   return rules;
 }
 
+// generatorRunSync handle generator function in Sync model and return value which is not Promise
+function generatorRunSync(iterator: Generator<any>): any {
+  let { value, done } = iterator.next();
+  while (true) {
+    if (value instanceof Promise) {
+      throw new Error('cannot handle Promise in generatorRunSync, Please use generatorRunAsync');
+    }
+    if (!done) {
+      const temp = value;
+      ({ value, done } = iterator.next(temp));
+    } else {
+      return value;
+    }
+  }
+}
+
+// generatorRunAsync handle generator function in Async model and return Promise
+async function generatorRunAsync(iterator: Generator<any>): Promise<any> {
+  let { value, done } = iterator.next();
+  while (true) {
+    if (!done) {
+      const temp = await value;
+      ({ value, done } = iterator.next(temp));
+    } else {
+      return value;
+    }
+  }
+}
+
 export {
   escapeAssertion,
   removeComments,
@@ -144,4 +173,6 @@ export {
   hasEval,
   replaceEval,
   getEvalValue,
+  generatorRunSync,
+  generatorRunAsync,
 };
