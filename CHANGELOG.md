@@ -1,3 +1,16 @@
+# [5.3.0](https://github.com/casbin/node-casbin/compare/v5.2.2...v5.3.0) (2021-01-28)
+
+
+### Bug Fixes
+
+* downgrade target from ESNext to ES2017 for building esm ([7dfcf93](https://github.com/casbin/node-casbin/commit/7dfcf93a2eb7a9c9116f55341537a4c81840e3d4))
+* update expression-eval ([95de296](https://github.com/casbin/node-casbin/commit/95de29650251af781d8638011dcc5cabeef2784c))
+
+
+### Features
+
+* enforceSync ([ff41f0a](https://github.com/casbin/node-casbin/commit/ff41f0a7c6eebbfafe985a929eba9e70f2c4b162))
+
 ## [5.2.3](https://github.com/casbin/node-casbin/compare/v5.2.2...v5.2.3) (2021-01-08)
 
 
