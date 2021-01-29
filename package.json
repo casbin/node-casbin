@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "await-lock": "^2.0.1",
-    "expression-eval": "^4.0.0",
+    "expression-eval": "^2.0.0",
     "ip": "^1.1.5",
     "micromatch": "^4.0.2"
   },
