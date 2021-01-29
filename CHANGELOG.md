@@ -1,3 +1,10 @@
+## [5.3.1](https://github.com/casbin/node-casbin/compare/v5.3.0...v5.3.1) (2021-01-29)
+
+
+### Bug Fixes
+
+* downgrade expression-eval back to v2.0.0 to avoid semantic-release failure, revert: https://github.com/casbin/node-casbin/pull/222 ([8c0b1fd](https://github.com/casbin/node-casbin/commit/8c0b1fd6b59c39350e90c768c54577396f89fefe))
+
 # [5.3.0](https://github.com/casbin/node-casbin/compare/v5.2.2...v5.3.0) (2021-01-28)
 
 
