@@ -15,7 +15,7 @@
 import { Adapter } from './adapter';
 
 // BatchAdapter is the interface for Casbin adapters with update policy functions.
-export interface updatableAdapter extends Adapter {
+export interface UpdatableAdapter extends Adapter {
   // updatePolicies adds policy rules to the storage.
   // This is part of the Auto-Save feature.
   updatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<void>;
