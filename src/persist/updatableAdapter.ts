@@ -14,7 +14,7 @@
 
 import { Adapter } from './adapter';
 
-// BatchAdapter is the interface for Casbin adapters with update policy functions.
+// UpdatableAdapter is the interface for Casbin adapters with update policy functions.
 export interface UpdatableAdapter extends Adapter {
   // updatePolicies adds policy rules to the storage.
   // This is part of the Auto-Save feature.
