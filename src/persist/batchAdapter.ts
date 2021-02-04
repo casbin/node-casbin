@@ -5,6 +5,9 @@ export interface BatchAdapter extends Adapter {
   // addPolicies adds policy rules to the storage.
   // This is part of the Auto-Save feature.
   addPolicies(sec: string, ptype: string, rules: string[][]): Promise<void>;
+  // updatePolicies adds policy rules to the storage.
+  // This is part of the Auto-Save feature.
+  updatePolicies(sec: string, ptype: string, oldRules: string[][], newRules: string[][]): Promise<void>;
   // removePolicies removes policy rules from the storage.
   // This is part of the Auto-Save feature.
   removePolicies(sec: string, ptype: string, rules: string[][]): Promise<void>;

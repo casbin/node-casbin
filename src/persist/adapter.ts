@@ -21,6 +21,8 @@ export interface Adapter {
 
   addPolicy(sec: string, ptype: string, rule: string[]): Promise<void>;
 
+  updatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<void>;
+
   removePolicy(sec: string, ptype: string, rule: string[]): Promise<void>;
 
   removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<void>;
