@@ -6,3 +6,5 @@ export * from './watcher';
 export * from './filteredAdapter';
 export * from './defaultFilteredAdapter';
 export * from './batchAdapter';
+export * from './batchFileAdapter';
+export * from './updatableAdapter';
