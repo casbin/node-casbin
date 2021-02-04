@@ -13,7 +13,8 @@
 // limitations under the License.
 
 import { CoreEnforcer } from './coreEnforcer';
-import { BatchAdapter } from './persist/batchAdapter';
+import { BatchAdapter } from './persist';
+import { UpdatableAdapter } from './persist';
 import { PolicyOp } from './model';
 
 /**
@@ -93,13 +94,17 @@ export class InternalEnforcer extends CoreEnforcer {
       return false;
     }
 
-    if (this.adapter && this.autoSave) {
-      try {
-        await this.adapter.updatePolicy(sec, ptype, oldRule, newRule);
-      } catch (e) {
-        if (e.message !== 'not implemented') {
-          throw e;
+    if (this.autoSave) {
+      if ('updatePolicy' in this.adapter) {
+        try {
+          await this.adapter.updatePolicy(sec, ptype, oldRule, newRule);
+        } catch (e) {
+          if (e.message !== 'not implemented') {
+            throw e;
+          }
         }
+      } else {
+        throw new Error('cannot to update policy, the adapter does not implement the UpdatableAdapter');
       }
     }
 

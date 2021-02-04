@@ -103,13 +103,6 @@ export class FileAdapter implements Adapter {
   }
 
   /**
-   * updatePolicy updates a policy rule from the storage.
-   */
-  public async updatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<void> {
-    throw new Error('not implemented');
-  }
-
-  /**
    * removePolicy removes a policy rule from the storage.
    */
   public async removePolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
