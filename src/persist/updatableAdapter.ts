@@ -16,7 +16,7 @@ import { Adapter } from './adapter';
 
 // UpdatableAdapter is the interface for Casbin adapters with update policy functions.
 export interface UpdatableAdapter extends Adapter {
-  // updatePolicies adds policy rules to the storage.
+  // updatePolicy updates a policy rules from the storage.
   // This is part of the Auto-Save feature.
   updatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<void>;
 }
