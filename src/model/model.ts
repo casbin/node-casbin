@@ -247,7 +247,18 @@ export class Model {
 
   // updatePolicy updates a policy from the model
   public updatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): boolean {
-    return this.removePolicy(sec, ptype, oldRule) && this.addPolicy(sec, ptype, newRule);
+    if (this.hasPolicy(sec, ptype, oldRule)) {
+      const ast = this.model.get(sec)?.get(ptype);
+      if (!ast) {
+        return false;
+      }
+      const index = ast.policy.indexOf(oldRule);
+      if (index !== -1) {
+        ast.policy[index] = newRule;
+        return true;
+      }
+    }
+    return false;
   }
 
   // removePolicy removes a policy rule from the model.
