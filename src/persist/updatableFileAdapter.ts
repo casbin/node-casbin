@@ -14,7 +14,7 @@ export class UpdatableFileAdapter extends FileAdapter implements UpdatableAdapte
     super(filePath);
   }
 
-  // updatePolicy updates a policy rules to the storage.
+  // UpdatePolicy updates a policy rule from storage.
   // This is part of the Auto-Save feature.
   updatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<void> {
     throw new Error('not implemented');
