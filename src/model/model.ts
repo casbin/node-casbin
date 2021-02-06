@@ -252,7 +252,8 @@ export class Model {
       if (!ast) {
         return false;
       }
-      const index = ast.policy.indexOf(oldRule);
+      // const index = ast.policy.indexOf(oldRule);
+      const index = ast.policy.findIndex((r) => util.arrayEquals(r, oldRule));
       if (index !== -1) {
         ast.policy[index] = newRule;
         return true;
