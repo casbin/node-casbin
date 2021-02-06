@@ -8,4 +8,3 @@ export * from './defaultFilteredAdapter';
 export * from './batchAdapter';
 export * from './batchFileAdapter';
 export * from './updatableAdapter';
-export * from './updatableFileAdapter';
