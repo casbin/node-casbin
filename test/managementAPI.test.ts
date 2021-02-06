@@ -186,6 +186,8 @@ test('addNamedPolicies', async () => {
 });
 
 test('updatePolicy', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
   const p = ['alice', 'data1', 'read'];
   const q = ['alice', 'data2', 'read'];
   const updated = await e.updatePolicy(p, q);
@@ -195,7 +197,7 @@ test('updatePolicy', async () => {
 });
 
 test('updateNamedPolicy', async () => {
-  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  const a = new FileAdapter('examples/rbac_policy.csv');
   e.setAdapter(a);
   const p = ['alice', 'data1', 'read'];
   const q = ['alice', 'data2', 'read'];
