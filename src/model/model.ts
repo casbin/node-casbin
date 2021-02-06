@@ -245,6 +245,23 @@ export class Model {
     return [true, rules];
   }
 
+  // updatePolicy updates a policy from the model
+  public updatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): boolean {
+    if (this.hasPolicy(sec, ptype, oldRule)) {
+      const ast = this.model.get(sec)?.get(ptype);
+      if (!ast) {
+        return false;
+      }
+      // const index = ast.policy.indexOf(oldRule);
+      const index = ast.policy.findIndex((r) => util.arrayEquals(r, oldRule));
+      if (index !== -1) {
+        ast.policy[index] = newRule;
+        return true;
+      }
+    }
+    return false;
+  }
+
   // removePolicy removes a policy rule from the model.
   public removePolicy(sec: string, key: string, rule: string[]): boolean {
     if (this.hasPolicy(sec, key, rule)) {

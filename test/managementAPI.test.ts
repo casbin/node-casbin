@@ -185,6 +185,28 @@ test('addNamedPolicies', async () => {
   }
 });
 
+test('updatePolicy', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const p = ['alice', 'data1', 'read'];
+  const q = ['alice', 'data2', 'read'];
+  const updated = await e.updatePolicy(p, q);
+  expect(updated).toBe(true);
+  expect(await e.hasPolicy(...p)).toBe(false);
+  expect(await e.hasPolicy(...q)).toBe(true);
+});
+
+test('updateNamedPolicy', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const p = ['alice', 'data1', 'read'];
+  const q = ['alice', 'data2', 'read'];
+  const updated = await e.updateNamedPolicy('p', p, q);
+  expect(updated).toBe(true);
+  expect(await e.hasPolicy(...p)).toBe(false);
+  expect(await e.hasPolicy(...q)).toBe(true);
+});
+
 test('removePolicy', async () => {
   const p = ['alice', 'data1', 'read'];
   const removed = await e.removePolicy(...p);

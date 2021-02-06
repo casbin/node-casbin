@@ -277,6 +277,33 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
+   * updatePolicy updates an authorization rule from the current policy.
+   * If the rule not exists, the function returns false.
+   * Otherwise the function returns true by changing it to the new rule.
+   *
+   * @return succeeds or not.
+   * @param oldRule the policy will be remove
+   * @param newRule the policy will be added
+   */
+  public async updatePolicy(oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.updateNamedPolicy('p', oldRule, newRule);
+  }
+
+  /**
+   * updateNamedPolicy updates an authorization rule from the current named policy.
+   * If the rule not exists, the function returns false.
+   * Otherwise the function returns true by changing it to the new rule.
+   *
+   * @param ptype the policy type, can be "p", "p2", "p3", ..
+   * @param oldRule the policy rule will be remove
+   * @param newRule the policy rule will be added
+   * @return succeeds or not.
+   */
+  public async updateNamedPolicy(ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.updatePolicyInternal('p', ptype, oldRule, newRule);
+  }
+
+  /**
    * removePolicy removes an authorization rule from the current policy.
    *
    * @param params the "p" policy rule, ptype "p" is implicitly used.
