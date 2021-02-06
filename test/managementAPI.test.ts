@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { newEnforcer, Enforcer, Util } from '../src';
-import { BatchFileAdapter } from '../src/persist';
+import { FileAdapter } from '../src';
 
 let e = {} as Enforcer;
 
@@ -147,7 +147,7 @@ test('addPolicy', async () => {
 });
 
 test('addPolicies', async () => {
-  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  const a = new FileAdapter('examples/rbac_policy.csv');
   e.setAdapter(a);
   const rules = [
     ['jack', 'data4', 'read'],
@@ -170,7 +170,7 @@ test('addNamedPolicy', async () => {
 });
 
 test('addNamedPolicies', async () => {
-  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  const a = new FileAdapter('examples/rbac_policy.csv');
   e.setAdapter(a);
   const rules = [
     ['jack', 'data4', 'read'],
@@ -193,7 +193,7 @@ test('removePolicy', async () => {
 });
 
 test('removePolicies', async () => {
-  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  const a = new FileAdapter('examples/rbac_policy.csv');
   e.setAdapter(a);
   const rules = [
     ['jack', 'data4', 'read'],
@@ -225,7 +225,7 @@ test('removeNamedPolicy', async () => {
 });
 
 test('removeNamedPolicies', async () => {
-  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  const a = new FileAdapter('examples/rbac_policy.csv');
   e.setAdapter(a);
   const rules = [
     ['jack', 'data4', 'read'],
@@ -265,7 +265,7 @@ test('addGroupingPolicy', async () => {
 });
 
 test('addGroupingPolicies', async () => {
-  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  const a = new FileAdapter('examples/rbac_policy.csv');
   e.setAdapter(a);
   const groupingRules = [
     ['ham', 'data4_admin'],
@@ -281,7 +281,7 @@ test('addNamedGroupingPolicy', async () => {
 });
 
 test('addNamedGroupingPolicies', async () => {
-  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  const a = new FileAdapter('examples/rbac_policy.csv');
   e.setAdapter(a);
   const groupingRules = [
     ['ham', 'data4_admin'],
@@ -297,7 +297,7 @@ test('removeGroupingPolicy', async () => {
 });
 
 test('removeGroupingPolicies', async () => {
-  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  const a = new FileAdapter('examples/rbac_policy.csv');
   e.setAdapter(a);
   const groupingRules = [
     ['ham', 'data4_admin'],
@@ -320,7 +320,7 @@ test('removeFilteredNamedGroupingPolicy', async () => {
 });
 
 test('removeNamedGroupingPolicies', async () => {
-  const a = new BatchFileAdapter('examples/rbac_policy.csv');
+  const a = new FileAdapter('examples/rbac_policy.csv');
   e.setAdapter(a);
   const groupingRules = [
     ['ham', 'data4_admin'],

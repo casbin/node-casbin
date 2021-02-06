@@ -87,10 +87,28 @@ export class FileAdapter implements Adapter {
     throw new Error('not implemented');
   }
 
+  // addPolicies adds policy rules to the storage.
+  // This is part of the Auto-Save feature.
+  public async addPolicies(sec: string, ptype: string, rules: string[][]): Promise<void> {
+    throw new Error('not implemented');
+  }
+
+  // UpdatePolicy updates a policy rule from storage.
+  // This is part of the Auto-Save feature.
+  updatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<void> {
+    throw new Error('not implemented');
+  }
+
   /**
    * removePolicy removes a policy rule from the storage.
    */
   public async removePolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
+    throw new Error('not implemented');
+  }
+
+  // removePolicies removes policy rules from the storage.
+  // This is part of the Auto-Save feature.
+  public async removePolicies(sec: string, ptype: string, rules: string[][]): Promise<void> {
     throw new Error('not implemented');
   }
 
