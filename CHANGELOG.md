@@ -1,3 +1,10 @@
+# [5.4.0](https://github.com/casbin/node-casbin/compare/v5.3.1...v5.4.0) (2021-02-06)
+
+
+### Features
+
+* add updatePolicy() ([#234](https://github.com/casbin/node-casbin/issues/234)) ([a3218f1](https://github.com/casbin/node-casbin/commit/a3218f1a5d134838c0fb90c8ad1c8751e26c6332)), closes [#235](https://github.com/casbin/node-casbin/issues/235)
+
 ## [5.3.1](https://github.com/casbin/node-casbin/compare/v5.3.0...v5.3.1) (2021-01-29)
 
 
