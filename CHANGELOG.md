@@ -1,3 +1,10 @@
+## [5.4.1](https://github.com/casbin/node-casbin/compare/v5.4.0...v5.4.1) (2021-02-19)
+
+
+### Bug Fixes
+
+* fix unexpected parser action ([3074fa9](https://github.com/casbin/node-casbin/commit/3074fa9050ca073eb4c0f4197c63f13e9e7f9ebf))
+
 # [5.4.0](https://github.com/casbin/node-casbin/compare/v5.3.1...v5.4.0) (2021-02-06)
 
 
