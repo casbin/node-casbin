@@ -91,7 +91,10 @@ export class Config implements ConfigInterface {
   }
 
   private parseBuffer(buf: Buffer): void {
-    const lines = buf.toString().split('\n');
+    const lines = buf
+      .toString()
+      .split('\n')
+      .filter((v) => v);
     const linesCount = lines.length;
     let section = '';
     let currentLine = '';
@@ -123,15 +126,11 @@ export class Config implements ConfigInterface {
         let shouldWrite = false;
         if (line.includes(Config.DEFAULT_MULTI_LINE_SEPARATOR)) {
           currentLine += line.substring(0, line.length - 1).trim();
-          // when the last line has a "\" string
-          if (lineNumber + 1 === linesCount) {
-            shouldWrite = true;
-          }
         } else {
           currentLine += line;
           shouldWrite = true;
         }
-        if (shouldWrite) {
+        if (shouldWrite || lineNumber === linesCount) {
           this.write(section, lineNumber, currentLine);
           currentLine = '';
         }

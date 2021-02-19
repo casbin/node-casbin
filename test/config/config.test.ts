@@ -23,6 +23,10 @@ describe('multi-line test', () => {
     expect(config.get('multi5::name')).toEqual('r.sub==p.sub&&r.obj==p.obj');
   });
 
+  it('should config.get("multi6::name") to equal r.sub==p.sub&&r.obj==p.obj&&r.tex==p.tex', function () {
+    expect(config.get('multi6::name')).toEqual('r.sub==p.sub&&r.obj==p.obj&&r.tex==p.tex');
+  });
+
   it('should config.get("mysql::mysql.master.host") to equal 10.0.0.1', function () {
     expect(config.get('mysql::mysql.master.host')).toEqual('10.0.0.1');
   });
