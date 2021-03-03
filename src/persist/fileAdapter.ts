@@ -1,7 +1,7 @@
 import { Adapter } from './adapter';
 import { Model } from '../model';
 import { Helper } from './helper';
-import { readFile, writeFile, arrayToString } from '../util';
+import { arrayToString, readFile, writeFile } from '../util';
 
 /**
  * FileAdapter is the file adapter for Casbin.
@@ -30,8 +30,7 @@ export class FileAdapter implements Adapter {
     const bodyBuf = await readFile(this.filePath);
     const lines = bodyBuf.toString().split('\n');
     lines.forEach((n: string, index: number) => {
-      const line = n.trim();
-      if (!line) {
+      if (!n) {
         return;
       }
       handler(n, model);

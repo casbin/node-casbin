@@ -2022,6 +2022,11 @@ cssstyle@^1.0.0:
   dependencies:
     cssom "0.3.x"
 
+csv-parse@^4.15.3:
+  version "4.15.3"
+  resolved "https://registry.npm.taobao.org/csv-parse/download/csv-parse-4.15.3.tgz#8a62759617a920c328cb31c351b05053b8f92b10"
+  integrity sha1-imJ1lhepIMMoyzHDUbBQU7j5KxA=
+
 cyclist@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/cyclist/download/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
