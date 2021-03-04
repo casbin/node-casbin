@@ -28,8 +28,7 @@ export class StringAdapter implements Adapter {
   private async loadRules(model: Model, handler: (line: string, model: Model) => void): Promise<void> {
     const rules = this.policy.split('\n');
     rules.forEach((n: string, index: number) => {
-      const line = n.trim();
-      if (!line) {
+      if (!n) {
         return;
       }
       handler(n, model);

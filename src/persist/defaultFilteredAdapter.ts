@@ -41,7 +41,7 @@ export class DefaultFilteredAdapter extends FileAdapter implements FilteredAdapt
     const bodyBuf = await readFile(this.filePath);
     const lines = bodyBuf.toString().split('\n');
     lines.forEach((n: string, index: number) => {
-      const line = n.trim();
+      const line = n;
       if (!line || DefaultFilteredAdapter.filterLine(line, filter)) {
         return;
       }
@@ -88,7 +88,7 @@ export class DefaultFilteredAdapter extends FileAdapter implements FilteredAdapt
     }
     let skipLine = false;
     for (let i = 0; i < filter.length; i++) {
-      if (filter[i] && filter[i].trim() !== filter[i + 1].trim()) {
+      if (filter[i] && filter[i] !== filter[i + 1]) {
         skipLine = true;
         break;
       }
