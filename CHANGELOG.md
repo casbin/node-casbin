@@ -1,3 +1,10 @@
+## [5.4.2](https://github.com/casbin/node-casbin/compare/v5.4.1...v5.4.2) (2021-03-04)
+
+
+### Bug Fixes
+
+* improve load policy line ([9f12511](https://github.com/casbin/node-casbin/commit/9f12511e5fbfb16646b38ad30e345beee5179c9d))
+
 ## [5.4.1](https://github.com/casbin/node-casbin/compare/v5.4.0...v5.4.1) (2021-02-19)
 
 
