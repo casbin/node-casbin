@@ -50,8 +50,12 @@ yarn add casbin
 
 New a `node-casbin` enforcer with a model file and a policy file, see [Model](#official-model) section for details:
 
-```typescript
-import { newEnforcer } from 'casbin';
+```node.js
+// For Node.js:
+const { newEnforcer } = require('casbin');
+// For browser:
+// import { newEnforcer } from 'casbin';
+
 const enforcer = await newEnforcer('basic_model.conf', 'basic_policy.csv');
 ```
 
@@ -59,12 +63,16 @@ const enforcer = await newEnforcer('basic_model.conf', 'basic_policy.csv');
 
 Add an enforcement hook into your code right before the access happens:
 
-```typescript
+```node.js
 const sub = 'alice'; // the user that wants to access a resource.
 const obj = 'data1'; // the resource that is going to be accessed.
 const act = 'read'; // the operation that the user performs on the resource.
 
+// Async:
 const res = await enforcer.enforce(sub, obj, act);
+// Sync:
+// const res = enforcer.enforceSync(sub, obj, act);
+
 if (res) {
   // permit alice to read data1
 } else {
@@ -75,7 +83,7 @@ if (res) {
 Besides the static policy file, `node-casbin` also provides API for permission management at run-time.
 For example, You can get all the roles assigned to a user as below:
 
-```typescript
+```node.js
 const roles = await enforcer.getRolesForUser('alice');
 ```
 
