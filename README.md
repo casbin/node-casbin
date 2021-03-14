@@ -14,11 +14,14 @@
 [download-image]: https://img.shields.io/npm/dm/casbin.svg?style=flat-square
 [download-url]: https://npmjs.org/package/casbin
 
-**News**: still worry about how to write the correct `node-casbin` policy? [Casbin online editor](http://casbin.org/en/editor) is coming to help!
+**News**: still worry about how to write the correct `node-casbin`
+policy? [Casbin online editor](http://casbin.org/en/editor) is coming to help!
 
 ![casbin Logo](casbin-logo.png)
 
-`node-casbin` is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https://en.wikipedia.org/wiki/Computer_security_model).
+`node-casbin` is a powerful and efficient open-source access control library for Node.JS projects. It provides support
+for enforcing authorization based on
+various [access control models](https://en.wikipedia.org/wiki/Computer_security_model).
 
 ## All the languages supported by Casbin:
 
@@ -52,6 +55,9 @@ New a `node-casbin` enforcer with a model file and a policy file, see [Model](#o
 
 ```typescript
 import { newEnforcer } from 'casbin';
+// Or
+const { newEnforcer } = require('casbin');
+
 const enforcer = await newEnforcer('basic_model.conf', 'basic_policy.csv');
 ```
 
@@ -64,19 +70,22 @@ const sub = 'alice'; // the user that wants to access a resource.
 const obj = 'data1'; // the resource that is going to be accessed.
 const act = 'read'; // the operation that the user performs on the resource.
 
-const res = await enforcer.enforce(sub, obj, act);
-if (res) {
-  // permit alice to read data1
-} else {
-  // deny the request, show an error
-}
+const res = enforcer.enforce(sub, obj, act);
+
+res.then((result) => {
+  if (result) {
+    // permit alice to read data1
+  } else {
+    // deny the request, show an error
+  }
+});
 ```
 
-Besides the static policy file, `node-casbin` also provides API for permission management at run-time.
-For example, You can get all the roles assigned to a user as below:
+Besides the static policy file, `node-casbin` also provides API for permission management at run-time. For example, You
+can get all the roles assigned to a user as below:
 
 ```typescript
-const roles = await enforcer.getRolesForUser('alice');
+const roles = enforcer.getRolesForUser('alice');
 ```
 
 See [Policy management APIs](#policy-management) for more usage.
@@ -85,8 +94,10 @@ See [Policy management APIs](#policy-management) for more usage.
 
 Casbin provides two sets of APIs to manage permissions:
 
-- [Management API](https://casbin.org/docs/en/management-api): the primitive API that provides full support for Casbin policy management.
-- [RBAC API](https://casbin.org/docs/en/rbac-api): a more friendly API for RBAC. This API is a subset of Management API. The RBAC users could use this API to simplify the code.
+- [Management API](https://casbin.org/docs/en/management-api): the primitive API that provides full support for Casbin
+  policy management.
+- [RBAC API](https://casbin.org/docs/en/rbac-api): a more friendly API for RBAC. This API is a subset of Management API.
+  The RBAC users could use this API to simplify the code.
 
 ## Official Model
 
@@ -117,7 +128,8 @@ Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com
 
 ## Sponsors
 
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/casbin#sponsor)]
+Support this project by becoming a sponsor. Your logo will show up here with a link to your
+website. [[Become a sponsor](https://opencollective.com/casbin#sponsor)]
 
 <a href="https://opencollective.com/casbin/sponsor/0/website" target="_blank"><img src="https://opencollective.com/casbin/sponsor/0/avatar.svg"></a>
 <a href="https://opencollective.com/casbin/sponsor/1/website" target="_blank"><img src="https://opencollective.com/casbin/sponsor/1/avatar.svg"></a>
@@ -140,4 +152,5 @@ If you have any issues or feature requests, please contact us. PR is welcomed.
 
 - https://github.com/casbin/node-casbin/issues
 - hsluoyz@gmail.com
-- Tencent QQ group: [546057381](//shang.qq.com/wpa/qunwpa?idkey=8ac8b91fc97ace3d383d0035f7aa06f7d670fd8e8d4837347354a31c18fac885)
+- Tencent QQ
+  group: [546057381](//shang.qq.com/wpa/qunwpa?idkey=8ac8b91fc97ace3d383d0035f7aa06f7d670fd8e8d4837347354a31c18fac885)
