@@ -14,14 +14,11 @@
 [download-image]: https://img.shields.io/npm/dm/casbin.svg?style=flat-square
 [download-url]: https://npmjs.org/package/casbin
 
-**News**: still worry about how to write the correct `node-casbin`
-policy? [Casbin online editor](http://casbin.org/en/editor) is coming to help!
+**News**: still worry about how to write the correct `node-casbin`policy? [Casbin online editor](http://casbin.org/en/editor) is coming to help!
 
 ![casbin Logo](casbin-logo.png)
 
-`node-casbin` is a powerful and efficient open-source access control library for Node.JS projects. It provides support
-for enforcing authorization based on
-various [access control models](https://en.wikipedia.org/wiki/Computer_security_model).
+`node-casbin` is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https://en.wikipedia.org/wiki/Computer_security_model).
 
 ## All the languages supported by Casbin:
 
@@ -81,8 +78,7 @@ res.then((result) => {
 });
 ```
 
-Besides the static policy file, `node-casbin` also provides API for permission management at run-time. For example, You
-can get all the roles assigned to a user as below:
+Besides the static policy file, `node-casbin` also provides API for permission management at run-time. For example, You can get all the roles assigned to a user as below:
 
 ```typescript
 const roles = enforcer.getRolesForUser('alice');
@@ -128,8 +124,7 @@ Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com
 
 ## Sponsors
 
-Support this project by becoming a sponsor. Your logo will show up here with a link to your
-website. [[Become a sponsor](https://opencollective.com/casbin#sponsor)]
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/casbin#sponsor)]
 
 <a href="https://opencollective.com/casbin/sponsor/0/website" target="_blank"><img src="https://opencollective.com/casbin/sponsor/0/avatar.svg"></a>
 <a href="https://opencollective.com/casbin/sponsor/1/website" target="_blank"><img src="https://opencollective.com/casbin/sponsor/1/avatar.svg"></a>
