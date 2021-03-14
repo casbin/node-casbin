@@ -14,7 +14,7 @@
 [download-image]: https://img.shields.io/npm/dm/casbin.svg?style=flat-square
 [download-url]: https://npmjs.org/package/casbin
 
-**News**: still worry about how to write the correct `node-casbin`policy? [Casbin online editor](http://casbin.org/en/editor) is coming to help!
+**News**: still worry about how to write the correct `node-casbin` policy? [Casbin online editor](http://casbin.org/en/editor) is coming to help!
 
 ![casbin Logo](casbin-logo.png)
 
@@ -78,7 +78,8 @@ res.then((result) => {
 });
 ```
 
-Besides the static policy file, `node-casbin` also provides API for permission management at run-time. For example, You can get all the roles assigned to a user as below:
+Besides the static policy file, `node-casbin` also provides API for permission management at run-time.
+For example, You can get all the roles assigned to a user as below:
 
 ```typescript
 const roles = enforcer.getRolesForUser('alice');
