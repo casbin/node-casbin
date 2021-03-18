@@ -17,6 +17,7 @@ import { Model, newModel } from './model';
 import { Adapter, FileAdapter, StringAdapter } from './persist';
 import { getLogger } from './log';
 import { arrayRemoveDuplicates } from './util';
+import RuntimeError = WebAssembly.RuntimeError;
 
 /**
  * Enforcer = ManagementEnforcer + RBAC API.
@@ -80,11 +81,15 @@ export class Enforcer extends ManagementEnforcer {
    * @return the roles that the user has.
    */
   public async getRolesForUser(name: string, domain?: string): Promise<string[]> {
-    if (domain === undefined) {
-      return this.rm.getRoles(name);
-    } else {
-      return this.rm.getRoles(name, domain);
+    const rm = this.rmMap.get('g');
+    if (rm) {
+      if (domain === undefined) {
+        return rm.getRoles(name);
+      } else {
+        return rm.getRoles(name, domain);
+      }
     }
+    throw new RuntimeError();
   }
 
   /**
@@ -95,11 +100,15 @@ export class Enforcer extends ManagementEnforcer {
    * @return the users that has the role.
    */
   public async getUsersForRole(name: string, domain?: string): Promise<string[]> {
-    if (domain === undefined) {
-      return this.rm.getUsers(name);
-    } else {
-      return this.rm.getUsers(name, domain);
+    const rm = this.rmMap.get('g');
+    if (rm) {
+      if (domain === undefined) {
+        return rm.getUsers(name);
+      } else {
+        return rm.getUsers(name, domain);
+      }
     }
+    throw new RuntimeError();
   }
 
   /**

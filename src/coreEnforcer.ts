@@ -35,7 +35,7 @@ export class CoreEnforcer {
 
   protected adapter: UpdatableAdapter | FilteredAdapter | Adapter | BatchAdapter;
   protected watcher: Watcher | null = null;
-  protected rm: RoleManager = new DefaultRoleManager(10);
+  protected rmMap: Map<string, RoleManager> = new Map<string, RoleManager>([['g', new DefaultRoleManager(10)]]);
 
   protected enabled = true;
   protected autoSave = true;
@@ -116,14 +116,14 @@ export class CoreEnforcer {
    * @param rm the role manager.
    */
   public setRoleManager(rm: RoleManager): void {
-    this.rm = rm;
+    this.rmMap.set('g', rm);
   }
 
   /**
    * getRoleManager gets the current role manager.
    */
   public getRoleManager(): RoleManager {
-    return this.rm;
+    return <RoleManager>this.rmMap.get('g');
   }
 
   /**
@@ -141,6 +141,16 @@ export class CoreEnforcer {
   public clearPolicy(): void {
     this.model.clearPolicy();
   }
+
+  // public initRmMap(): void {
+  //   this.rmMap = new Map<string, RoleManager>();
+  //   const rm = this.model.model.get('g');
+  //   if (rm) {
+  //     for (const ptype of rm.keys()) {
+  //       this.rmMap.set(ptype, new DefaultRoleManager(10));
+  //     }
+  //   }
+  // }
 
   /**
    * loadPolicy reloads the policy from file/database.
@@ -266,12 +276,17 @@ export class CoreEnforcer {
    * @param rules policies
    */
   public async buildIncrementalRoleLinks(op: PolicyOp, ptype: string, rules: string[][]): Promise<void> {
-    await this.model.buildIncrementalRoleLinks(this.rm, op, 'g', ptype, rules);
+    for (const rmKey of this.rmMap.keys()) {
+      await this.model.buildIncrementalRoleLinks(<RoleManager>this.rmMap.get(rmKey), op, rmKey, ptype, rules);
+    }
   }
 
   protected async buildRoleLinksInternal(): Promise<void> {
-    await this.rm.clear();
-    await this.model.buildRoleLinks(this.rm);
+    // await this.model.buildRoleLinks(this.rmMap);
+    for (const rm of this.rmMap.values()) {
+      rm.clear();
+      await this.model.buildRoleLinks(rm);
+    }
   }
 
   private *privateEnforce(asyncCompile = true, ...rvals: any[]): Generator<boolean | Promise<boolean>> {
