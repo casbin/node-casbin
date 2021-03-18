@@ -17,7 +17,6 @@ import { Model, newModel } from './model';
 import { Adapter, FileAdapter, StringAdapter } from './persist';
 import { getLogger } from './log';
 import { arrayRemoveDuplicates } from './util';
-import RuntimeError = WebAssembly.RuntimeError;
 
 /**
  * Enforcer = ManagementEnforcer + RBAC API.
