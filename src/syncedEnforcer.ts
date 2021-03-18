@@ -15,6 +15,7 @@
 import { Enforcer, newEnforcerWithClass } from './enforcer';
 import AwaitLock from 'await-lock';
 import { Watcher } from './persist';
+import { MatchingFunc } from './rbac';
 
 // SyncedEnforcer wraps Enforcer and provides synchronized access
 export class SyncedEnforcer extends Enforcer {
@@ -476,6 +477,28 @@ export class SyncedEnforcer extends Enforcer {
   public async removeFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
     await this.lock.acquireAsync();
     return super.removeFilteredNamedGroupingPolicy(ptype, fieldIndex, ...fieldValues).finally(() => this.lock.release());
+  }
+
+  /**
+   * add matching function to RoleManager by ptype
+   * @param ptype g
+   * @param fn the function will be added
+   */
+  public async addNamedMatchingFunc(ptype: string, fn: MatchingFunc): Promise<void> {
+    await this.lock.acquireAsync();
+    return super.addNamedMatchingFunc(ptype, fn).finally(() => this.lock.release());
+  }
+
+  /**
+   * add domain matching function to RoleManager by ptype
+   * @param ptype g
+   * @param fn the function will be added
+   */
+  public async addNamedDomainMatchingFunc(ptype: string, fn: MatchingFunc): Promise<void> {
+    await this.lock.acquireAsync();
+    return super.addNamedDomainMatchingFunc(ptype, fn).finally(() => {
+      this.lock.release();
+    });
   }
 }
 
