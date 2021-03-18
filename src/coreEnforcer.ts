@@ -311,7 +311,7 @@ export class CoreEnforcer {
   protected async buildRoleLinksInternal(): Promise<void> {
     // await this.model.buildRoleLinks(this.rmMap);
     for (const rm of this.rmMap.values()) {
-      rm.clear();
+      await rm.clear();
       await this.model.buildRoleLinks(rm);
     }
   }
