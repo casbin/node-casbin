@@ -143,15 +143,15 @@ export class CoreEnforcer {
     this.model.clearPolicy();
   }
 
-  // public initRmMap(): void {
-  //   this.rmMap = new Map<string, RoleManager>();
-  //   const rm = this.model.model.get('g');
-  //   if (rm) {
-  //     for (const ptype of rm.keys()) {
-  //       this.rmMap.set(ptype, new DefaultRoleManager(10));
-  //     }
-  //   }
-  // }
+  public initRmMap(): void {
+    this.rmMap = new Map<string, RoleManager>();
+    const rm = this.model.model.get('g');
+    if (rm) {
+      for (const ptype of rm.keys()) {
+        this.rmMap.set(ptype, new DefaultRoleManager(10));
+      }
+    }
+  }
 
   /**
    * loadPolicy reloads the policy from file/database.
@@ -159,6 +159,8 @@ export class CoreEnforcer {
   public async loadPolicy(): Promise<void> {
     this.model.clearPolicy();
     await this.adapter.loadPolicy(this.model);
+
+    this.initRmMap();
 
     if (this.autoBuildRoleLinks) {
       await this.buildRoleLinksInternal();
@@ -179,6 +181,8 @@ export class CoreEnforcer {
     } else {
       throw new Error('filtered policies are not supported by this adapter');
     }
+
+    this.initRmMap();
 
     if (this.autoBuildRoleLinks) {
       await this.buildRoleLinksInternal();
