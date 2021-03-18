@@ -89,7 +89,7 @@ export class Enforcer extends ManagementEnforcer {
         return rm.getRoles(name, domain);
       }
     }
-    throw new RuntimeError();
+    throw new Error("RoleManager didn't exist.");
   }
 
   /**
@@ -108,7 +108,7 @@ export class Enforcer extends ManagementEnforcer {
         return rm.getUsers(name, domain);
       }
     }
-    throw new RuntimeError();
+    throw new Error("RoleManager didn't exist.");
   }
 
   /**
