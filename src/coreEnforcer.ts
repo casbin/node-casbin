@@ -20,6 +20,7 @@ import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter } fro
 import { DefaultRoleManager, RoleManager } from './rbac';
 import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval, generatorRunSync, generatorRunAsync } from './util';
 import { getLogger, logPrint } from './log';
+import { MatchingFunc } from './rbac';
 
 type Matcher = ((context: any) => Promise<any>) | ((context: any) => any);
 
@@ -260,6 +261,32 @@ export class CoreEnforcer {
    */
   public enableAutoBuildRoleLinks(autoBuildRoleLinks: boolean): void {
     this.autoBuildRoleLinks = autoBuildRoleLinks;
+  }
+
+  /**
+   * add matching function to RoleManager by ptype
+   * @param ptype g
+   * @param fn the function will be added
+   */
+  public async addNamedMatchingFunc(ptype: string, fn: MatchingFunc): Promise<void> {
+    const rm = this.rmMap.get(ptype);
+    if (rm) {
+      return await (<DefaultRoleManager>rm).addMatchingFunc(fn);
+    }
+
+    throw Error('Target ptype not found.');
+  }
+
+  /**
+   * add domain matching function to RoleManager by ptype
+   * @param ptype g
+   * @param fn the function will be added
+   */
+  public async addNamedDomainMatchingFunc(ptype: string, fn: MatchingFunc): Promise<void> {
+    const rm = this.rmMap.get(ptype);
+    if (rm) {
+      return await (<DefaultRoleManager>rm).addDomainMatchingFunc(fn);
+    }
   }
 
   /**
