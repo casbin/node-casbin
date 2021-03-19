@@ -15,7 +15,7 @@
 import { RoleManager } from './roleManager';
 import { getLogger, logPrint } from '../log';
 
-type MatchingFunc = (arg1: string, arg2: string) => boolean;
+export type MatchingFunc = (arg1: string, arg2: string) => boolean;
 
 // DEFAULT_DOMAIN defines the default domain space.
 const DEFAULT_DOMAIN = 'casbin::default';

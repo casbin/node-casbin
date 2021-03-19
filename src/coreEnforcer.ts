@@ -20,6 +20,7 @@ import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter } fro
 import { DefaultRoleManager, RoleManager } from './rbac';
 import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval, generatorRunSync, generatorRunAsync } from './util';
 import { getLogger, logPrint } from './log';
+import { MatchingFunc } from './rbac';
 
 type Matcher = ((context: any) => Promise<any>) | ((context: any) => any);
 
@@ -35,7 +36,7 @@ export class CoreEnforcer {
 
   protected adapter: UpdatableAdapter | FilteredAdapter | Adapter | BatchAdapter;
   protected watcher: Watcher | null = null;
-  protected rm: RoleManager = new DefaultRoleManager(10);
+  protected rmMap: Map<string, RoleManager> = new Map<string, RoleManager>([['g', new DefaultRoleManager(10)]]);
 
   protected enabled = true;
   protected autoSave = true;
@@ -116,14 +117,14 @@ export class CoreEnforcer {
    * @param rm the role manager.
    */
   public setRoleManager(rm: RoleManager): void {
-    this.rm = rm;
+    this.rmMap.set('g', rm);
   }
 
   /**
    * getRoleManager gets the current role manager.
    */
   public getRoleManager(): RoleManager {
-    return this.rm;
+    return <RoleManager>this.rmMap.get('g');
   }
 
   /**
@@ -142,12 +143,24 @@ export class CoreEnforcer {
     this.model.clearPolicy();
   }
 
+  public initRmMap(): void {
+    this.rmMap = new Map<string, RoleManager>();
+    const rm = this.model.model.get('g');
+    if (rm) {
+      for (const ptype of rm.keys()) {
+        this.rmMap.set(ptype, new DefaultRoleManager(10));
+      }
+    }
+  }
+
   /**
    * loadPolicy reloads the policy from file/database.
    */
   public async loadPolicy(): Promise<void> {
     this.model.clearPolicy();
     await this.adapter.loadPolicy(this.model);
+
+    this.initRmMap();
 
     if (this.autoBuildRoleLinks) {
       await this.buildRoleLinksInternal();
@@ -168,6 +181,8 @@ export class CoreEnforcer {
     } else {
       throw new Error('filtered policies are not supported by this adapter');
     }
+
+    this.initRmMap();
 
     if (this.autoBuildRoleLinks) {
       await this.buildRoleLinksInternal();
@@ -253,6 +268,32 @@ export class CoreEnforcer {
   }
 
   /**
+   * add matching function to RoleManager by ptype
+   * @param ptype g
+   * @param fn the function will be added
+   */
+  public async addNamedMatchingFunc(ptype: string, fn: MatchingFunc): Promise<void> {
+    const rm = this.rmMap.get(ptype);
+    if (rm) {
+      return await (<DefaultRoleManager>rm).addMatchingFunc(fn);
+    }
+
+    throw Error('Target ptype not found.');
+  }
+
+  /**
+   * add domain matching function to RoleManager by ptype
+   * @param ptype g
+   * @param fn the function will be added
+   */
+  public async addNamedDomainMatchingFunc(ptype: string, fn: MatchingFunc): Promise<void> {
+    const rm = this.rmMap.get(ptype);
+    if (rm) {
+      return await (<DefaultRoleManager>rm).addDomainMatchingFunc(fn);
+    }
+  }
+
+  /**
    * buildRoleLinks manually rebuild the role inheritance relations.
    */
   public async buildRoleLinks(): Promise<void> {
@@ -266,12 +307,17 @@ export class CoreEnforcer {
    * @param rules policies
    */
   public async buildIncrementalRoleLinks(op: PolicyOp, ptype: string, rules: string[][]): Promise<void> {
-    await this.model.buildIncrementalRoleLinks(this.rm, op, 'g', ptype, rules);
+    for (const rmKey of this.rmMap.keys()) {
+      await this.model.buildIncrementalRoleLinks(<RoleManager>this.rmMap.get(rmKey), op, rmKey, ptype, rules);
+    }
   }
 
   protected async buildRoleLinksInternal(): Promise<void> {
-    await this.rm.clear();
-    await this.model.buildRoleLinks(this.rm);
+    // await this.model.buildRoleLinks(this.rmMap);
+    for (const rm of this.rmMap.values()) {
+      await rm.clear();
+      await this.model.buildRoleLinks(rm);
+    }
   }
 
   private *privateEnforce(asyncCompile = true, ...rvals: any[]): Generator<boolean | Promise<boolean>> {

@@ -309,9 +309,7 @@ test('TestRBACModelWithPattern', async () => {
   // You can see in policy that: "g2, /book/:id, book_group", so in "g2()" function in the matcher, instead
   // of checking whether "/book/:id" equals the obj: "/book/1", it checks whether the pattern matches.
   // You can see it as normal RBAC: "/book/:id" == "/book/1" becomes KeyMatch2("/book/:id", "/book/1")
-  const rm = e.getRoleManager() as DefaultRoleManager;
-  await rm.addMatchingFunc(keyMatch2Func);
-  await e.buildRoleLinks();
+  await e.addNamedMatchingFunc('g2', keyMatch2Func);
   await testEnforce(e, 'alice', '/book/1', 'GET', true);
   await testEnforce(e, 'alice', '/book/2', 'GET', true);
   await testEnforce(e, 'alice', '/pen/1', 'GET', true);
@@ -323,8 +321,8 @@ test('TestRBACModelWithPattern', async () => {
 
   // AddMatchingFunc() is actually setting a function because only one function is allowed,
   // so when we set "KeyMatch3", we are actually replacing "KeyMatch2" with "KeyMatch3".
-  await rm.addMatchingFunc(keyMatch3Func);
-  await e.buildRoleLinks();
+  // From v5.5.0, you can use addNamedMatchingFunc(), which resolve the problem above
+  await e.addNamedMatchingFunc('g2', keyMatch3Func);
   await testEnforce(e, 'alice', '/book2/1', 'GET', true);
   await testEnforce(e, 'alice', '/book2/2', 'GET', true);
   await testEnforce(e, 'alice', '/pen2/1', 'GET', true);
