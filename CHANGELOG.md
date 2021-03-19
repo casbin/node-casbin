@@ -1,3 +1,20 @@
+# [5.5.0](https://github.com/casbin/node-casbin/compare/v5.4.2...v5.5.0) (2021-03-19)
+
+
+### Bug Fixes
+
+* add missing await ([523ce85](https://github.com/casbin/node-casbin/commit/523ce8508ce45d7e79673bb0b498ed017772815d))
+* fix errror type ([dc9e5b5](https://github.com/casbin/node-casbin/commit/dc9e5b5db766d64918a7670f6b3b72f70e84ca28))
+* remove unused import ([2f8801c](https://github.com/casbin/node-casbin/commit/2f8801c47e716f69c36b49a73a45c67d9c751b92))
+
+
+### Features
+
+* add initRmMap ([87f8011](https://github.com/casbin/node-casbin/commit/87f801109e9cf4b0b423e3b76e1a8b9987b1b600))
+* add named addMatchingFunc ([65d3a26](https://github.com/casbin/node-casbin/commit/65d3a2655c638085938de9df4efa5a7d16bfa788))
+* add sync mode ([70e4e12](https://github.com/casbin/node-casbin/commit/70e4e12610dc42b6f25f8df268611ee1a0cbc7bd))
+* add unittest ([3cd5b73](https://github.com/casbin/node-casbin/commit/3cd5b7307b54342849029c957ceec81fc84f0fdd))
+
 ## [5.4.2](https://github.com/casbin/node-casbin/compare/v5.4.1...v5.4.2) (2021-03-04)
 
 
