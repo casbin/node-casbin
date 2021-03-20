@@ -252,11 +252,22 @@ export class Model {
       }
     }
 
-    // ast.policy = ast.policy.concat(rules);
+    let priorityFlag = false;
 
-    rules.forEach((rule) => {
-      this.addPolicy(sec, ptype, rule);
-    });
+    if (rules.length > 0) {
+      const tmpRule = rules[0];
+      if (tmpRule.find((value) => value === 'p_priority')) {
+        priorityFlag = true;
+      }
+    }
+
+    if (priorityFlag) {
+      rules.forEach((rule) => {
+        this.addPolicy(sec, ptype, rule);
+      });
+    } else {
+      ast.policy = ast.policy.concat(rules);
+    }
 
     return [true, rules];
   }
