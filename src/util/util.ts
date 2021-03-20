@@ -159,6 +159,12 @@ async function generatorRunAsync(iterator: Generator<any>): Promise<any> {
   }
 }
 
+function policySortByPriority(priorityIndex: number, tokens: Array<string>, policy: Array<Array<string>>): void {
+  policy.sort((a, b) => {
+    return parseInt(a[priorityIndex]) - parseInt(b[priorityIndex]);
+  });
+}
+
 export {
   escapeAssertion,
   removeComments,
@@ -175,4 +181,5 @@ export {
   getEvalValue,
   generatorRunSync,
   generatorRunAsync,
+  policySortByPriority,
 };

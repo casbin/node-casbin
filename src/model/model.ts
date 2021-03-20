@@ -220,7 +220,19 @@ export class Model {
       if (!ast) {
         return false;
       }
-      ast.policy.push(rule);
+
+      const policy = ast.policy;
+      const tokens = ast.tokens;
+
+      if (ast.tokens.find((str) => str === 'p_priority')) {
+        const targetPriorityIndex = tokens.indexOf('p_priority');
+        const rulePriority = rule[targetPriorityIndex];
+        const targetInsertIndex = policy.findIndex((oneRule) => oneRule[targetPriorityIndex] >= rulePriority);
+        // If targetInsertIndex returns -1, next line will still work as expected.
+        policy.splice(targetInsertIndex, 0, rule);
+      } else {
+        policy.push(rule);
+      }
       return true;
     }
 
@@ -240,7 +252,11 @@ export class Model {
       }
     }
 
-    ast.policy = ast.policy.concat(rules);
+    // ast.policy = ast.policy.concat(rules);
+
+    rules.forEach((rule) => {
+      this.addPolicy(sec, ptype, rule);
+    });
 
     return [true, rules];
   }
