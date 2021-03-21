@@ -175,7 +175,7 @@ export class CoreEnforcer {
     if (policy && tokens) {
       const priorityIndex = tokens.indexOf('p_priority');
       if (priorityIndex !== -1) {
-        policySortByPriority(priorityIndex, tokens, policy);
+        policySortByPriority(priorityIndex, policy);
       }
     }
 
@@ -207,7 +207,7 @@ export class CoreEnforcer {
     if (policy && tokens) {
       const priorityIndex = tokens.indexOf('p_priority');
       if (priorityIndex !== -1) {
-        policySortByPriority(priorityIndex, tokens, policy);
+        policySortByPriority(priorityIndex, policy);
       }
     }
 
