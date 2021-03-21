@@ -224,12 +224,17 @@ export class Model {
       const policy = ast.policy;
       const tokens = ast.tokens;
 
-      if (tokens.find((str) => str === 'p_priority')) {
-        const targetPriorityIndex = tokens.indexOf('p_priority');
-        const rulePriority = rule[targetPriorityIndex];
-        const targetInsertIndex = policy.findIndex((oneRule) => oneRule[targetPriorityIndex] >= rulePriority);
-        // If targetInsertIndex returns -1, next line will still work as expected.
-        policy.splice(targetInsertIndex, 0, rule);
+      const priorityIndex = tokens.indexOf('p_priority');
+
+      if (priorityIndex !== -1) {
+        const priorityRule = rule[priorityIndex];
+        const insertIndex = policy.findIndex((oneRule) => oneRule[priorityIndex] >= priorityRule);
+
+        if (priorityIndex === -1) {
+          policy.push(rule);
+        } else {
+          policy.splice(insertIndex, 0, rule);
+        }
       } else {
         policy.push(rule);
       }
@@ -252,14 +257,7 @@ export class Model {
       }
     }
 
-    let priorityFlag = false;
-
-    if (rules.length > 0) {
-      const tmpRule = rules[0];
-      if (tmpRule.find((value) => value === 'p_priority')) {
-        priorityFlag = true;
-      }
-    }
+    const priorityFlag = ast.tokens.indexOf('p_priority') !== -1;
 
     if (priorityFlag) {
       rules.forEach((rule) => {
