@@ -224,7 +224,7 @@ export class Model {
       const policy = ast.policy;
       const tokens = ast.tokens;
 
-      if (ast.tokens.find((str) => str === 'p_priority')) {
+      if (tokens.find((str) => str === 'p_priority')) {
         const targetPriorityIndex = tokens.indexOf('p_priority');
         const rulePriority = rule[targetPriorityIndex];
         const targetInsertIndex = policy.findIndex((oneRule) => oneRule[targetPriorityIndex] >= rulePriority);

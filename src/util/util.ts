@@ -159,9 +159,9 @@ async function generatorRunAsync(iterator: Generator<any>): Promise<any> {
   }
 }
 
-function policySortByPriority(priorityIndex: number, tokens: Array<string>, policy: Array<Array<string>>): void {
+function policySortByPriority(priorityIndex: number, policy: Array<Array<string>>): void {
   policy.sort((a, b) => {
-    return parseInt(a[priorityIndex]) - parseInt(b[priorityIndex]);
+    return parseInt(a[priorityIndex], 10) - parseInt(b[priorityIndex], 10);
   });
 }
 
