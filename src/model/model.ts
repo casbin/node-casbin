@@ -277,12 +277,19 @@ export class Model {
       if (!ast) {
         return false;
       }
-      // const index = ast.policy.indexOf(oldRule);
-      const index = ast.policy.findIndex((r) => util.arrayEquals(r, oldRule));
-      if (index !== -1) {
-        ast.policy[index] = newRule;
-        return true;
+
+      const priorityFlag = ast.tokens.indexOf('p_priority') !== -1;
+
+      if (priorityFlag) {
+        this.removePolicy(sec, ptype, oldRule);
+        this.addPolicy(sec, ptype, newRule);
+      } else {
+        const index = ast.policy.findIndex((r) => util.arrayEquals(r, oldRule));
+        if (index !== -1) {
+          ast.policy[index] = newRule;
+        }
       }
+      return true;
     }
     return false;
   }

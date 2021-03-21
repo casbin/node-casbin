@@ -18,16 +18,7 @@ import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
 import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
-import {
-  escapeAssertion,
-  generateGFunction,
-  getEvalValue,
-  hasEval,
-  replaceEval,
-  generatorRunSync,
-  generatorRunAsync,
-  policySortByPriority,
-} from './util';
+import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval, generatorRunSync, generatorRunAsync } from './util';
 import { getLogger, logPrint } from './log';
 import { MatchingFunc } from './rbac';
 
@@ -162,6 +153,20 @@ export class CoreEnforcer {
     }
   }
 
+  public sortPolicies(): void {
+    const policy = this.model.model.get('p')?.get('p')?.policy;
+    const tokens = this.model.model.get('p')?.get('p')?.tokens;
+
+    if (policy && tokens) {
+      const priorityIndex = tokens.indexOf('p_priority');
+      if (priorityIndex !== -1) {
+        policy.sort((a, b) => {
+          return parseInt(a[priorityIndex], 10) - parseInt(b[priorityIndex], 10);
+        });
+      }
+    }
+  }
+
   /**
    * loadPolicy reloads the policy from file/database.
    */
@@ -169,15 +174,7 @@ export class CoreEnforcer {
     this.model.clearPolicy();
     await this.adapter.loadPolicy(this.model);
 
-    const policy = this.model.model.get('p')?.get('p')?.policy;
-    const tokens = this.model.model.get('p')?.get('p')?.tokens;
-
-    if (policy && tokens) {
-      const priorityIndex = tokens.indexOf('p_priority');
-      if (priorityIndex !== -1) {
-        policySortByPriority(priorityIndex, policy);
-      }
-    }
+    this.sortPolicies();
 
     this.initRmMap();
 
@@ -201,15 +198,7 @@ export class CoreEnforcer {
       throw new Error('filtered policies are not supported by this adapter');
     }
 
-    const policy = this.model.model.get('p')?.get('p')?.policy;
-    const tokens = this.model.model.get('p')?.get('p')?.tokens;
-
-    if (policy && tokens) {
-      const priorityIndex = tokens.indexOf('p_priority');
-      if (priorityIndex !== -1) {
-        policySortByPriority(priorityIndex, policy);
-      }
-    }
+    this.sortPolicies();
 
     this.initRmMap();
 
