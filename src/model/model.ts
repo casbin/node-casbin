@@ -272,26 +272,30 @@ export class Model {
 
   // updatePolicy updates a policy from the model
   public updatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): boolean {
-    if (this.hasPolicy(sec, ptype, oldRule)) {
-      const ast = this.model.get(sec)?.get(ptype);
-      if (!ast) {
-        return false;
-      }
+    const ast = this.model.get(sec)?.get(ptype);
+    if (!ast) {
+      return false;
+    }
 
-      const priorityFlag = ast.tokens.indexOf('p_priority') !== -1;
+    const index = ast.policy.findIndex((r) => util.arrayEquals(r, oldRule));
+    if (index === -1) {
+      return false;
+    }
 
-      if (priorityFlag) {
+    const priorityIndex = ast.tokens.indexOf('p_priority');
+
+    if (priorityIndex !== -1) {
+      if (oldRule[priorityIndex] === newRule[priorityIndex]) {
+        ast.policy[index] = newRule;
+      } else {
         this.removePolicy(sec, ptype, oldRule);
         this.addPolicy(sec, ptype, newRule);
-      } else {
-        const index = ast.policy.findIndex((r) => util.arrayEquals(r, oldRule));
-        if (index !== -1) {
-          ast.policy[index] = newRule;
-        }
       }
-      return true;
+    } else {
+      ast.policy[index] = newRule;
     }
-    return false;
+
+    return true;
   }
 
   // removePolicy removes a policy rule from the model.
