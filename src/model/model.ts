@@ -220,7 +220,24 @@ export class Model {
       if (!ast) {
         return false;
       }
-      ast.policy.push(rule);
+
+      const policy = ast.policy;
+      const tokens = ast.tokens;
+
+      const priorityIndex = tokens.indexOf('p_priority');
+
+      if (priorityIndex !== -1) {
+        const priorityRule = rule[priorityIndex];
+        const insertIndex = policy.findIndex((oneRule) => oneRule[priorityIndex] >= priorityRule);
+
+        if (priorityIndex === -1) {
+          policy.push(rule);
+        } else {
+          policy.splice(insertIndex, 0, rule);
+        }
+      } else {
+        policy.push(rule);
+      }
       return true;
     }
 
@@ -240,26 +257,46 @@ export class Model {
       }
     }
 
-    ast.policy = ast.policy.concat(rules);
+    const priorityFlag = ast.tokens.indexOf('p_priority') !== -1;
+
+    if (priorityFlag) {
+      rules.forEach((rule) => {
+        this.addPolicy(sec, ptype, rule);
+      });
+    } else {
+      ast.policy = ast.policy.concat(rules);
+    }
 
     return [true, rules];
   }
 
   // updatePolicy updates a policy from the model
   public updatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): boolean {
-    if (this.hasPolicy(sec, ptype, oldRule)) {
-      const ast = this.model.get(sec)?.get(ptype);
-      if (!ast) {
-        return false;
-      }
-      // const index = ast.policy.indexOf(oldRule);
-      const index = ast.policy.findIndex((r) => util.arrayEquals(r, oldRule));
-      if (index !== -1) {
-        ast.policy[index] = newRule;
-        return true;
-      }
+    const ast = this.model.get(sec)?.get(ptype);
+    if (!ast) {
+      return false;
     }
-    return false;
+
+    const index = ast.policy.findIndex((r) => util.arrayEquals(r, oldRule));
+    if (index === -1) {
+      return false;
+    }
+
+    const priorityIndex = ast.tokens.indexOf('p_priority');
+
+    if (priorityIndex !== -1) {
+      if (oldRule[priorityIndex] === newRule[priorityIndex]) {
+        ast.policy[index] = newRule;
+      } else {
+        // this.removePolicy(sec, ptype, oldRule);
+        // this.addPolicy(sec, ptype, newRule);
+        throw new Error('new rule should have the same priority with old rule.');
+      }
+    } else {
+      ast.policy[index] = newRule;
+    }
+
+    return true;
   }
 
   // removePolicy removes a policy rule from the model.

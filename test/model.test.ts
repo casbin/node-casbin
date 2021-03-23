@@ -287,6 +287,51 @@ test('TestPriorityModel', async () => {
   await testEnforce(e, 'bob', 'data2', 'write', false);
 });
 
+test('TestExplicitPriorityModel', async () => {
+  const e = await newEnforcer('examples/priority_model_explicit.conf', 'examples/priority_policy_explicit.csv');
+
+  await testEnforce(e, 'alice', 'data1', 'write', true);
+  await testEnforce(e, 'alice', 'data1', 'read', true);
+  await testEnforce(e, 'bob', 'data2', 'read', false);
+  await testEnforce(e, 'bob', 'data2', 'write', true);
+  await testEnforce(e, 'data1_deny_group', 'data1', 'read', false);
+  await testEnforce(e, 'data1_deny_group', 'data1', 'write', false);
+  await testEnforce(e, 'data2_allow_group', 'data2', 'read', true);
+  await testEnforce(e, 'data2_allow_group', 'data2', 'write', true);
+});
+
+test('TestExplicitPriorityModelAddPolicy', async () => {
+  const e = await newEnforcer('examples/priority_model_explicit.conf', 'examples/priority_policy_explicit.csv');
+
+  await e.addPolicy('1', 'bob', 'data2', 'write', 'deny');
+
+  await testEnforce(e, 'alice', 'data1', 'write', true);
+  await testEnforce(e, 'alice', 'data1', 'read', true);
+  await testEnforce(e, 'bob', 'data2', 'read', false);
+  await testEnforce(e, 'bob', 'data2', 'write', false);
+  await testEnforce(e, 'data1_deny_group', 'data1', 'read', false);
+  await testEnforce(e, 'data1_deny_group', 'data1', 'write', false);
+  await testEnforce(e, 'data2_allow_group', 'data2', 'read', true);
+  await testEnforce(e, 'data2_allow_group', 'data2', 'write', true);
+});
+
+test('TestExplicitPriorityModelUpdatePolicy', async () => {
+  const e = await newEnforcer('examples/priority_model_explicit.conf', 'examples/priority_policy_explicit_update.csv');
+
+  await e.updatePolicy(['1', 'bob', 'data2', 'write', 'allow'], ['1', 'bob', 'data2', 'write', 'deny']);
+
+  await testEnforce(e, 'alice', 'data1', 'write', true);
+  await testEnforce(e, 'alice', 'data1', 'read', true);
+  await testEnforce(e, 'bob', 'data2', 'read', false);
+  await testEnforce(e, 'bob', 'data2', 'write', false);
+  await testEnforce(e, 'data1_deny_group', 'data1', 'read', false);
+  await testEnforce(e, 'data1_deny_group', 'data1', 'write', false);
+  await testEnforce(e, 'data2_allow_group', 'data2', 'read', true);
+  await testEnforce(e, 'data2_allow_group', 'data2', 'write', true);
+
+  await expect(e.updatePolicy(['1', 'bob', 'data2', 'write', 'allow'], ['2999', 'bob', 'data2', 'write', 'deny'])).resolves.toBe(false);
+});
+
 test('TestPriorityModelIndeterminate', async () => {
   const e = await newEnforcer('examples/priority_model.conf', 'examples/priority_indeterminate_policy.csv');
 

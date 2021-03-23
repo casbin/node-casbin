@@ -153,12 +153,28 @@ export class CoreEnforcer {
     }
   }
 
+  public sortPolicies(): void {
+    const policy = this.model.model.get('p')?.get('p')?.policy;
+    const tokens = this.model.model.get('p')?.get('p')?.tokens;
+
+    if (policy && tokens) {
+      const priorityIndex = tokens.indexOf('p_priority');
+      if (priorityIndex !== -1) {
+        policy.sort((a, b) => {
+          return parseInt(a[priorityIndex], 10) - parseInt(b[priorityIndex], 10);
+        });
+      }
+    }
+  }
+
   /**
    * loadPolicy reloads the policy from file/database.
    */
   public async loadPolicy(): Promise<void> {
     this.model.clearPolicy();
     await this.adapter.loadPolicy(this.model);
+
+    this.sortPolicies();
 
     this.initRmMap();
 
@@ -181,6 +197,8 @@ export class CoreEnforcer {
     } else {
       throw new Error('filtered policies are not supported by this adapter');
     }
+
+    this.sortPolicies();
 
     this.initRmMap();
 

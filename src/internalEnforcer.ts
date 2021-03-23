@@ -45,6 +45,7 @@ export class InternalEnforcer extends CoreEnforcer {
     }
 
     const ok = this.model.addPolicy(sec, ptype, rule);
+
     if (sec === 'g' && ok) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, [rule]);
     }
