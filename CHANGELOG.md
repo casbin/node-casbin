@@ -1,3 +1,10 @@
+# [5.6.0](https://github.com/casbin/node-casbin/compare/v5.5.0...v5.6.0) (2021-03-23)
+
+
+### Features
+
+* add priority_policy_explicit support ([#250](https://github.com/casbin/node-casbin/issues/250)) ([763c18e](https://github.com/casbin/node-casbin/commit/763c18e7f3cfa068e7b61fdd7491dd0365b86dca))
+
 # [5.5.0](https://github.com/casbin/node-casbin/compare/v5.4.2...v5.5.0) (2021-03-19)
 
 
