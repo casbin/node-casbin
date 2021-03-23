@@ -288,8 +288,9 @@ export class Model {
       if (oldRule[priorityIndex] === newRule[priorityIndex]) {
         ast.policy[index] = newRule;
       } else {
-        this.removePolicy(sec, ptype, oldRule);
-        this.addPolicy(sec, ptype, newRule);
+        // this.removePolicy(sec, ptype, oldRule);
+        // this.addPolicy(sec, ptype, newRule);
+        throw new Error('new rule should have the same priority with old rule.');
       }
     } else {
       ast.policy[index] = newRule;

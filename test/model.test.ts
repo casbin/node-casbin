@@ -328,6 +328,8 @@ test('TestExplicitPriorityModelUpdatePolicy', async () => {
   await testEnforce(e, 'data1_deny_group', 'data1', 'write', false);
   await testEnforce(e, 'data2_allow_group', 'data2', 'read', true);
   await testEnforce(e, 'data2_allow_group', 'data2', 'write', true);
+
+  await expect(e.updatePolicy(['1', 'bob', 'data2', 'write', 'allow'], ['2999', 'bob', 'data2', 'write', 'deny'])).resolves.toBe(false);
 });
 
 test('TestPriorityModelIndeterminate', async () => {
