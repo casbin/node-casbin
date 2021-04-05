@@ -18,6 +18,11 @@ import { casbinJsGetPermissionForUser } from '../src/frontend';
 
 test('TestCasbinJsGetPermissionForUser', async () => {
   const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  const a = await casbinJsGetPermissionForUser(e, 'alice');
+  const b = await casbinJsGetPermissionForUser(e, 'alice');
+  if (a !== b) {
+    throw new Error('Unexpected side affect.');
+  }
   const received = JSON.parse(await casbinJsGetPermissionForUser(e, 'alice'));
   const expectedModelStr = readFileSync('examples/rbac_model.conf').toString();
   expect(received['m']).toBe(expectedModelStr.replace(/\n\n/g, '\n'));
