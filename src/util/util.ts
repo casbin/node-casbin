@@ -175,4 +175,5 @@ export {
   getEvalValue,
   generatorRunSync,
   generatorRunAsync,
+  deepCopy,
 };
