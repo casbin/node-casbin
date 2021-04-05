@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Enforcer } from './enforcer';
+import { deepCopy } from './util';
 
 /**
  * Experiment!
