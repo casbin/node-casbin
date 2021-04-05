@@ -1,3 +1,10 @@
+## [5.6.1](https://github.com/casbin/node-casbin/compare/v5.6.0...v5.6.1) (2021-04-05)
+
+
+### Bug Fixes
+
+* fix CasbinJsGetPermissionForUser() ([#251](https://github.com/casbin/node-casbin/issues/251)) ([98c11f1](https://github.com/casbin/node-casbin/commit/98c11f1451e71b0b002b140387f2a38bb9957c38))
+
 # [5.6.0](https://github.com/casbin/node-casbin/compare/v5.5.0...v5.6.0) (2021-03-23)
 
 
