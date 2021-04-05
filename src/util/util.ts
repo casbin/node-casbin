@@ -159,6 +159,17 @@ async function generatorRunAsync(iterator: Generator<any>): Promise<any> {
   }
 }
 
+function deepCopy(obj: Array<any> | any): any {
+  if (typeof obj !== 'object') return;
+  const newObj: any = obj instanceof Array ? [] : {};
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      newObj[key] = typeof obj[key] === 'object' ? deepCopy(obj[key]) : obj[key];
+    }
+  }
+  return newObj;
+}
+
 export {
   escapeAssertion,
   removeComments,
@@ -175,4 +186,5 @@ export {
   getEvalValue,
   generatorRunSync,
   generatorRunAsync,
+  deepCopy,
 };
