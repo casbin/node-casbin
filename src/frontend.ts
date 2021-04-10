@@ -17,14 +17,12 @@ import { deepCopy } from './util';
 
 /**
  * Experiment!
- * getPermissionForCasbinJs returns a string describing the permission of a given user.
+ * getPermissionForCasbinJs returns a string include the whole model.
  * You can pass the returned string to the frontend and manage your webpage widgets and APIs with Casbin.js.
- * The returned permission depends on `getImplicitPermissionsForUser`.
- * In other words, getPermissionForCasbinJs will load all of the explicit and implicit permission (role's permission).
  * @param e the initialized enforcer
  * @param user the user
  */
-export async function casbinJsGetPermissionForUser(e: Enforcer, user: string): Promise<string> {
+export async function casbinJsGetPermissionForUser(e: Enforcer, user?: string): Promise<string> {
   const obj: any = {};
 
   const m = e.getModel().model;
