@@ -490,7 +490,7 @@ export class CoreEnforcer {
     }
 
     if (explain) {
-      let explainRule: string[] | undefined;
+      let explainRule: string[] | undefined = [];
       if (explainIndex !== -1 && policyLen && explainIndex < policyLen) {
         explainRule = p?.policy[explainIndex];
       }

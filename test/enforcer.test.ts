@@ -24,6 +24,14 @@ function testEnforceSync(e: Enforcer, sub: any, obj: string, act: string, res: b
   expect(e.enforceSync(sub, obj, act)).toBe(res);
 }
 
+async function testEnforceEx(e: Enforcer, sub: any, obj: string, act: string, res: [boolean, string[]]): Promise<void> {
+  await expect(e.enforceEx(sub, obj, act)).resolves.toEqual(res);
+}
+
+function testEnforceExSync(e: Enforcer, sub: any, obj: string, act: string, res: [boolean, string[]]): void {
+  expect(e.enforceExSync(sub, obj, act)).toEqual(res);
+}
+
 async function testGetPolicy(e: Enforcer, res: string[][]): Promise<void> {
   const myRes = await e.getPolicy();
   console.log('Policy: ', myRes);
@@ -584,4 +592,36 @@ test('TestEnforceSync', async () => {
   await e.addPermissionForUser('alice', 'data1', 'invalid');
 
   testEnforceSync(e, 'alice', 'data1', 'read', false);
+});
+
+test('TestEnforceEx', async () => {
+  const m = newModel();
+  m.addDef('r', 'r', 'sub, obj, act');
+  m.addDef('p', 'p', 'sub, obj, act');
+  m.addDef('g', 'g', '_, _');
+  m.addDef('e', 'e', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm', 'g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act');
+
+  const e = await newEnforcer(m);
+
+  await e.addPermissionForUser('alice', 'data1', 'invalid');
+
+  testEnforceEx(e, 'alice', 'data1', 'read', [false, []]);
+  testEnforceEx(e, 'alice', 'data1', 'invalid', [true, ['alice', 'data1', 'invalid']]);
+});
+
+test('TestSyncEnforceEx', async () => {
+  const m = newModel();
+  m.addDef('r', 'r', 'sub, obj, act');
+  m.addDef('p', 'p', 'sub, obj, act');
+  m.addDef('g', 'g', '_, _');
+  m.addDef('e', 'e', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm', 'g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act');
+
+  const e = await newEnforcer(m);
+
+  await e.addPermissionForUser('alice', 'data1', 'invalid');
+
+  testEnforceExSync(e, 'alice', 'data1', 'read', [false, []]);
+  testEnforceExSync(e, 'alice', 'data1', 'invalid', [true, ['alice', 'data1', 'invalid']]);
 });
