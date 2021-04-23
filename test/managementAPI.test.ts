@@ -88,6 +88,9 @@ test('getPolicy', async () => {
 test('getFilteredPolicy', async () => {
   let filteredPolicy = await e.getFilteredPolicy(0, 'alice');
   testArray2DEquals(filteredPolicy, [['alice', 'data1', 'read']]);
+  await e.savePolicy();
+  filteredPolicy = await e.getFilteredPolicy(0, 'alice');
+  testArray2DEquals(filteredPolicy, [['alice', 'data1', 'read']]);
   filteredPolicy = await e.getFilteredPolicy(0, 'bob');
   testArray2DEquals(filteredPolicy, [['bob', 'data2', 'write']]);
 });

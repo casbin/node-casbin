@@ -16,7 +16,7 @@ import { Effect } from './effector';
 
 // EffectorStream provides a stream interface
 export interface EffectorStream {
-  current(): boolean;
+  intermediateEffect(effects: Set<Effect>): Effect;
 
-  pushEffect(eft: Effect): [boolean, boolean];
+  finalEffect(effects: Set<Effect>): Effect;
 }

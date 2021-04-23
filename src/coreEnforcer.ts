@@ -14,13 +14,12 @@
 
 import { compile, compileAsync } from 'expression-eval';
 
-import { DefaultEffector, Effect, Effector } from './effect';
+import { DefaultEffector, Effect, Effector, effectToBool } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
-import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter } from './persist';
-import { DefaultRoleManager, RoleManager } from './rbac';
-import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval, generatorRunSync, generatorRunAsync } from './util';
+import { Adapter, BatchAdapter, FilteredAdapter, UpdatableAdapter, Watcher } from './persist';
+import { DefaultRoleManager, MatchingFunc, RoleManager } from './rbac';
+import { escapeAssertion, generateGFunction, generatorRunAsync, generatorRunSync, getEvalValue, hasEval, replaceEval } from './util';
 import { getLogger, logPrint } from './log';
-import { MatchingFunc } from './rbac';
 
 type Matcher = ((context: any) => Promise<any>) | ((context: any) => any);
 
@@ -338,7 +337,7 @@ export class CoreEnforcer {
     }
   }
 
-  private *privateEnforce(asyncCompile = true, ...rvals: any[]): Generator<boolean | Promise<boolean>> {
+  private *privateEnforce(asyncCompile = true, explain = false, ...rvals: any[]): Generator<boolean | Promise<boolean>> {
     if (!this.enabled) {
       return true;
     }
@@ -375,6 +374,9 @@ export class CoreEnforcer {
     const rTokensLen = rTokens?.length;
 
     const effectStream = this.eft.newStream(effectExpr);
+    const effectSet = new Set<Effect>();
+
+    let explainIndex = -1;
 
     if (policyLen && policyLen !== 0) {
       for (let i = 0; i < policyLen; i++) {
@@ -413,16 +415,17 @@ export class CoreEnforcer {
         const context = { ...parameters, ...functions };
         const result = asyncCompile ? yield expression(context) : expression(context);
 
-        let eftRes: Effect;
         switch (typeof result) {
           case 'boolean':
-            eftRes = result ? Effect.Allow : Effect.Indeterminate;
+            if (!result) {
+              effectSet.add(Effect.Indeterminate);
+              continue;
+            }
             break;
           case 'number':
             if (result === 0) {
-              eftRes = Effect.Indeterminate;
-            } else {
-              eftRes = result;
+              effectSet.add(Effect.Indeterminate);
+              continue;
             }
             break;
           default:
@@ -430,19 +433,20 @@ export class CoreEnforcer {
         }
 
         const eft = parameters['p_eft'];
-        if (eft && eftRes === Effect.Allow) {
+        if (eft) {
           if (eft === 'allow') {
-            eftRes = Effect.Allow;
+            effectSet.add(Effect.Allow);
           } else if (eft === 'deny') {
-            eftRes = Effect.Deny;
+            effectSet.add(Effect.Deny);
           } else {
-            eftRes = Effect.Indeterminate;
+            effectSet.add(Effect.Indeterminate);
           }
+        } else {
+          effectSet.add(Effect.Allow);
         }
 
-        const [res, done] = effectStream.pushEffect(eftRes);
-
-        if (done) {
+        if (effectStream.intermediateEffect(effectSet) !== Effect.Indeterminate) {
+          explainIndex = i;
           break;
         }
       }
@@ -462,13 +466,13 @@ export class CoreEnforcer {
       const result = asyncCompile ? yield expression(context) : expression(context);
 
       if (result) {
-        effectStream.pushEffect(Effect.Allow);
+        effectSet.add(Effect.Allow);
       } else {
-        effectStream.pushEffect(Effect.Indeterminate);
+        effectSet.add(Effect.Indeterminate);
       }
     }
 
-    const res = effectStream.current();
+    const res = effectToBool(effectStream.finalEffect(effectSet));
 
     // only generate the request --> result string if the message
     // is going to be logged.
@@ -485,7 +489,16 @@ export class CoreEnforcer {
       logPrint(reqStr);
     }
 
-    return res;
+    if (explain) {
+      let explainRule: string[] | undefined;
+      if (explainIndex !== -1 && policyLen && explainIndex < policyLen) {
+        explainRule = p?.policy[explainIndex];
+      }
+
+      return [res, explainRule];
+    } else {
+      return res;
+    }
   }
 
   /**
@@ -499,7 +512,21 @@ export class CoreEnforcer {
    * @return whether to allow the request.
    */
   public enforceSync(...rvals: any[]): boolean {
-    return generatorRunSync(this.privateEnforce(false, ...rvals));
+    return generatorRunSync(this.privateEnforce(false, false, ...rvals));
+  }
+
+  /**
+   * If the matchers does not contain an asynchronous method, call it faster.
+   *
+   * enforceSync decides whether a "subject" can access a "object" with
+   * the operation "action", input parameters are usually: (sub, obj, act).
+   *
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request and the reason rule.
+   */
+  public enforceExSync(...rvals: any[]): boolean {
+    return generatorRunSync(this.privateEnforce(false, true, ...rvals));
   }
 
   /**
@@ -518,6 +545,18 @@ export class CoreEnforcer {
    * @return whether to allow the request.
    */
   public async enforce(...rvals: any[]): Promise<boolean> {
-    return generatorRunAsync(this.privateEnforce(true, ...rvals));
+    return generatorRunAsync(this.privateEnforce(true, false, ...rvals));
+  }
+
+  /**
+   * enforce decides whether a "subject" can access a "object" with
+   * the operation "action", input parameters are usually: (sub, obj, act).
+   *
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request and the reason rule.
+   */
+  public async enforceEx(...rvals: any[]): Promise<boolean> {
+    return generatorRunAsync(this.privateEnforce(true, true, ...rvals));
   }
 }

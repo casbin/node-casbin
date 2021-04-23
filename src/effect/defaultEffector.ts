@@ -14,13 +14,25 @@
 
 import { Effector } from './effector';
 import { EffectorStream } from './effectorStream';
-import { DefaultEffectorStream } from './defaultEffectorStream';
+import * as Effectors from './defaultEffectorStream';
 
 /**
  * DefaultEffector is default effector for Casbin.
  */
 export class DefaultEffector implements Effector {
   newStream(expr: string): EffectorStream {
-    return new DefaultEffectorStream(expr);
+    expr = expr.replace(/\s*/g, '');
+    switch (expr) {
+      case 'some(where(p_eft==allow))':
+        return new Effectors.AllowOverrideEffector();
+      case '!some(where(p_eft==deny))':
+        return new Effectors.DenyOverrideEffector();
+      case 'some(where(p_eft==allow))&&!some(where(p_eft==deny))':
+        return new Effectors.AllowAndDenyEffector();
+      case 'priority(p_eft)||deny':
+        return new Effectors.PriorityEffector();
+      default:
+        throw new Error('unsupported effect');
+    }
   }
 }

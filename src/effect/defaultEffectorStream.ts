@@ -15,54 +15,104 @@
 import { EffectorStream } from './effectorStream';
 import { Effect } from './effector';
 
-/**
- * DefaultEffectorStream is the default implementation of EffectorStream.
- */
-export class DefaultEffectorStream implements EffectorStream {
-  private done = false;
-  private res = false;
-  private readonly expr: string;
-
-  constructor(expr: string) {
-    this.expr = expr;
-  }
-
-  current(): boolean {
-    return this.res;
-  }
-
-  public pushEffect(eft: Effect): [boolean, boolean] {
-    switch (this.expr) {
-      case 'some(where (p_eft == allow))':
-        if (eft === Effect.Allow) {
-          this.res = true;
-          this.done = true;
-        }
-        break;
-      case '!some(where (p_eft == deny))':
-        this.res = true;
-        if (eft === Effect.Deny) {
-          this.res = false;
-          this.done = true;
-        }
-        break;
-      case 'some(where (p_eft == allow)) && !some(where (p_eft == deny))':
-        if (eft === Effect.Allow) {
-          this.res = true;
-        } else if (eft === Effect.Deny) {
-          this.res = false;
-          this.done = true;
-        }
-        break;
-      case 'priority(p_eft) || deny':
-        if (eft !== Effect.Indeterminate) {
-          this.res = eft === Effect.Allow;
-          this.done = true;
-        }
-        break;
-      default:
-        throw new Error('unsupported effect');
+export class AllowOverrideEffector implements EffectorStream {
+  /**
+   * returns a intermediate effect based on the matched effects of the enforcer
+   * @param effects
+   */
+  intermediateEffect(effects: Set<Effect>): Effect {
+    if (effects.has(Effect.Allow)) {
+      return Effect.Allow;
     }
-    return [this.res, this.done];
+    return Effect.Indeterminate;
+  }
+
+  /**
+   * returns the final effect based on the matched effects of the enforcer
+   * @param effects
+   */
+  finalEffect(effects: Set<Effect>): Effect {
+    if (effects.has(Effect.Allow)) {
+      return Effect.Allow;
+    }
+    return Effect.Deny;
+  }
+}
+
+export class DenyOverrideEffector implements EffectorStream {
+  /**
+   * returns a intermediate effect based on the matched effects of the enforcer
+   * @param effects
+   */
+  intermediateEffect(effects: Set<Effect>): Effect {
+    if (effects.has(Effect.Deny)) {
+      return Effect.Deny;
+    }
+    return Effect.Indeterminate;
+  }
+
+  /**
+   * returns the final effect based on the matched effects of the enforcer
+   * @param effects
+   */
+  finalEffect(effects: Set<Effect>): Effect {
+    if (effects.has(Effect.Deny)) {
+      return Effect.Deny;
+    }
+    return Effect.Allow;
+  }
+}
+
+export class AllowAndDenyEffector implements EffectorStream {
+  /**
+   * returns a intermediate effect based on the matched effects of the enforcer
+   * @param effects
+   */
+  intermediateEffect(effects: Set<Effect>): Effect {
+    if (effects.has(Effect.Deny)) {
+      return Effect.Deny;
+    }
+    return Effect.Indeterminate;
+  }
+
+  /**
+   * returns the final effect based on the matched effects of the enforcer
+   * @param effects
+   */
+  finalEffect(effects: Set<Effect>): Effect {
+    if (effects.has(Effect.Deny) || !effects.has(Effect.Allow)) {
+      return Effect.Deny;
+    }
+    return Effect.Allow;
+  }
+}
+
+export class PriorityEffector implements EffectorStream {
+  /**
+   * returns a intermediate effect based on the matched effects of the enforcer
+   * @param effects
+   */
+  intermediateEffect(effects: Set<Effect>): Effect {
+    if (effects.has(Effect.Allow)) {
+      return Effect.Allow;
+    }
+    if (effects.has(Effect.Deny)) {
+      return Effect.Deny;
+    }
+    return Effect.Indeterminate;
+  }
+
+  /**
+   * returns the final effect based on the matched effects of the enforcer
+   * @param effects
+   */
+  finalEffect(effects: Set<Effect>): Effect {
+    if (effects.has(Effect.Allow)) {
+      return Effect.Allow;
+    }
+    if (effects.has(Effect.Deny)) {
+      return Effect.Deny;
+    }
+    return Effect.Deny;
   }
 }

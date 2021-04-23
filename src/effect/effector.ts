@@ -26,3 +26,14 @@ export enum Effect {
 export interface Effector {
   newStream(expr: string): EffectorStream;
 }
+
+export function effectToBool(effect: Effect): boolean {
+  switch (effect) {
+    case Effect.Allow:
+      return true;
+    case Effect.Deny:
+      return false;
+    default:
+      throw new Error('effect can not convert to bool');
+  }
+}
