@@ -378,7 +378,7 @@ export class CoreEnforcer {
 
     if (policyLen && policyLen !== 0) {
       let pIndex = -1;
-      var successReason;
+      var successReason = [];
       var response;
       for (let i = 0; i < policyLen; i++) {
         const parameters: { [key: string]: any } = {};
@@ -447,7 +447,7 @@ export class CoreEnforcer {
 
         if (done) {
           pIndex = i;
-          successReason = p['policy'][pIndex];
+          successReason.push(p['policy'][pIndex]);
           break;
         }
       }
@@ -490,14 +490,7 @@ export class CoreEnforcer {
       logPrint(reqStr);
     }
 
-    if(successReason){
-      response = { decision : res ,successRule : successReason };
-    }
-    else{
-       response = { decision : res }
-    }
-
-    return response;
+  return [res,successReason];
   }
 
   /**
