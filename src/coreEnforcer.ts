@@ -377,6 +377,9 @@ export class CoreEnforcer {
     const effectStream = this.eft.newStream(effectExpr);
 
     if (policyLen && policyLen !== 0) {
+      let pIndex = -1;
+      var successReason;
+      var response;
       for (let i = 0; i < policyLen; i++) {
         const parameters: { [key: string]: any } = {};
 
@@ -443,6 +446,8 @@ export class CoreEnforcer {
         const [res, done] = effectStream.pushEffect(eftRes);
 
         if (done) {
+          pIndex = i;
+          successReason = p['policy'][pIndex];
           break;
         }
       }
@@ -485,7 +490,14 @@ export class CoreEnforcer {
       logPrint(reqStr);
     }
 
-    return res;
+    if(successReason){
+      response = { decision : res ,successRule : successReason };
+    }
+    else{
+       response = { decision : res }
+    }
+
+    return response;
   }
 
   /**
