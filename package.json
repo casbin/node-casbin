@@ -26,7 +26,6 @@
     "@semantic-release/github": "^7.2.0",
     "@semantic-release/npm": "^7.0.10",
     "@semantic-release/release-notes-generator": "^9.0.2",
-    "@types/ip": "^0.0.31",
     "@types/jest": "^26.0.20",
     "@types/lodash": "^4.14.168",
     "@types/micromatch": "^4.0.1",
@@ -54,7 +53,6 @@
     "await-lock": "^2.0.1",
     "csv-parse": "^4.15.3",
     "expression-eval": "^2.0.0",
-    "ip": "^1.1.5",
     "micromatch": "^4.0.2"
   },
   "files": [

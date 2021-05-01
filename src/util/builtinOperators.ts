@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as rbac from '../rbac';
-import * as ip from 'ip';
+import { ip } from './ip';
 import { isMatch } from 'micromatch';
 
 // regexMatch determines whether key1 matches the pattern of key2 in regular expression.
