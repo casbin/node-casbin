@@ -1,3 +1,10 @@
+## [5.6.2](https://github.com/casbin/node-casbin/compare/v5.6.1...v5.6.2) (2021-05-02)
+
+
+### Bug Fixes
+
+* transfer from micromatch to picomatch ([#264](https://github.com/casbin/node-casbin/issues/264)) ([6be1b06](https://github.com/casbin/node-casbin/commit/6be1b06f2225bc906b2a0e215ff8635c6dd3422f))
+
 ## [5.6.1](https://github.com/casbin/node-casbin/compare/v5.6.0...v5.6.1) (2021-04-05)
 
 
