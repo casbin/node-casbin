@@ -14,7 +14,7 @@
 
 import * as rbac from '../rbac';
 import { ip } from './ip';
-import { isMatch } from 'micromatch';
+import * as picomatch from 'picomatch';
 
 // regexMatch determines whether key1 matches the pattern of key2 in regular expression.
 function regexMatch(key1: string, key2: string): boolean {
@@ -230,8 +230,7 @@ function ipMatchFunc(...args: any[]): boolean {
  * ```
  */
 function globMatch(string: string, pattern: string): boolean {
-  const ok = isMatch(string, pattern);
-  return ok;
+  return picomatch(pattern)(string);
 }
 
 // generateGFunction is the factory method of the g(_, _) function.
