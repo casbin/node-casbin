@@ -1,15 +1,14 @@
-import { FilteredAdapter } from './filteredAdapter';
-import { Model } from '../model';
+import { Model } from '../../model';
 import { FileAdapter } from './fileAdapter';
-import { Helper } from './helper';
-import { readFile } from '../util';
+import * as persist from '../../persist';
+import { readFileSync } from 'fs';
 
 export class Filter {
   public g: string[] = [];
   public p: string[] = [];
 }
 
-export class DefaultFilteredAdapter extends FileAdapter implements FilteredAdapter {
+export class FilteredAdapter extends FileAdapter implements persist.FilteredAdapter {
   private filtered: boolean;
 
   constructor(filePath: string) {
@@ -33,16 +32,16 @@ export class DefaultFilteredAdapter extends FileAdapter implements FilteredAdapt
       throw new Error('invalid file path, file path cannot be empty');
     }
 
-    await this.loadFilteredPolicyFile(model, filter, Helper.loadPolicyLine);
+    await this.loadFilteredPolicyFile(model, filter, persist.Helper.loadPolicyLine);
     this.filtered = true;
   }
 
   private async loadFilteredPolicyFile(model: Model, filter: Filter, handler: (line: string, model: Model) => void): Promise<void> {
-    const bodyBuf = await readFile(this.filePath);
+    const bodyBuf = await readFileSync(this.filePath);
     const lines = bodyBuf.toString().split('\n');
     lines.forEach((n: string, index: number) => {
       const line = n;
-      if (!line || DefaultFilteredAdapter.filterLine(line, filter)) {
+      if (!line || FilteredAdapter.filterLine(line, filter)) {
         return;
       }
       handler(line, model);
@@ -79,7 +78,7 @@ export class DefaultFilteredAdapter extends FileAdapter implements FilteredAdapt
         break;
     }
 
-    return DefaultFilteredAdapter.filterWords(p, filterSlice);
+    return FilteredAdapter.filterWords(p, filterSlice);
   }
 
   private static filterWords(line: string[], filter: string[]): boolean {

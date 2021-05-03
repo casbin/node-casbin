@@ -12,14 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Enforcer, newCachedEnforcer } from '../src';
+import { readFileSync } from 'fs';
+import { Enforcer, newCachedEnforcer, newModelFromString } from '../src';
+import { FileAdapter } from '../src/adapter/node/fileAdapter';
 
 async function testEnforce(e: Enforcer, sub: string, obj: string, act: string, res: boolean): Promise<void> {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
 }
 
 test('TestRBACModel', async () => {
-  const e = await newCachedEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
+  const e = await newCachedEnforcer(
+    newModelFromString(readFileSync('examples/rbac_model.conf').toString()),
+    new FileAdapter('examples/rbac_policy.csv')
+  );
 
   await testEnforce(e, 'alice', 'data1', 'read', true);
 });

@@ -1,5 +1,5 @@
 import { FileAdapter } from './fileAdapter';
-import { BatchAdapter } from './batchAdapter';
+import { BatchAdapter } from '../../persist';
 
 /**
  * BatchFileAdapter is the file adapter for Casbin.

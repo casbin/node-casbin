@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Helper, newModel } from '../../src';
+import { Helper, Model } from '../../src';
 
 test('test Helper.loadPolicyLine', async () => {
-  const m = newModel();
+  const m = new Model();
   m.loadModelFromText(`
 [request_definition]
 r = sub, obj, act

@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { newEnforcer, Enforcer, Util } from '../src';
-import { FileAdapter } from '../src';
+import { Enforcer, Util } from '../src';
+import { newEnforcer } from './helper';
+import { FileAdapter } from '../src/adapter/node/fileAdapter';
 
 let e = {} as Enforcer;
 

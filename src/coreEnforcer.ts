@@ -15,7 +15,7 @@
 import { compile, compileAsync } from 'expression-eval';
 
 import { DefaultEffector, Effect, Effector } from './effect';
-import { FunctionMap, Model, newModel, PolicyOp } from './model';
+import { FunctionMap, Model, PolicyOp } from './model';
 import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval, generatorRunSync, generatorRunAsync } from './util';
@@ -28,7 +28,6 @@ type Matcher = ((context: any) => Promise<any>) | ((context: any) => any);
  * CoreEnforcer defines the core functionality of an enforcer.
  */
 export class CoreEnforcer {
-  protected modelPath: string;
   protected model: Model;
   protected fm: FunctionMap = FunctionMap.loadFunctionMap();
   protected eft: Effector = new DefaultEffector();
@@ -52,17 +51,6 @@ export class CoreEnforcer {
       this.matcherMap.set(matcherKey, expression);
     }
     return expression;
-  }
-
-  /**
-   * loadModel reloads the model from the model CONF file.
-   * Because the policy is attached to a model,
-   * so the policy is invalidated and needs to be reloaded by calling LoadPolicy().
-   */
-  public loadModel(): void {
-    this.model = newModel();
-    this.model.loadModel(this.modelPath);
-    this.model.printModel();
   }
 
   /**

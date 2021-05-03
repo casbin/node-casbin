@@ -38,7 +38,7 @@ export const ip = {
     let result;
 
     if (this.isV4Format(ip)) {
-      result = buff || new Buffer(offset + 4);
+      result = buff || Buffer.alloc(offset + 4);
       ip.split(/\./g).map(function (byte) {
         offset = offset ? offset : 0;
         result[offset++] = parseInt(byte, 10) & 0xff;
@@ -80,7 +80,7 @@ export const ip = {
         sections.splice.apply(sections, argv);
       }
 
-      result = buff || new Buffer(offset + 16);
+      result = buff || Buffer.alloc(offset + 16);
       for (i = 0; i < sections.length; i++) {
         const word = parseInt(sections[i], 16);
         result[offset++] = (word >> 8) & 0xff;
@@ -145,7 +145,7 @@ export const ip = {
     if (family === 'ipv6') {
       len = 16;
     }
-    const buff = new Buffer(len);
+    const buff = Buffer.alloc(len);
 
     for (let i = 0, n = buff.length; i < n; ++i) {
       let bits = 8;
@@ -164,7 +164,7 @@ export const ip = {
     const addrBuffer = ip.toBuffer(addr);
     const maskBuffer = ip.toBuffer(mask);
 
-    const result = new Buffer(Math.max(addrBuffer.length, maskBuffer.length));
+    const result = Buffer.alloc(Math.max(addrBuffer.length, maskBuffer.length));
 
     let i;
     // Same protocol - do bitwise and

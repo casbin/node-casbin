@@ -11,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { readFileSync } from 'fs';
 
 // ConfigInterface defines the behavior of a Config implementation
 export interface ConfigInterface {
@@ -45,22 +44,22 @@ export class Config implements ConfigInterface {
    *
    * @param confName the path of the model file.
    * @return the constructor of Config.
+   *
+   * @Deprecated newConfig has been deprecated, please use newConfigFromText() instead.
    */
   public static newConfig(confName: string): Config {
-    const config = new Config();
-    config.parse(confName);
-    return config;
+    throw new Error('newConfig has been deprecated, please use newConfigFromText() instead.');
   }
 
   /**
    * newConfigFromText create an empty configuration representation from text.
    *
-   * @param text the model text.
+   * @param modelText the model text.
    * @return the constructor of Config.
    */
-  public static newConfigFromText(text: string): Config {
+  public static newConfigFromText(modelText: string): Config {
     const config = new Config();
-    config.parseBuffer(Buffer.from(text));
+    config.parse(modelText);
     return config;
   }
 
@@ -85,16 +84,8 @@ export class Config implements ConfigInterface {
     }
   }
 
-  private parse(path: string): void {
-    const buf = readFileSync(path);
-    this.parseBuffer(buf);
-  }
-
-  private parseBuffer(buf: Buffer): void {
-    const lines = buf
-      .toString()
-      .split('\n')
-      .filter((v) => v);
+  private parse(model: string): void {
+    const lines = model.split('\n').filter((v) => v);
     const linesCount = lines.length;
     let section = '';
     let currentLine = '';

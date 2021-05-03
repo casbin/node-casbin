@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as _ from 'lodash';
-import { DefaultRoleManager, Enforcer, newEnforcer, newModel } from '../src';
+import { DefaultRoleManager, Enforcer, Model } from '../src';
+import { newEnforcer } from './helper';
 import { keyMatch2Func, keyMatch3Func, keyMatchFunc } from '../src/util';
 
 async function testEnforce(e: Enforcer, sub: string, obj: any, act: string, res: boolean): Promise<void> {
@@ -235,8 +235,8 @@ function customFunction(key1: string, key2: string): boolean {
 }
 
 function customFunctionWrapper(...args: any[]): boolean {
-  const name1: string = _.toString(args[0]);
-  const name2: string = _.toString(args[1]);
+  const name1 = `${args[0]}`;
+  const name2 = `${args[1]}`;
 
   return customFunction(name1, name2);
 }
@@ -339,7 +339,7 @@ test('TestPriorityModelIndeterminate', async () => {
 });
 
 test('TestMatcher', async () => {
-  const m = newModel();
+  const m = new Model();
 
   m.addDef('m', 'm', 'keyMatch(r.obj, ".*get$") || regexMatch(r.act, ".user.")');
 

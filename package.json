@@ -28,8 +28,8 @@
     "@semantic-release/release-notes-generator": "^9.0.2",
     "@types/jest": "^26.0.20",
     "@types/lodash": "^4.14.168",
-    "@types/picomatch": "^2.2.2",
     "@types/node": "^10.5.3",
+    "@types/picomatch": "^2.2.2",
     "@typescript-eslint/eslint-plugin": "^4.17.0",
     "@typescript-eslint/parser": "^4.17.0",
     "coveralls": "^3.0.2",
@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "await-lock": "^2.0.1",
+    "buffer": "^6.0.3",
     "csv-parse": "^4.15.3",
     "expression-eval": "^2.0.0",
     "picomatch": "^2.2.3"

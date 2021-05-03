@@ -14,7 +14,9 @@
 
 import { readFileSync } from 'fs';
 
-import { newModel, newEnforcer, Enforcer, FileAdapter, StringAdapter, Util } from '../src';
+import { Enforcer, StringAdapter, Util, Model, newModelFromString } from '../src';
+import { newEnforcer } from './helper';
+import { FileAdapter } from '../src/adapter/node/fileAdapter';
 
 async function testEnforce(e: Enforcer, sub: any, obj: string, act: string, res: boolean): Promise<void> {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
@@ -32,7 +34,7 @@ async function testGetPolicy(e: Enforcer, res: string[][]): Promise<void> {
 }
 
 test('TestKeyMatchModelInMemory', async () => {
-  const m = newModel();
+  const m = new Model();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('e', 'e', 'some(where (p.eft == allow))');
@@ -91,7 +93,7 @@ test('TestKeyMatchModelInMemory', async () => {
 });
 
 test('TestKeyMatchModelInMemoryDeny', async () => {
-  const m = newModel();
+  const m = new Model();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('e', 'e', '!some(where (p.eft == deny))');
@@ -105,7 +107,7 @@ test('TestKeyMatchModelInMemoryDeny', async () => {
 });
 
 test('TestRBACModelInMemoryIndeterminate', async () => {
-  const m = newModel();
+  const m = new Model();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('g', 'g', '_, _');
@@ -120,7 +122,7 @@ test('TestRBACModelInMemoryIndeterminate', async () => {
 });
 
 test('TestRBACModelInMemory', async () => {
-  const m = newModel();
+  const m = new Model();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('g', 'g', '_, _');
@@ -209,7 +211,7 @@ e = some(where (p.eft == allow))
 [matchers]
 m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
 `;
-  const m = newModel(text);
+  const m = newModelFromString(text);
   // The above is the same as:
   // const m = newModel();
   // m.loadModelFromText(text);
@@ -233,7 +235,7 @@ m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
 });
 
 test('TestNotUsedRBACModelInMemory', async () => {
-  const m = newModel();
+  const m = new Model();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('g', 'g', '_, _');
@@ -457,7 +459,7 @@ test('TestSetAdapterFromString', async () => {
 test('TestInitEmpty with File Adapter', async () => {
   const e = await newEnforcer();
 
-  const m = newModel();
+  const m = new Model();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('e', 'e', 'some(where (p.eft == allow))');
@@ -475,7 +477,7 @@ test('TestInitEmpty with File Adapter', async () => {
 test('TestInitEmpty with String Adapter', async () => {
   const e = await newEnforcer();
 
-  const m = newModel();
+  const m = new Model();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('e', 'e', 'some(where (p.eft == allow))');
@@ -572,7 +574,7 @@ test('test ABAC Scaling', async () => {
 });
 
 test('TestEnforceSync', async () => {
-  const m = newModel();
+  const m = new Model();
   m.addDef('r', 'r', 'sub, obj, act');
   m.addDef('p', 'p', 'sub, obj, act');
   m.addDef('g', 'g', '_, _');

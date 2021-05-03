@@ -1,7 +1,9 @@
-import { Adapter } from './adapter';
-import { Model } from '../model';
-import { Helper } from './helper';
-import { arrayToString, readFile, writeFile } from '../util';
+import { Adapter } from '../../persist';
+import { Model } from '../../model';
+import { Helper } from '../../persist';
+import { arrayToString } from '../../util';
+
+import { readFileSync, writeFileSync } from 'fs';
 
 /**
  * FileAdapter is the file adapter for Casbin.
@@ -20,16 +22,15 @@ export class FileAdapter implements Adapter {
 
   public async loadPolicy(model: Model): Promise<void> {
     if (!this.filePath) {
-      // throw new Error('invalid file path, file path cannot be empty');
-      return;
+      throw new Error('invalid file path, file path cannot be empty');
     }
     await this.loadPolicyFile(model, Helper.loadPolicyLine);
   }
 
   private async loadPolicyFile(model: Model, handler: (line: string, model: Model) => void): Promise<void> {
-    const bodyBuf = await readFile(this.filePath);
+    const bodyBuf = readFileSync(this.filePath);
     const lines = bodyBuf.toString().split('\n');
-    lines.forEach((n: string, index: number) => {
+    lines.forEach((n: string) => {
       if (!n) {
         return;
       }
@@ -41,10 +42,6 @@ export class FileAdapter implements Adapter {
    * savePolicy saves all policy rules to the storage.
    */
   public async savePolicy(model: Model): Promise<boolean> {
-    if (!this.filePath) {
-      // throw new Error('invalid file path, file path cannot be empty');
-      return false;
-    }
     let result = '';
 
     const pList = model.model.get('p');
@@ -71,12 +68,8 @@ export class FileAdapter implements Adapter {
       });
     });
 
-    await this.savePolicyFile(result.trim());
+    writeFileSync(this.filePath, result);
     return true;
-  }
-
-  private async savePolicyFile(text: string): Promise<void> {
-    await writeFile(this.filePath, text);
   }
 
   /**
@@ -85,6 +78,7 @@ export class FileAdapter implements Adapter {
   public async addPolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
     throw new Error('not implemented');
   }
+
   /**
    * addPolicies adds policy rules to the storage.
    This is part of the Auto-Save feature.

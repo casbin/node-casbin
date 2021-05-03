@@ -20,6 +20,8 @@
 
 `node-casbin` is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https://en.wikipedia.org/wiki/Computer_security_model).
 
+Since `v5.7.0`, `node-casbin` are available for WEB, Node.js, React Native, Electron and more JavaScript platforms.
+
 ## All the languages supported by Casbin:
 
 | [![golang](https://casbin.org/img/langs/golang.png)](https://github.com/casbin/casbin) | [![java](https://casbin.org/img/langs/java.png)](https://github.com/casbin/jcasbin) | [![nodejs](https://casbin.org/img/langs/nodejs.png)](https://github.com/casbin/node-casbin) | [![php](https://casbin.org/img/langs/php.png)](https://github.com/php-casbin/php-casbin) |
@@ -50,20 +52,62 @@ yarn add casbin
 
 New a `node-casbin` enforcer with a model file and a policy file, see [Model](#official-model) section for details:
 
-```node.js
-// For Node.js:
-const { newEnforcer } = require('casbin');
-// For browser:
-// import { newEnforcer } from 'casbin';
+For Node.js:
 
+```typescript
+// For CommonJS:
+const { newEnforcer } = require('casbin');
+const { FileAdapter } = require('casbin/lib/cjs/adapter/node');
+const { readFileSync } = require('fs');
+
+// For ES Module:
+import { newEnforcer, newModelFromString } from 'casbin';
+import { FileAdapter } from 'casbin/lib/esm/adapter/node';
+import { readFileSync } from 'fs';
+
+// After v5.7.0
+const model = newModelFromString(readFileSync('basic_model.conf').toString());
+const adapter = new FileAdapter('basic_policy.csv');
+
+const enforcer = await newEnforcer(model, adapter);
+
+// Before v5.7.0
 const enforcer = await newEnforcer('basic_model.conf', 'basic_policy.csv');
+```
+
+For WEB/React Native/Electron:
+
+```typescript
+import { newEnforcer, newModelFromString, StringAdapter } from 'casbin';
+
+const model = newModelFromString(`
+[request_definition]
+r = sub, obj, act
+
+[policy_definition]
+p = sub, obj, act
+
+[policy_effect]
+e = some(where (p.eft == allow))
+
+[matchers]
+m = r.sub == p.sub && r.obj == p.obj && r.act == p.act
+`);
+
+// You can implement an adapter that adaptable to your platform.
+const adapter = new StringAdapter(`
+p, alice, data1, read
+p, bob, data2, write
+`);
+
+const enforcer = await newEnforcer(model, adapter);
 ```
 
 > **Note**: you can also initialize an enforcer with policy in DB instead of file, see [Persistence](#policy-persistence) section for details.
 
 Add an enforcement hook into your code right before the access happens:
 
-```node.js
+```typescript
 const sub = 'alice'; // the user that wants to access a resource.
 const obj = 'data1'; // the resource that is going to be accessed.
 const act = 'read'; // the operation that the user performs on the resource.
@@ -83,7 +127,7 @@ if (res) {
 Besides the static policy file, `node-casbin` also provides API for permission management at run-time.
 For example, You can get all the roles assigned to a user as below:
 
-```node.js
+```typescript
 const roles = await enforcer.getRolesForUser('alice');
 ```
 

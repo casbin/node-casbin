@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as rbac from '../rbac';
-import * as util from '../util';
 import { Config, ConfigInterface } from '../config';
 import { Assertion } from './assertion';
 import { getLogger, logPrint } from '../log';
+import { arrayEquals, arrayRemoveDuplicates, escapeAssertion } from '../util';
+import { RoleManager } from '../rbac';
 
 export const sectionNameMap: { [index: string]: string } = {
   r: 'request_definition',
@@ -95,7 +95,7 @@ export class Model {
         value = value.replace(n, `$<${index}>`);
       });
 
-      value = util.escapeAssertion(value);
+      value = escapeAssertion(value);
 
       stringArguments.forEach((n, index) => {
         value = value.replace(`$<${index}>`, n);
@@ -103,7 +103,7 @@ export class Model {
 
       ast.value = value;
     } else {
-      ast.value = util.escapeAssertion(value);
+      ast.value = escapeAssertion(value);
     }
 
     const nodeMap = this.model.get(sec);
@@ -119,11 +119,14 @@ export class Model {
     return true;
   }
 
-  // loadModel loads the model from model CONF file.
+  /**
+   * loadModel loads the model from model CONF file.
+   * @param path
+   *
+   * @deprecated loadModel has been deprecated, please use loadModelFromText instead.
+   */
   public loadModel(path: string): void {
-    const cfg = Config.newConfig(path);
-
-    this.loadModelFromConfig(cfg);
+    throw new Error('loadModel has been deprecated, please use loadModelFromText instead.');
   }
 
   // loadModelFromText loads the model from the text.
@@ -165,14 +168,14 @@ export class Model {
   }
 
   // buildIncrementalRoleLinks provides incremental build the role inheritance relations.
-  public async buildIncrementalRoleLinks(rm: rbac.RoleManager, op: PolicyOp, sec: string, ptype: string, rules: string[][]): Promise<void> {
+  public async buildIncrementalRoleLinks(rm: RoleManager, op: PolicyOp, sec: string, ptype: string, rules: string[][]): Promise<void> {
     if (sec === 'g') {
       await this.model.get(sec)?.get(ptype)?.buildIncrementalRoleLinks(rm, op, rules);
     }
   }
 
   // buildRoleLinks initializes the roles in RBAC.
-  public async buildRoleLinks(rm: rbac.RoleManager): Promise<void> {
+  public async buildRoleLinks(rm: RoleManager): Promise<void> {
     const astMap = this.model.get('g');
     if (!astMap) {
       return;
@@ -210,7 +213,7 @@ export class Model {
     if (!ast) {
       return false;
     }
-    return ast.policy.some((n: string[]) => util.arrayEquals(n, rule));
+    return ast.policy.some((n: string[]) => arrayEquals(n, rule));
   }
 
   // addPolicy adds a policy rule to the model.
@@ -277,7 +280,7 @@ export class Model {
       return false;
     }
 
-    const index = ast.policy.findIndex((r) => util.arrayEquals(r, oldRule));
+    const index = ast.policy.findIndex((r) => arrayEquals(r, oldRule));
     if (index === -1) {
       return false;
     }
@@ -306,7 +309,7 @@ export class Model {
       if (!ast) {
         return false;
       }
-      ast.policy = ast.policy.filter((r) => !util.arrayEquals(rule, r));
+      ast.policy = ast.policy.filter((r) => !arrayEquals(rule, r));
       return true;
     }
 
@@ -329,7 +332,7 @@ export class Model {
 
     for (const rule of rules) {
       ast.policy = ast.policy.filter((r: string[]) => {
-        const equals = util.arrayEquals(rule, r);
+        const equals = arrayEquals(rule, r);
         if (equals) {
           effects.push(r);
         }
@@ -409,7 +412,7 @@ export class Model {
     if (!ast) {
       return values;
     }
-    return util.arrayRemoveDuplicates(ast.policy.map((n: string[]) => n[fieldIndex]));
+    return arrayRemoveDuplicates(ast.policy.map((n: string[]) => n[fieldIndex]));
   }
 
   // getValuesForFieldInPolicyAllTypes gets all values for a field for all rules in a policy of all ptypes, duplicated values are removed.
@@ -425,7 +428,7 @@ export class Model {
       values.push(...this.getValuesForFieldInPolicy(sec, ptype, fieldIndex));
     }
 
-    return util.arrayRemoveDuplicates(values);
+    return arrayRemoveDuplicates(values);
   }
 
   // printPolicy prints the policy to log.
@@ -448,28 +451,16 @@ export class Model {
  * newModel creates a model.
  */
 export function newModel(...text: string[]): Model {
-  const m = new Model();
-
-  if (text.length === 2) {
-    if (text[0] !== '') {
-      m.loadModel(text[0]);
-    }
-  } else if (text.length === 1) {
-    m.loadModelFromText(text[0]);
-  } else if (text.length !== 0) {
-    throw new Error('Invalid parameters for model.');
-  }
-
-  return m;
+  throw new Error('newModel has been deprecated, please use new Model() instead.');
 }
 
 /**
  * newModelFromFile creates a model from a .CONF file.
+ *
+ * @deprecated newModelFromFile has been deprecated, please use newModelFromString() instead.
  */
 export function newModelFromFile(path: string): Model {
-  const m = new Model();
-  m.loadModel(path);
-  return m;
+  throw new Error('newModelFromFile has been deprecated, please use newModelFromString() instead.');
 }
 
 /**

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { ManagementEnforcer } from './managementEnforcer';
-import { Model, newModel } from './model';
-import { Adapter, FileAdapter, StringAdapter } from './persist';
+import { Model, newModelFromString } from './model';
+import { Adapter } from './persist';
 import { getLogger } from './log';
 import { arrayRemoveDuplicates } from './util';
 
@@ -26,32 +26,32 @@ export class Enforcer extends ManagementEnforcer {
    * initWithFile initializes an enforcer with a model file and a policy file.
    * @param modelPath model file path
    * @param policyPath policy file path
+   * @deprecated initWithFile has been deprecated, please use initWithModelAndAdapter.
    */
   public async initWithFile(modelPath: string, policyPath: string): Promise<void> {
-    const a = new FileAdapter(policyPath);
-    await this.initWithAdapter(modelPath, a);
+    throw new Error('initWithFile has been deprecated, please use initWithModelAndAdapter instead.');
   }
 
   /**
    * initWithFile initializes an enforcer with a model file and a policy file.
    * @param modelPath model file path
    * @param policyString policy CSV string
+   *
+   * @deprecated initWithString has been deprecated, please use initWithModelAndAdapter instead.
    */
   public async initWithString(modelPath: string, policyString: string): Promise<void> {
-    const a = new StringAdapter(policyString);
-    await this.initWithAdapter(modelPath, a);
+    throw new Error('initWithString has been deprecated, please use initWithModelAndAdapter instead.');
   }
 
   /**
    * initWithAdapter initializes an enforcer with a database adapter.
    * @param modelPath model file path
    * @param adapter current adapter instance
+   *
+   * @deprecated initWithAdapter has been deprecated, please use initWithModelAndAdapter instead.
    */
   public async initWithAdapter(modelPath: string, adapter: Adapter): Promise<void> {
-    const m = newModel(modelPath, '');
-    await this.initWithModelAndAdapter(m, adapter);
-
-    this.modelPath = modelPath;
+    throw new Error('initWithAdapter has been deprecated, please use initWithModelAndAdapter instead.');
   }
 
   /**
@@ -362,62 +362,83 @@ export class Enforcer extends ManagementEnforcer {
 }
 
 export async function newEnforcerWithClass<T extends Enforcer>(enforcer: new () => T, ...params: any[]): Promise<T> {
+  const [model, adapterOrEnableLog, enableLog = false] = params;
+
   const e = new enforcer();
 
-  let parsedParamLen = 0;
-  if (params.length >= 1) {
-    const enableLog = params[params.length - 1];
-    if (typeof enableLog === 'boolean') {
-      getLogger().enableLog(enableLog);
-      parsedParamLen++;
-    }
+  if ((model === undefined || model === null) && (adapterOrEnableLog === undefined || adapterOrEnableLog === null))  {
+    getLogger().enableLog(enableLog);
+    return e;
   }
 
-  if (params.length - parsedParamLen === 2) {
-    if (typeof params[0] === 'string') {
-      if (typeof params[1] === 'string') {
-        await e.initWithFile(params[0].toString(), params[1].toString());
-      } else {
-        await e.initWithAdapter(params[0].toString(), params[1]);
-      }
-    } else {
-      if (typeof params[1] === 'string') {
-        throw new Error('Invalid parameters for enforcer.');
-      } else {
-        await e.initWithModelAndAdapter(params[0], params[1]);
-      }
+  if (model) {
+    if (!(model instanceof Model)) {
+      throw new Error('params[0] should be an instance of Model.');
     }
-  } else if (params.length - parsedParamLen === 1) {
-    if (typeof params[0] === 'string') {
-      await e.initWithFile(params[0], '');
-    } else {
-      await e.initWithModelAndAdapter(params[0]);
-    }
-  } else if (params.length === parsedParamLen) {
-    await e.initWithFile('', '');
+    e.setModel(model);
+  }
+
+  if (typeof adapterOrEnableLog === 'boolean') {
+    getLogger().enableLog(adapterOrEnableLog);
   } else {
-    throw new Error('Invalid parameters for enforcer.');
+    getLogger().enableLog(enableLog);
+    if (model && adapterOrEnableLog) {
+      await e.initWithModelAndAdapter(model, adapterOrEnableLog);
+    } else {
+      e.setAdapter(adapterOrEnableLog);
+    }
   }
 
   return e;
 }
-
 /**
+ *
  * newEnforcer creates an enforcer via file or DB.
  *
- * File:
- * ```js
- * const e = new Enforcer('path/to/basic_model.conf', 'path/to/basic_policy.csv');
+ * @example
+ *
+ * ```typescript
+ * For Node.js:
+ * import { newEnforcer, newModelFromString } from 'casbin';
+ * import { FileAdapter } from 'casbin/lib/esm/adapter/node';
+ * import { readFileSync } from "fs";
+ * const model = newModelFromString(readFileSync('basic_model.conf').toString());
+ * const adapter = new FileAdapter('basic_policy.csv');
+ * const e = new Enforcer(model, adapter);
+ *
+ * For WEB/React Native/Electron
+ * import { newEnforcer, newModelFromString, StringAdapter } from 'casbin';
+ * const model = newModelFromString(`
+ * [request_definition]
+ * r = sub, obj, act
+ *
+ * [policy_definition]
+ * p = sub, obj, act
+ *
+ * [policy_effect]
+ * e = some(where (p.eft == allow))
+ *
+ * [matchers]
+ * m = r.sub == p.sub && r.obj == p.obj && r.act == p.act
+ * `);
+ *
+ * // You can implement an adapter that adaptable to your platform.
+ * const adapter = new StringAdapter(`
+ * p, alice, data1, read
+ * p, bob, data2, write
+ * `);
+ *
+ * const enforcer = await newEnforcer(model, adapter);
  * ```
  *
- * MySQL DB:
- * ```js
- * const a = new MySQLAdapter('mysql', 'mysql_username:mysql_password@tcp(127.0.0.1:3306)/');
- * const e = new Enforcer('path/to/basic_model.conf', a);
- * ```
- *
- * @param params
+ * @param model - A model instance of Model, built-in newModelFromString().
+ * @param adapter - An adapter instance of Adapter interface, built-in StringAdapter, FileAdapter.
+ * @param enableLog - Controls whether logger is enabled.
  */
+export async function newEnforcer(model: Model | undefined, adapter: Adapter | undefined, enableLog: boolean): Promise<Enforcer>;
+export async function newEnforcer(model?: Model, adapterOrEnableLog?: Adapter | boolean): Promise<Enforcer>;
+export async function newEnforcer(model?: Model): Promise<Enforcer>;
+
 export async function newEnforcer(...params: any[]): Promise<Enforcer> {
   return newEnforcerWithClass(Enforcer, ...params);
 }

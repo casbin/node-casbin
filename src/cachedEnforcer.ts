@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import { Enforcer, newEnforcerWithClass } from './enforcer';
+import { Model } from './model';
+import { Adapter } from './persist';
 
 // CachedEnforcer wraps Enforcer and provides decision cache
 export class CachedEnforcer extends Enforcer {
@@ -73,6 +75,10 @@ export class CachedEnforcer extends Enforcer {
     return res;
   }
 }
+
+export async function newCachedEnforcer(model: Model | undefined, adapter: Adapter | undefined, enableLog: boolean): Promise<Enforcer>;
+export async function newCachedEnforcer(model?: Model, adapterOrEnableLog?: Adapter | boolean): Promise<Enforcer>;
+export async function newCachedEnforcer(model?: Model): Promise<Enforcer>;
 
 // newCachedEnforcer creates a cached enforcer via file or DB.
 export async function newCachedEnforcer(...params: any[]): Promise<CachedEnforcer> {
