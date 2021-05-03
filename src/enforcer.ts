@@ -366,7 +366,7 @@ export async function newEnforcerWithClass<T extends Enforcer>(enforcer: new () 
 
   const e = new enforcer();
 
-  if ((model === undefined || model === null) && (adapterOrEnableLog === undefined || adapterOrEnableLog === null))  {
+  if ((model === undefined || model === null) && (adapterOrEnableLog === undefined || adapterOrEnableLog === null)) {
     getLogger().enableLog(enableLog);
     return e;
   }
