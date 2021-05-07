@@ -325,16 +325,18 @@ export class CoreEnforcer {
    * @param rules policies
    */
   public async buildIncrementalRoleLinks(op: PolicyOp, ptype: string, rules: string[][]): Promise<void> {
-    for (const rmKey of this.rmMap.keys()) {
-      await this.model.buildIncrementalRoleLinks(<RoleManager>this.rmMap.get(rmKey), op, rmKey, ptype, rules);
+    let rm = this.rmMap.get(ptype);
+    if (!rm) {
+      rm = new DefaultRoleManager(10);
+      this.rmMap.set(ptype, rm);
     }
+    await this.model.buildIncrementalRoleLinks(rm, op, 'g', ptype, rules);
   }
 
   protected async buildRoleLinksInternal(): Promise<void> {
-    // await this.model.buildRoleLinks(this.rmMap);
     for (const rm of this.rmMap.values()) {
       await rm.clear();
-      await this.model.buildRoleLinks(rm);
+      await this.model.buildRoleLinks(this.rmMap);
     }
   }
 

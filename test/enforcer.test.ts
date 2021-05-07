@@ -585,3 +585,9 @@ test('TestEnforceSync', async () => {
 
   testEnforceSync(e, 'alice', 'data1', 'read', false);
 });
+
+test('Test RBAC G2', async () => {
+  const e = await newEnforcer('examples/rbac_g2_model.conf', 'examples/rbac_g2_policy.csv');
+  expect(await e.enforce('alice', 'data1', 'read')).toBe(false);
+  expect(await e.enforce('admin', 'data1', 'read')).toBe(true);
+});
