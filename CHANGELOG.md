@@ -1,3 +1,10 @@
+## [5.6.3](https://github.com/casbin/node-casbin/compare/v5.6.2...v5.6.3) (2021-05-07)
+
+
+### Bug Fixes
+
+* fix buildRoleLinks to isolate groups ([0fb6ae7](https://github.com/casbin/node-casbin/commit/0fb6ae798ef692aaef890472421f980b58a4dfec))
+
 ## [5.6.2](https://github.com/casbin/node-casbin/compare/v5.6.1...v5.6.2) (2021-05-02)
 
 
