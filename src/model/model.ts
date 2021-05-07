@@ -17,6 +17,7 @@ import * as util from '../util';
 import { Config, ConfigInterface } from '../config';
 import { Assertion } from './assertion';
 import { getLogger, logPrint } from '../log';
+import { DefaultRoleManager } from '../rbac';
 
 export const sectionNameMap: { [index: string]: string } = {
   r: 'request_definition',
@@ -172,13 +173,19 @@ export class Model {
   }
 
   // buildRoleLinks initializes the roles in RBAC.
-  public async buildRoleLinks(rm: rbac.RoleManager): Promise<void> {
+  public async buildRoleLinks(rmMap: Map<string, rbac.RoleManager>): Promise<void> {
     const astMap = this.model.get('g');
     if (!astMap) {
       return;
     }
-    for (const value of astMap.values()) {
-      await value.buildRoleLinks(rm);
+    for (const key of astMap.keys()) {
+      const ast = astMap.get(key);
+      let rm = rmMap.get(key);
+      if (!rm) {
+        rm = new DefaultRoleManager(10);
+        rmMap.set(key, rm);
+      }
+      await ast?.buildRoleLinks(rm);
     }
   }
 
