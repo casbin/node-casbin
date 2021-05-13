@@ -515,7 +515,7 @@ export class CoreEnforcer {
    * @return whether to allow the request.
    */
   public enforceSync(...rvals: any[]): boolean {
-    return generatorRunSync(this.privateEnforce(false, ...rvals));
+    return generatorRunSync(this.privateEnforce(false, false, ...rvals));
   }
 
   /**
@@ -548,7 +548,7 @@ export class CoreEnforcer {
    * @return whether to allow the request.
    */
   public async enforce(...rvals: any[]): Promise<boolean> {
-    return generatorRunAsync(this.privateEnforce(true, ...rvals));
+    return generatorRunAsync(this.privateEnforce(true, false, ...rvals));
   }
 
   /**
