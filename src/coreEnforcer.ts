@@ -24,6 +24,8 @@ import { MatchingFunc } from './rbac';
 
 type Matcher = ((context: any) => Promise<any>) | ((context: any) => any);
 
+type EnforceResult = Generator<(boolean | [boolean, string[]]) | Promise<boolean | [boolean, string[]]>>;
+
 /**
  * CoreEnforcer defines the core functionality of an enforcer.
  */
@@ -340,10 +342,12 @@ export class CoreEnforcer {
     }
   }
 
-  private *privateEnforce(asyncCompile = true, ...rvals: any[]): Generator<boolean | Promise<boolean>> {
+  private *privateEnforce(asyncCompile = true, explain = false, ...rvals: any[]): EnforceResult {
     if (!this.enabled) {
       return true;
     }
+
+    let explainIndex = -1;
 
     const functions: { [key: string]: any } = {};
     this.fm.getFunctions().forEach((value: any, key: string) => {
@@ -445,10 +449,13 @@ export class CoreEnforcer {
         const [res, done] = effectStream.pushEffect(eftRes);
 
         if (done) {
+          explainIndex = i;
           break;
         }
       }
     } else {
+      explainIndex = 0;
+
       const parameters: { [key: string]: any } = {};
 
       rTokens?.forEach((token, j): void => {
@@ -487,6 +494,13 @@ export class CoreEnforcer {
       logPrint(reqStr);
     }
 
+    if (explain) {
+      if (explainIndex === -1) {
+        return [res, []];
+      }
+      return [res, p?.policy[explainIndex]];
+    }
+
     return res;
   }
 
@@ -502,6 +516,20 @@ export class CoreEnforcer {
    */
   public enforceSync(...rvals: any[]): boolean {
     return generatorRunSync(this.privateEnforce(false, ...rvals));
+  }
+
+  /**
+   * If the matchers does not contain an asynchronous method, call it faster.
+   *
+   * enforceSync decides whether a "subject" can access a "object" with
+   * the operation "action", input parameters are usually: (sub, obj, act).
+   *
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request and the reason rule.
+   */
+  public enforceExSync(...rvals: any[]): boolean {
+    return generatorRunSync(this.privateEnforce(false, true, ...rvals));
   }
 
   /**
@@ -521,5 +549,17 @@ export class CoreEnforcer {
    */
   public async enforce(...rvals: any[]): Promise<boolean> {
     return generatorRunAsync(this.privateEnforce(true, ...rvals));
+  }
+
+  /**
+   * enforce decides whether a "subject" can access a "object" with
+   * the operation "action", input parameters are usually: (sub, obj, act).
+   *
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request and the reason rule.
+   */
+  public async enforceEx(...rvals: any[]): Promise<boolean> {
+    return generatorRunAsync(this.privateEnforce(true, true, ...rvals));
   }
 }
