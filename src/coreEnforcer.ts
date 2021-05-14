@@ -528,7 +528,7 @@ export class CoreEnforcer {
    *              of strings, can be class instances if ABAC is used.
    * @return whether to allow the request and the reason rule.
    */
-  public enforceExSync(...rvals: any[]): boolean {
+  public enforceExSync(...rvals: any[]): [boolean, string[]] {
     return generatorRunSync(this.privateEnforce(false, true, ...rvals));
   }
 
@@ -559,7 +559,7 @@ export class CoreEnforcer {
    *              of strings, can be class instances if ABAC is used.
    * @return whether to allow the request and the reason rule.
    */
-  public async enforceEx(...rvals: any[]): Promise<boolean> {
+  public async enforceEx(...rvals: any[]): Promise<[boolean, string[]]> {
     return generatorRunAsync(this.privateEnforce(true, true, ...rvals));
   }
 }
