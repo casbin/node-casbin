@@ -1,3 +1,10 @@
+# [5.7.0](https://github.com/casbin/node-casbin/compare/v5.6.3...v5.7.0) (2021-05-14)
+
+
+### Features
+
+* add enforceEx() ([#271](https://github.com/casbin/node-casbin/issues/271)) ([762efd9](https://github.com/casbin/node-casbin/commit/762efd9d9766fbc8e95f9d5160413ed2a8c6ce88))
+
 ## [5.6.3](https://github.com/casbin/node-casbin/compare/v5.6.2...v5.6.3) (2021-05-07)
 
 
