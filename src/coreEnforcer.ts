@@ -130,6 +130,13 @@ export class CoreEnforcer {
   }
 
   /**
+   * getNamedRoleManager gets role manager by name.
+   */
+  public getNamedRoleManager(name: string): RoleManager | undefined {
+    return this.rmMap.get(name);
+  }
+
+  /**
    * setEffector sets the current effector.
    *
    * @param eft the effector.

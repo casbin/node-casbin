@@ -292,13 +292,15 @@ export class Enforcer extends ManagementEnforcer {
     const q = [name];
     let n: string | undefined;
     while ((n = q.shift()) !== undefined) {
-      const role = await this.getRoleManager().getRoles(n, ...domain);
-      role.forEach((r) => {
-        if (!res.has(r)) {
-          res.add(r);
-          q.push(r);
-        }
-      });
+      for (const rm of this.rmMap.values()) {
+        const role = await rm.getRoles(n, ...domain);
+        role.forEach((r) => {
+          if (!res.has(r)) {
+            res.add(r);
+            q.push(r);
+          }
+        });
+      }
     }
 
     return Array.from(res);
