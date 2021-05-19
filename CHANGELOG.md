@@ -1,3 +1,10 @@
+## [5.7.1](https://github.com/casbin/node-casbin/compare/v5.7.0...v5.7.1) (2021-05-19)
+
+
+### Bug Fixes
+
+* `getImplicitPermissionsForUser` works with rmMap ([#272](https://github.com/casbin/node-casbin/issues/272)) ([0d59239](https://github.com/casbin/node-casbin/commit/0d5923998fa71648c8f77a23f67ffffac2a09343))
+
 # [5.7.0](https://github.com/casbin/node-casbin/compare/v5.6.3...v5.7.0) (2021-05-14)
 
 
