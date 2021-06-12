@@ -1,3 +1,10 @@
+## [5.7.2](https://github.com/casbin/node-casbin/compare/v5.7.1...v5.7.2) (2021-06-12)
+
+
+### Bug Fixes
+
+* Support for loadIncrementalFilteredPolicy ([72c2001](https://github.com/casbin/node-casbin/commit/72c2001ab064d190bfa5bcd305829d083eca52f7))
+
 ## [5.7.1](https://github.com/casbin/node-casbin/compare/v5.7.0...v5.7.1) (2021-05-19)
 
 
