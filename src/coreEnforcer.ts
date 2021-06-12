@@ -201,6 +201,16 @@ export class CoreEnforcer {
   public async loadFilteredPolicy(filter: any): Promise<boolean> {
     this.model.clearPolicy();
 
+    return this.loadIncrementalFilteredPolicy(filter);
+  }
+
+  /**
+   * LoadIncrementalFilteredPolicy append a filtered policy from file/database.
+   *
+   * @param filter the filter used to specify which type of policy should be appended.
+   */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  public async loadIncrementalFilteredPolicy(filter: any): Promise<boolean> {
     if ('isFiltered' in this.adapter) {
       await this.adapter.loadFilteredPolicy(this.model, filter);
     } else {
