@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { compile, compileAsync } from 'expression-eval';
+import { compile, compileAsync, addBinaryOp } from 'expression-eval';
 
 import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
@@ -47,6 +47,12 @@ export class CoreEnforcer {
 
   private getExpression(asyncCompile: boolean, exp: string): Matcher {
     const matcherKey = `${asyncCompile ? 'ASYNC[' : 'SYNC['}${exp}]`;
+
+    addBinaryOp('in', 1, (a, b) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      return (a in b) as number;
+    });
 
     let expression = this.matcherMap.get(matcherKey);
     if (!expression) {
