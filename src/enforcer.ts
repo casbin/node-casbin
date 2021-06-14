@@ -182,6 +182,25 @@ export class Enforcer extends ManagementEnforcer {
   }
 
   /**
+   * deleteRolesForUser deletes all roles for a user.
+   * Returns false if the user does not have any roles (aka not affected).
+   *
+   * @param user the user.
+   * @param filter a function used to filter role
+   * @param domain user domain
+   * @return succeeds or not.
+   */
+  public async deleteFilteredRolesForUser(user: string, filter: (role: string) => boolean, domain?: string): Promise<boolean> {
+    const result: Array<boolean> = [];
+    const roles = await this.getRolesForUser(user, domain);
+    const filteredRoles = roles.filter(filter);
+    for (const role of filteredRoles) {
+      result.push(await this.deleteRoleForUser(user, role, domain));
+    }
+    return result.every((a) => a);
+  }
+
+  /**
    * deleteUser deletes a user.
    * Returns false if the user does not exist (aka not affected).
    *

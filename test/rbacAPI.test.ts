@@ -98,6 +98,26 @@ test('test deleteRolesForUser', async () => {
   expect(await e.getImplicitPermissionsForUser('bob')).toEqual([['bob', 'data2', 'write']]);
 });
 
+test('test deleteFilteredRolesForUser', async () => {
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  expect(await e.hasPermissionForUser('bob', 'data2', 'write')).toEqual(true);
+  expect(await e.getImplicitPermissionsForUser('bob')).toEqual([['bob', 'data2', 'write']]);
+  expect(await e.getImplicitPermissionsForUser('alice')).toEqual([
+    ['alice', 'data1', 'read'],
+    ['data1_admin', 'data1', 'read'],
+    ['data1_admin', 'data1', 'write'],
+    ['data2_admin', 'data2', 'read'],
+    ['data2_admin', 'data2', 'write'],
+  ]);
+  expect(
+    await e.deleteFilteredRolesForUser('admin', (role) => {
+      const regex = new RegExp(/data\d_admin/);
+      return regex.test(role);
+    })
+  ).toEqual(true);
+  expect(await e.getRolesForUser('admin')).toEqual([]);
+});
+
 test('test deleteRolesForUser with domain', async () => {
   const e = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
   expect(await e.getImplicitRolesForUser('alice', 'domain1')).toEqual(['admin']);
