@@ -52,7 +52,7 @@
   "dependencies": {
     "await-lock": "^2.0.1",
     "csv-parse": "^4.15.3",
-    "expression-eval": "^2.0.0",
+    "expression-eval": "^4.0.0",
     "picomatch": "^2.2.3"
   },
   "files": [
