@@ -1,3 +1,38 @@
+# [5.9.0](https://github.com/casbin/node-casbin/compare/v5.8.0...v5.9.0) (2021-06-18)
+
+
+### Features
+
+* Add lazyload option at enforcer init method ([#289](https://github.com/casbin/node-casbin/issues/289)) ([e858dcb](https://github.com/casbin/node-casbin/commit/e858dcbab2351de038e2c5385bbfd20b7aa255ad))
+
+# [5.8.0](https://github.com/casbin/node-casbin/compare/v5.7.2...v5.8.0) (2021-06-14)
+
+
+### Features
+
+* add support for `in` operator ([a44c6a9](https://github.com/casbin/node-casbin/commit/a44c6a99ed36634a67e7888472e8f6d324b257f4))
+
+## [5.7.2](https://github.com/casbin/node-casbin/compare/v5.7.1...v5.7.2) (2021-06-12)
+
+
+### Bug Fixes
+
+* Support for loadIncrementalFilteredPolicy ([72c2001](https://github.com/casbin/node-casbin/commit/72c2001ab064d190bfa5bcd305829d083eca52f7))
+
+## [5.7.1](https://github.com/casbin/node-casbin/compare/v5.7.0...v5.7.1) (2021-05-19)
+
+
+### Bug Fixes
+
+* `getImplicitPermissionsForUser` works with rmMap ([#272](https://github.com/casbin/node-casbin/issues/272)) ([0d59239](https://github.com/casbin/node-casbin/commit/0d5923998fa71648c8f77a23f67ffffac2a09343))
+
+# [5.7.0](https://github.com/casbin/node-casbin/compare/v5.6.3...v5.7.0) (2021-05-14)
+
+
+### Features
+
+* add enforceEx() ([#271](https://github.com/casbin/node-casbin/issues/271)) ([762efd9](https://github.com/casbin/node-casbin/commit/762efd9d9766fbc8e95f9d5160413ed2a8c6ce88))
+
 ## [5.6.3](https://github.com/casbin/node-casbin/compare/v5.6.2...v5.6.3) (2021-05-07)
 
 

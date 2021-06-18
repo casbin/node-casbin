@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { readFileSync } from 'fs';
-import { newEnforcer } from '../src/index';
-import { casbinJsGetPermissionForUser } from '../src/frontend';
+import { newEnforcer } from '../src';
+import { casbinJsGetPermissionForUser } from '../src';
 
 test('TestCasbinJsGetPermissionForUser', async () => {
   const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
@@ -25,6 +25,7 @@ test('TestCasbinJsGetPermissionForUser', async () => {
   }
   const received = JSON.parse(await casbinJsGetPermissionForUser(e, 'alice'));
   const expectedModelStr = readFileSync('examples/rbac_model.conf').toString();
+  // If you enable CR_LF auto transfer on Windows platform, this can lead to some unexpected behavior.
   expect(received['m']).toBe(expectedModelStr.replace(/\n\n/g, '\n'));
   const expectedPoliciesStr = readFileSync('examples/rbac_with_hierarchy_policy.csv').toString();
   const expectedPolicyItem = expectedPoliciesStr.split(RegExp(',|\n'));

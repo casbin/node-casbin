@@ -4,4 +4,12 @@ node_modules
 lib
 yarn-error.log
 package-lock.json
-coverage
+
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+

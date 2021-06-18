@@ -26,30 +26,33 @@ export class Enforcer extends ManagementEnforcer {
    * initWithFile initializes an enforcer with a model file and a policy file.
    * @param modelPath model file path
    * @param policyPath policy file path
+   * @param lazyLoad lazyLoad whether to load policy at initial time
    */
-  public async initWithFile(modelPath: string, policyPath: string): Promise<void> {
+  public async initWithFile(modelPath: string, policyPath: string, lazyLoad = false): Promise<void> {
     const a = new FileAdapter(policyPath);
-    await this.initWithAdapter(modelPath, a);
+    await this.initWithAdapter(modelPath, a, lazyLoad);
   }
 
   /**
    * initWithFile initializes an enforcer with a model file and a policy file.
    * @param modelPath model file path
    * @param policyString policy CSV string
+   * @param lazyLoad whether to load policy at initial time
    */
-  public async initWithString(modelPath: string, policyString: string): Promise<void> {
+  public async initWithString(modelPath: string, policyString: string, lazyLoad = false): Promise<void> {
     const a = new StringAdapter(policyString);
-    await this.initWithAdapter(modelPath, a);
+    await this.initWithAdapter(modelPath, a, lazyLoad);
   }
 
   /**
    * initWithAdapter initializes an enforcer with a database adapter.
    * @param modelPath model file path
    * @param adapter current adapter instance
+   * @param lazyLoad whether to load policy at initial time
    */
-  public async initWithAdapter(modelPath: string, adapter: Adapter): Promise<void> {
+  public async initWithAdapter(modelPath: string, adapter: Adapter, lazyLoad = false): Promise<void> {
     const m = newModel(modelPath, '');
-    await this.initWithModelAndAdapter(m, adapter);
+    await this.initWithModelAndAdapter(m, adapter, lazyLoad);
 
     this.modelPath = modelPath;
   }
@@ -58,8 +61,9 @@ export class Enforcer extends ManagementEnforcer {
    * initWithModelAndAdapter initializes an enforcer with a model and a database adapter.
    * @param m model instance
    * @param adapter current adapter instance
+   * @param lazyLoad whether to load policy at initial time
    */
-  public async initWithModelAndAdapter(m: Model, adapter?: Adapter): Promise<void> {
+  public async initWithModelAndAdapter(m: Model, adapter?: Adapter, lazyLoad = false): Promise<void> {
     if (adapter) {
       this.adapter = adapter;
     }
@@ -67,7 +71,7 @@ export class Enforcer extends ManagementEnforcer {
     this.model = m;
     this.model.printModel();
 
-    if (this.adapter) {
+    if (!lazyLoad && this.adapter) {
       await this.loadPolicy();
     }
   }
@@ -292,13 +296,15 @@ export class Enforcer extends ManagementEnforcer {
     const q = [name];
     let n: string | undefined;
     while ((n = q.shift()) !== undefined) {
-      const role = await this.getRoleManager().getRoles(n, ...domain);
-      role.forEach((r) => {
-        if (!res.has(r)) {
-          res.add(r);
-          q.push(r);
-        }
-      });
+      for (const rm of this.rmMap.values()) {
+        const role = await rm.getRoles(n, ...domain);
+        role.forEach((r) => {
+          if (!res.has(r)) {
+            res.add(r);
+            q.push(r);
+          }
+        });
+      }
     }
 
     return Array.from(res);

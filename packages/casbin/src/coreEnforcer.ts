@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { compile, compileAsync } from 'expression-eval';
+import { compile, compileAsync, addBinaryOp } from 'expression-eval';
 
 import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
@@ -23,6 +23,8 @@ import { getLogger, logPrint } from './log';
 import { MatchingFunc } from './rbac';
 
 type Matcher = ((context: any) => Promise<any>) | ((context: any) => any);
+
+type EnforceResult = Generator<(boolean | [boolean, string[]]) | Promise<boolean | [boolean, string[]]>>;
 
 /**
  * CoreEnforcer defines the core functionality of an enforcer.
@@ -45,6 +47,12 @@ export class CoreEnforcer {
 
   private getExpression(asyncCompile: boolean, exp: string): Matcher {
     const matcherKey = `${asyncCompile ? 'ASYNC[' : 'SYNC['}${exp}]`;
+
+    addBinaryOp('in', 1, (a, b) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      return (a in b) as number;
+    });
 
     let expression = this.matcherMap.get(matcherKey);
     if (!expression) {
@@ -128,6 +136,13 @@ export class CoreEnforcer {
   }
 
   /**
+   * getNamedRoleManager gets role manager by name.
+   */
+  public getNamedRoleManager(name: string): RoleManager | undefined {
+    return this.rmMap.get(name);
+  }
+
+  /**
    * setEffector sets the current effector.
    *
    * @param eft the effector.
@@ -192,6 +207,16 @@ export class CoreEnforcer {
   public async loadFilteredPolicy(filter: any): Promise<boolean> {
     this.model.clearPolicy();
 
+    return this.loadIncrementalFilteredPolicy(filter);
+  }
+
+  /**
+   * LoadIncrementalFilteredPolicy append a filtered policy from file/database.
+   *
+   * @param filter the filter used to specify which type of policy should be appended.
+   */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  public async loadIncrementalFilteredPolicy(filter: any): Promise<boolean> {
     if ('isFiltered' in this.adapter) {
       await this.adapter.loadFilteredPolicy(this.model, filter);
     } else {
@@ -340,10 +365,12 @@ export class CoreEnforcer {
     }
   }
 
-  private *privateEnforce(asyncCompile = true, ...rvals: any[]): Generator<boolean | Promise<boolean>> {
+  private *privateEnforce(asyncCompile = true, explain = false, ...rvals: any[]): EnforceResult {
     if (!this.enabled) {
       return true;
     }
+
+    let explainIndex = -1;
 
     const functions: { [key: string]: any } = {};
     this.fm.getFunctions().forEach((value: any, key: string) => {
@@ -445,10 +472,13 @@ export class CoreEnforcer {
         const [res, done] = effectStream.pushEffect(eftRes);
 
         if (done) {
+          explainIndex = i;
           break;
         }
       }
     } else {
+      explainIndex = 0;
+
       const parameters: { [key: string]: any } = {};
 
       rTokens?.forEach((token, j): void => {
@@ -487,6 +517,13 @@ export class CoreEnforcer {
       logPrint(reqStr);
     }
 
+    if (explain) {
+      if (explainIndex === -1) {
+        return [res, []];
+      }
+      return [res, p?.policy[explainIndex]];
+    }
+
     return res;
   }
 
@@ -501,7 +538,21 @@ export class CoreEnforcer {
    * @return whether to allow the request.
    */
   public enforceSync(...rvals: any[]): boolean {
-    return generatorRunSync(this.privateEnforce(false, ...rvals));
+    return generatorRunSync(this.privateEnforce(false, false, ...rvals));
+  }
+
+  /**
+   * If the matchers does not contain an asynchronous method, call it faster.
+   *
+   * enforceSync decides whether a "subject" can access a "object" with
+   * the operation "action", input parameters are usually: (sub, obj, act).
+   *
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request and the reason rule.
+   */
+  public enforceExSync(...rvals: any[]): [boolean, string[]] {
+    return generatorRunSync(this.privateEnforce(false, true, ...rvals));
   }
 
   /**
@@ -520,6 +571,18 @@ export class CoreEnforcer {
    * @return whether to allow the request.
    */
   public async enforce(...rvals: any[]): Promise<boolean> {
-    return generatorRunAsync(this.privateEnforce(true, ...rvals));
+    return generatorRunAsync(this.privateEnforce(true, false, ...rvals));
+  }
+
+  /**
+   * enforce decides whether a "subject" can access a "object" with
+   * the operation "action", input parameters are usually: (sub, obj, act).
+   *
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request and the reason rule.
+   */
+  public async enforceEx(...rvals: any[]): Promise<[boolean, string[]]> {
+    return generatorRunAsync(this.privateEnforce(true, true, ...rvals));
   }
 }

@@ -1,84 +1,43 @@
 {
-  "name": "casbin",
-  "version": "5.6.3",
-  "description": "An authorization library that supports access control models like ACL, RBAC, ABAC in Node.JS",
-  "main": "lib/cjs/index.js",
-  "typings": "lib/cjs/index.d.ts",
-  "module": "lib/esm/index.js",
+  "name": "root",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "prepack": "run-s lint test build",
-    "postpack": "run-s clean",
-    "build": "run-s clean && run-p build:*",
-    "build:cjs": "tsc -p tsconfig.cjs.json",
-    "build:esm": "tsc -p tsconfig.esm.json",
-    "test": "jest",
-    "lint": "eslint . --ext .js,.ts",
-    "fmt": "eslint . --ext .js,.ts --fix",
-    "semantic-release": "semantic-release",
-    "commit": "git-cz",
-    "clean": "rimraf lib",
-    "coverage": "jest --coverage"
+    "postinstall": "husky install",
+    "test:unit": "jest",
+    "test:lint": "eslint packages/**/@(src|test)/**/*.@(ts|tsx|js)",
+    "test:coverage": "jest --coverage",
+    "commit": "cz"
   },
   "devDependencies": {
-    "@semantic-release/changelog": "^5.0.1",
-    "@semantic-release/commit-analyzer": "^8.0.1",
-    "@semantic-release/git": "^9.0.0",
-    "@semantic-release/github": "^7.2.0",
-    "@semantic-release/npm": "^7.0.10",
-    "@semantic-release/release-notes-generator": "^9.0.2",
-    "@types/jest": "^26.0.20",
-    "@types/lodash": "^4.14.168",
-    "@types/picomatch": "^2.2.2",
-    "@types/node": "^10.5.3",
-    "@typescript-eslint/eslint-plugin": "^4.17.0",
-    "@typescript-eslint/parser": "^4.17.0",
-    "coveralls": "^3.0.2",
-    "cz-conventional-changelog": "^3.2.0",
-    "eslint": "^7.22.0",
-    "eslint-config-prettier": "^6.12.0",
-    "eslint-plugin-prettier": "^3.3.1",
-    "husky": "^2.3.0",
+    "@commitlint/cli": "^12.1.4",
+    "@commitlint/config-conventional": "^12.1.4",
+    "@types/jest": "^26.0.23",
+    "@types/node": "^15.0.2",
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
+    "eslint": "^7.26.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^6.0.0",
     "jest": "^26.6.3",
-    "lint-staged": "^8.1.7",
+    "lerna": "^4.0.0",
+    "lint-staged": "^11.0.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.2.1",
-    "pretty-quick": "^3.1.0",
     "rimraf": "^3.0.2",
-    "semantic-release": "^17.4.2",
-    "ts-jest": "^26.5.3",
-    "tslint": "^5.11.0",
-    "typescript": "^3.7.2"
+    "ts-jest": "^26.5.6",
+    "typescript": "^4.2.4"
+  },
+  "lint-staged": {
+    "*{.ts,.js}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "dependencies": {
-    "await-lock": "^2.0.1",
-    "csv-parse": "^4.15.3",
-    "expression-eval": "^2.0.0",
-    "picomatch": "^2.2.3"
-  },
-  "files": [
-    "lib",
-    "examples"
-  ],
-  "homepage": "http://casbin.org",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/casbin/node-casbin.git"
-  },
-  "licenses": [
-    {
-      "type": "Apache-2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0"
-    }
-  ],
-  "husky": {
-    "hooks": {
-      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true",
-      "pre-commit": "yarn fmt && pretty-quick --staged"
-    }
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
+    "conventional-changelog-angular": "^5.0.12"
   }
 }
