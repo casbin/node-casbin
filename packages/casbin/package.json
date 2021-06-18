@@ -1,0 +1,44 @@
+{
+  "name": "casbin",
+  "version": "5.9.0",
+  "description": "An authorization library that supports access control models like ACL, RBAC, ABAC in Node.JS",
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "lib/cjs/index.js",
+    "typings": "lib/cjs/index.d.ts",
+    "module": "lib/esm/index.js",
+    "access": "public"
+  },
+  "scripts": {
+    "prepack": "run-s clean && run-p build:*",
+    "postpack": "run-s clean",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "clean": "rimraf lib"
+  },
+  "devDependencies": {
+    "@types/picomatch": "^2.2.2",
+    "coveralls": "^3.0.2"
+  },
+  "dependencies": {
+    "await-lock": "^2.0.1",
+    "csv-parse": "^4.15.3",
+    "expression-eval": "^4.0.0",
+    "picomatch": "^2.2.3"
+  },
+  "files": [
+    "lib",
+    "../../examples"
+  ],
+  "homepage": "https://casbin.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/casbin/node-casbin.git"
+  },
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ]
+}

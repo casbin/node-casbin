@@ -1,6 +1,7 @@
 import { Config } from '../../src';
+import { join } from 'path';
 
-const config = Config.newConfig('test/config/testini.ini');
+const config = Config.newConfig(join(__dirname, 'testini.ini'));
 
 describe('multi-line test', () => {
   it('should config.get("multi1::name") to equal r.sub==p.sub&&r.obj==p.obj', function () {

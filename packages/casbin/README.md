@@ -16,7 +16,7 @@
 
 **News**: still worry about how to write the correct `node-casbin` policy? [Casbin online editor](http://casbin.org/en/editor) is coming to help!
 
-![casbin Logo](casbin-logo.png)
+![casbin Logo](../../casbin-logo.png)
 
 `node-casbin` is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https://en.wikipedia.org/wiki/Computer_security_model).
 
@@ -140,7 +140,7 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 
 ## License
 
-This project is licensed under the [Apache 2.0 license](LICENSE).
+This project is licensed under the [Apache 2.0 license](../../LICENSE).
 
 ## Contact
 

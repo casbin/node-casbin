@@ -13,10 +13,10 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install --ignore-engines
-      - run: yarn lint
-      - run: yarn test
-      - run: yarn coverage
+      - run: yarn install
+      - run: yarn test:lint
+      - run: yarn test:unit
+      - run: yarn test:coverage
       - name: Coveralls
         uses: coverallsapp/github-action@master
         with:
@@ -27,6 +27,7 @@ jobs:
   semantic-release:
     needs: [test]
     runs-on: ubuntu-latest
+    if: ${{ false }} # Temporarily disable until the release tool is available.
     steps:
       - uses: actions/checkout@v2
 
