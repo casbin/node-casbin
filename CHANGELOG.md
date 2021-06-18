@@ -1,3 +1,10 @@
+# [5.9.0](https://github.com/casbin/node-casbin/compare/v5.8.0...v5.9.0) (2021-06-18)
+
+
+### Features
+
+* Add lazyload option at enforcer init method ([#289](https://github.com/casbin/node-casbin/issues/289)) ([e858dcb](https://github.com/casbin/node-casbin/commit/e858dcbab2351de038e2c5385bbfd20b7aa255ad))
+
 # [5.8.0](https://github.com/casbin/node-casbin/compare/v5.7.2...v5.8.0) (2021-06-14)
 
 
