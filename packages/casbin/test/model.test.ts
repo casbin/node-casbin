@@ -13,7 +13,6 @@
 // limitations under the License.
 // noinspection JSMismatchedCollectionQueryUpdate
 
-import * as _ from 'lodash';
 import { DefaultRoleManager, Enforcer, newEnforcer, newModel } from '../src';
 import { keyMatch2Func, keyMatch3Func, keyMatchFunc } from '../src/util';
 
@@ -236,8 +235,8 @@ function customFunction(key1: string, key2: string): boolean {
 }
 
 function customFunctionWrapper(...args: any[]): boolean {
-  const name1: string = _.toString(args[0]);
-  const name2: string = _.toString(args[1]);
+  const name1 = `${args[0]}`;
+  const name2 = `${args[1]}`;
 
   return customFunction(name1, name2);
 }
