@@ -399,6 +399,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@casbin/core@workspace:packages/casbin-core":
+  version: 0.0.0-use.local
+  resolution: "@casbin/core@workspace:packages/casbin-core"
+  dependencies:
+    "@types/picomatch": ^2.2.2
+    await-lock: ^2.0.1
+    coveralls: ^3.0.2
+    csv-parse: ^4.15.3
+    expression-eval: ^4.0.0
+    picomatch: ^2.2.3
+  languageName: unknown
+  linkType: soft
+
 "@cnakazawa/watch@npm:^1.0.3":
   version: 1.0.4
   resolution: "@cnakazawa/watch@npm:1.0.4::__archiveUrl=https%3A%2F%2Fregistry.nlark.com%2F%40cnakazawa%2Fwatch%2Fdownload%2F%40cnakazawa%2Fwatch-1.0.4.tgz"
