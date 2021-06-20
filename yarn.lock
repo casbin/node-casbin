@@ -399,9 +399,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@casbin/core@workspace:packages/casbin-core":
+"@casbin/core@workspace:packages/core":
   version: 0.0.0-use.local
-  resolution: "@casbin/core@workspace:packages/casbin-core"
+  resolution: "@casbin/core@workspace:packages/core"
   dependencies:
     "@types/picomatch": ^2.2.2
     await-lock: ^2.0.1
