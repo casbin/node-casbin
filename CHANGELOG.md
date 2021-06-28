@@ -1,3 +1,10 @@
+## [5.9.1](https://github.com/casbin/node-casbin/compare/v5.9.0...v5.9.1) (2021-06-28)
+
+
+### Bug Fixes
+
+* type assertion ([852530b](https://github.com/casbin/node-casbin/commit/852530bf49f56816e27a3a762dd907fe29e3c924))
+
 # [5.9.0](https://github.com/casbin/node-casbin/compare/v5.8.0...v5.9.0) (2021-06-18)
 
 
