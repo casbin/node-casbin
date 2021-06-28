@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { CoreEnforcer } from './coreEnforcer';
-import { BatchAdapter } from './persist';
-import { UpdatableAdapter } from './persist';
+import { FilteredAdapter } from './persist';
 import { PolicyOp } from './model';
 
 /**
@@ -194,7 +193,7 @@ export class InternalEnforcer extends CoreEnforcer {
   public async removeFilteredPolicyInternal(sec: string, ptype: string, fieldIndex: number, fieldValues: string[]): Promise<boolean> {
     if (this.adapter && this.autoSave) {
       try {
-        await this.adapter.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
+        await (this.adapter as FilteredAdapter).removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
       } catch (e) {
         if (e.message !== 'not implemented') {
           throw e;

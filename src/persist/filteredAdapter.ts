@@ -6,4 +6,6 @@ export interface FilteredAdapter extends Adapter {
   loadFilteredPolicy(model: Model, filter: any): Promise<void>;
   // isFiltered returns true if the loaded policy has been filtered.
   isFiltered(): boolean;
+  // removeFilteredPolicy removes only rules that match the filter.
+  removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<void>;
 }
