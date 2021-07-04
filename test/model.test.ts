@@ -14,7 +14,7 @@
 // noinspection JSMismatchedCollectionQueryUpdate
 
 import * as _ from 'lodash';
-import { DefaultRoleManager, Enforcer, newEnforcer, newModel } from '../src';
+import { DefaultRoleManager, DefaultSyncedRoleManager, Enforcer, newEnforcer, newModel } from '../src';
 import { keyMatch2Func, keyMatch3Func, keyMatchFunc } from '../src/util';
 
 async function testEnforce(e: Enforcer, sub: string, obj: any, act: string, res: boolean): Promise<void> {
@@ -382,7 +382,7 @@ test('TestRBACModelWithPattern', async () => {
 test('TestNodeCasbin150', async () => {
   const e = await newEnforcer('examples/issues/node_casbin_150_model.conf', 'examples/issues/node_casbin_150_policy.csv');
 
-  const rm = e.getRoleManager() as DefaultRoleManager;
+  const rm = e.getRoleManager() as DefaultSyncedRoleManager;
   await rm.addMatchingFunc(keyMatchFunc);
   await e.buildRoleLinks();
 
@@ -392,7 +392,7 @@ test('TestNodeCasbin150', async () => {
 test('TestDomainMatchModel', async () => {
   const e = await newEnforcer('examples/rbac_with_domain_pattern_model.conf', 'examples/rbac_with_domain_pattern_policy.csv');
 
-  const rm = e.getRoleManager() as DefaultRoleManager;
+  const rm = e.getRoleManager() as DefaultSyncedRoleManager;
   await rm.addDomainMatchingFunc(keyMatch2Func);
 
   await testDomainEnforce(e, 'alice', 'domain1', 'data1', 'read', true);
@@ -410,7 +410,7 @@ test('TestDomainMatchModel', async () => {
 test('TestAllMatchModel', async () => {
   const e = await newEnforcer('examples/rbac_with_all_pattern_model.conf', 'examples/rbac_with_all_pattern_policy.csv');
 
-  const rm = e.getRoleManager() as DefaultRoleManager;
+  const rm = e.getRoleManager() as DefaultSyncedRoleManager;
   await rm.addMatchingFunc(keyMatch2Func);
   await rm.addDomainMatchingFunc(keyMatch2Func);
 
