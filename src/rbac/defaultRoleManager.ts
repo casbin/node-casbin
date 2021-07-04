@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { RoleManager } from './roleManager';
+import { RoleManager, SyncedRoleManager } from './roleManager';
 import { getLogger, logPrint } from '../log';
 
 export type MatchingFunc = (arg1: string, arg2: string) => boolean;
@@ -117,14 +117,15 @@ class Roles extends Map<string, Role> {
   }
 }
 
-// RoleManager provides a default implementation for the RoleManager interface
-export class DefaultRoleManager implements RoleManager {
+export class DefaultSyncedRoleManager implements SyncedRoleManager {
   private allDomains: Map<string, Roles>;
   private maxHierarchyLevel: number;
   private hasPattern = false;
   private hasDomainPattern = false;
   private matchingFunc: MatchingFunc;
   private domainMatchingFunc: MatchingFunc;
+
+  public isSynced = true;
 
   /**
    * DefaultRoleManager is the constructor for creating an instance of the
@@ -144,13 +145,13 @@ export class DefaultRoleManager implements RoleManager {
    * @param fn matching function
    * @deprecated
    */
-  public async addMatchingFunc(name: string, fn: MatchingFunc): Promise<void>;
+  public addMatchingFunc(name: string, fn: MatchingFunc): void;
 
   /**
    * addMatchingFunc support use pattern in g
    * @param fn matching function
    */
-  public async addMatchingFunc(fn: MatchingFunc): Promise<void>;
+  public addMatchingFunc(fn: MatchingFunc): void;
 
   /**
    * addMatchingFunc support use pattern in g
@@ -158,7 +159,7 @@ export class DefaultRoleManager implements RoleManager {
    * @param fn matching function
    * @deprecated
    */
-  public async addMatchingFunc(name: string | MatchingFunc, fn?: MatchingFunc): Promise<void> {
+  public addMatchingFunc(name: string | MatchingFunc, fn?: MatchingFunc): void {
     this.hasPattern = true;
     if (typeof name === 'string' && fn) {
       this.matchingFunc = fn;
@@ -174,7 +175,7 @@ export class DefaultRoleManager implements RoleManager {
    * @param fn domain matching function
    * ```
    */
-  public async addDomainMatchingFunc(fn: MatchingFunc): Promise<void> {
+  public addDomainMatchingFunc(fn: MatchingFunc): void {
     this.hasDomainPattern = true;
     this.domainMatchingFunc = fn;
   }
@@ -208,7 +209,7 @@ export class DefaultRoleManager implements RoleManager {
    * aka role: name1 inherits role: name2.
    * domain is a prefix to the roles.
    */
-  public async addLink(name1: string, name2: string, ...domain: string[]): Promise<void> {
+  public addLink(name1: string, name2: string, ...domain: string[]): void {
     if (domain.length === 0) {
       domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
@@ -225,7 +226,7 @@ export class DefaultRoleManager implements RoleManager {
   /**
    * clear clears all stored data and resets the role manager to the initial state.
    */
-  public async clear(): Promise<void> {
+  public clear(): void {
     this.allDomains = new Map();
     this.allDomains.set(DEFAULT_DOMAIN, new Roles());
   }
@@ -235,7 +236,7 @@ export class DefaultRoleManager implements RoleManager {
    * aka role: name1 does not inherit role: name2 any more.
    * domain is a prefix to the roles.
    */
-  public async deleteLink(name1: string, name2: string, ...domain: string[]): Promise<void> {
+  public deleteLink(name1: string, name2: string, ...domain: string[]): void {
     if (domain.length === 0) {
       domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
@@ -257,7 +258,7 @@ export class DefaultRoleManager implements RoleManager {
    * hasLink determines whether role: name1 inherits role: name2.
    * domain is a prefix to the roles.
    */
-  public async hasLink(name1: string, name2: string, ...domain: string[]): Promise<boolean> {
+  public hasLink(name1: string, name2: string, ...domain: string[]): boolean {
     if (domain.length === 0) {
       domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
@@ -287,7 +288,7 @@ export class DefaultRoleManager implements RoleManager {
    * getRoles gets the roles that a subject inherits.
    * domain is a prefix to the roles.
    */
-  public async getRoles(name: string, ...domain: string[]): Promise<string[]> {
+  public getRoles(name: string, ...domain: string[]): string[] {
     if (domain.length === 0) {
       domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
@@ -312,7 +313,7 @@ export class DefaultRoleManager implements RoleManager {
    * getUsers gets the users that inherits a subject.
    * domain is an unreferenced parameter here, may be used in other implementations.
    */
-  public async getUsers(name: string, ...domain: string[]): Promise<string[]> {
+  public getUsers(name: string, ...domain: string[]): string[] {
     if (domain.length === 0) {
       domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
@@ -336,11 +337,126 @@ export class DefaultRoleManager implements RoleManager {
   /**
    * printRoles prints all the roles to log.
    */
-  public async printRoles(): Promise<void> {
+  public printRoles(): void {
     if (getLogger().isEnable()) {
       [...this.allDomains.values()].forEach((n) => {
         logPrint(n.toString());
       });
     }
+  }
+}
+
+// RoleManager provides a default implementation for the RoleManager interface
+export class DefaultRoleManager extends DefaultSyncedRoleManager implements RoleManager {
+  /**
+   * DefaultRoleManager is the constructor for creating an instance of the
+   * default RoleManager implementation.
+   *
+   * @param maxHierarchyLevel the maximized allowed RBAC hierarchy level.
+   */
+  constructor(maxHierarchyLevel: number) {
+    super(maxHierarchyLevel);
+    this.isSynced = false;
+  }
+
+  /**
+   * addMatchingFunc support use pattern in g
+   * @param name name
+   * @param fn matching function
+   * @deprecated
+   */
+  public async addMatchingFunc(name: string, fn: MatchingFunc): Promise<void>;
+
+  /**
+   * addMatchingFunc support use pattern in g
+   * @param fn matching function
+   */
+  public async addMatchingFunc(fn: MatchingFunc): Promise<void>;
+
+  /**
+   * addMatchingFunc support use pattern in g
+   * @param name name
+   * @param fn matching function
+   * @deprecated
+   */
+  public async addMatchingFunc(name: string | MatchingFunc, fn?: MatchingFunc): Promise<void> {
+    if (typeof name === 'string' && fn) {
+      super.addMatchingFunc(fn);
+    } else if (typeof name === 'function') {
+      super.addMatchingFunc(name);
+    } else {
+      throw new Error('name or fn should be a MatchingFunc');
+    }
+  }
+
+  /**
+   * addDomainMatchingFunc support use domain pattern in g
+   * @param fn domain matching function
+   * ```
+   */
+  public async addDomainMatchingFunc(fn: MatchingFunc): Promise<void> {
+    super.addDomainMatchingFunc(fn);
+  }
+
+  /**
+   * addLink adds the inheritance link between role: name1 and role: name2.
+   * aka role: name1 inherits role: name2.
+   * domain is a prefix to the roles.
+   */
+  public async addLink(name1: string, name2: string, ...domain: string[]): Promise<void> {
+    super.addLink(name1, name2, ...domain);
+  }
+
+  /**
+   * clear clears all stored data and resets the role manager to the initial state.
+   */
+  public async clear(): Promise<void> {
+    super.clear();
+  }
+
+  /**
+   * deleteLink deletes the inheritance link between role: name1 and role: name2.
+   * aka role: name1 does not inherit role: name2 any more.
+   * domain is a prefix to the roles.
+   */
+  public async deleteLink(name1: string, name2: string, ...domain: string[]): Promise<void> {
+    super.deleteLink(name1, name2, ...domain);
+  }
+
+  /**
+   * hasLink determines whether role: name1 inherits role: name2.
+   * domain is a prefix to the roles.
+   */
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  public async hasLink(name1: string, name2: string, ...domain: string[]): Promise<boolean> {
+    return super.hasLink(name1, name2, ...domain);
+  }
+
+  /**
+   * getRoles gets the roles that a subject inherits.
+   * domain is a prefix to the roles.
+   */
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  public async getRoles(name: string, ...domain: string[]): Promise<string[]> {
+    return super.getRoles(name, ...domain);
+  }
+
+  /**
+   * getUsers gets the users that inherits a subject.
+   * domain is an unreferenced parameter here, may be used in other implementations.
+   */
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  public async getUsers(name: string, ...domain: string[]): Promise<string[]> {
+    return super.getUsers(name, ...domain);
+  }
+
+  /**
+   * printRoles prints all the roles to log.
+   */
+  public async printRoles(): Promise<void> {
+    super.printRoles();
   }
 }
