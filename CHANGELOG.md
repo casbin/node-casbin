@@ -1,3 +1,10 @@
+# [5.10.0](https://github.com/casbin/node-casbin/compare/v5.9.0...v5.10.0) (2021-07-19)
+
+
+### Features
+
+* use new license format ([284d2a4](https://github.com/casbin/node-casbin/commit/284d2a48cd67db8c197de24a99029858dbbe2da8))
+
 # [5.9.0](https://github.com/casbin/node-casbin/compare/v5.8.0...v5.9.0) (2021-06-18)
 
 
