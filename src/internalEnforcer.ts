@@ -64,7 +64,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (this.autoSave) {
       if ('addPolicies' in this.adapter) {
         try {
-          await this.adapter.addPolicies(sec, ptype, rules);
+          await (this.adapter as BatchAdapter).addPolicies(sec, ptype, rules);
         } catch (e) {
           if (e.message !== 'not implemented') {
             throw e;
@@ -98,7 +98,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (this.autoSave) {
       if ('updatePolicy' in this.adapter) {
         try {
-          await this.adapter.updatePolicy(sec, ptype, oldRule, newRule);
+          await (this.adapter as UpdatableAdapter).updatePolicy(sec, ptype, oldRule, newRule);
         } catch (e) {
           if (e.message !== 'not implemented') {
             throw e;
@@ -165,7 +165,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (this.autoSave) {
       if ('removePolicies' in this.adapter) {
         try {
-          await this.adapter.removePolicies(sec, ptype, rules);
+          await (this.adapter as BatchAdapter).removePolicies(sec, ptype, rules);
         } catch (e) {
           if (e.message !== 'not implemented') {
             throw e;

@@ -1,4 +1,4 @@
-import { ConfigInterface, newModel, newModelFromFile, newModelFromString, requiredSections, sectionNameMap } from '../../src';
+import { ConfigInterface, newModel, newModelFromString, requiredSections, sectionNameMap } from '../../src';
 import { readFileSync } from 'fs';
 
 class MockConfig implements ConfigInterface {
@@ -39,12 +39,6 @@ basicConfig.data.set('matchers::m', 'r.sub == p.sub && r.obj == p.obj && r.act =
 
 test('TestNewModel', () => {
   const m = newModel();
-
-  expect(m !== null).toBe(true);
-});
-
-test('TestNewModelFromFile', () => {
-  const m = newModelFromFile(basicExample);
 
   expect(m !== null).toBe(true);
 });

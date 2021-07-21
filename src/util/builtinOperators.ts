@@ -14,7 +14,6 @@
 
 import * as rbac from '../rbac';
 import { ip } from './ip';
-import * as picomatch from 'picomatch';
 
 // regexMatch determines whether key1 matches the pattern of key2 in regular expression.
 function regexMatch(key1: string, key2: string): boolean {
@@ -246,6 +245,12 @@ function regexMatchFunc(...args: any[]): boolean {
 // ip2 can be an IP address or a CIDR pattern.
 // For example, '192.168.2.123' matches '192.168.2.0/24'
 function ipMatch(ip1: string, ip2: string): boolean {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    require('buffer');
+  } catch {
+    throw new Error('Please add buffer to your dependency.');
+  }
   // check ip1
   if (!(ip.isV4Format(ip1) || ip.isV6Format(ip1))) {
     throw new Error('invalid argument: ip1 in ipMatch() function is not an IP address.');
@@ -285,7 +290,13 @@ function ipMatchFunc(...args: any[]): boolean {
  * ```
  */
 function globMatch(string: string, pattern: string): boolean {
-  return picomatch(pattern)(string);
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const picomatch = require('picomatch');
+    return picomatch(pattern)(string);
+  } catch {
+    throw new Error('Please add picomatch to your dependency.');
+  }
 }
 
 // generateGFunction is the factory method of the g(_, _) function.

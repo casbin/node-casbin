@@ -52,7 +52,7 @@ export class Model {
     return this.addDef(sec, key, value);
   }
 
-  private getKeySuffix(i: number): string {
+  private static getKeySuffix(i: number): string {
     if (i === 1) {
       return '';
     }
@@ -63,7 +63,7 @@ export class Model {
   private loadSection(cfg: ConfigInterface, sec: string): void {
     let i = 1;
     for (;;) {
-      if (!this.loadAssertion(cfg, sec, sec + this.getKeySuffix(i))) {
+      if (!this.loadAssertion(cfg, sec, sec + Model.getKeySuffix(i))) {
         break;
       } else {
         i++;
@@ -467,15 +467,6 @@ export function newModel(...text: string[]): Model {
     throw new Error('Invalid parameters for model.');
   }
 
-  return m;
-}
-
-/**
- * newModelFromFile creates a model from a .CONF file.
- */
-export function newModelFromFile(path: string): Model {
-  const m = new Model();
-  m.loadModel(path);
   return m;
 }
 

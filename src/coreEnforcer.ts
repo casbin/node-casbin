@@ -16,7 +16,7 @@ import { compile, compileAsync, addBinaryOp } from 'expression-eval';
 
 import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
-import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter } from './persist';
+import { Adapter, FilteredAdapter, Watcher } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 import {
   escapeAssertion,
@@ -46,7 +46,7 @@ export class CoreEnforcer {
   protected eft: Effector = new DefaultEffector();
   private matcherMap: Map<string, Matcher> = new Map();
 
-  protected adapter: UpdatableAdapter | FilteredAdapter | Adapter | BatchAdapter;
+  protected adapter: Adapter;
   protected watcher: Watcher | null = null;
   protected rmMap: Map<string, RoleManager>;
 
@@ -223,7 +223,7 @@ export class CoreEnforcer {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   public async loadIncrementalFilteredPolicy(filter: any): Promise<boolean> {
     if ('isFiltered' in this.adapter) {
-      await this.adapter.loadFilteredPolicy(this.model, filter);
+      await (this.adapter as FilteredAdapter).loadFilteredPolicy(this.model, filter);
     } else {
       throw new Error('filtered policies are not supported by this adapter');
     }
@@ -243,7 +243,7 @@ export class CoreEnforcer {
    */
   public isFiltered(): boolean {
     if ('isFiltered' in this.adapter) {
-      return this.adapter.isFiltered();
+      return (this.adapter as FilteredAdapter).isFiltered();
     }
     return false;
   }

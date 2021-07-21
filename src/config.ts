@@ -11,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { readFileSync } from 'fs';
 
 // ConfigInterface defines the behavior of a Config implementation
 export interface ConfigInterface {
@@ -48,7 +47,7 @@ export class Config implements ConfigInterface {
    */
   public static newConfig(confName: string): Config {
     const config = new Config();
-    config.parse(confName);
+    config.parseText(confName);
     return config;
   }
 
@@ -60,7 +59,7 @@ export class Config implements ConfigInterface {
    */
   public static newConfigFromText(text: string): Config {
     const config = new Config();
-    config.parseBuffer(Buffer.from(text));
+    config.parseText(text);
     return config;
   }
 
@@ -85,16 +84,8 @@ export class Config implements ConfigInterface {
     }
   }
 
-  private parse(path: string): void {
-    const buf = readFileSync(path);
-    this.parseBuffer(buf);
-  }
-
-  private parseBuffer(buf: Buffer): void {
-    const lines = buf
-      .toString()
-      .split('\n')
-      .filter((v) => v);
+  private parseText(text: string): void {
+    const lines = text.split('\n').filter((v) => v);
     const linesCount = lines.length;
     let section = '';
     let currentLine = '';

@@ -20,7 +20,7 @@ export class StringAdapter implements Adapter {
 
   public async loadPolicy(model: Model): Promise<void> {
     if (!this.policy) {
-      throw new Error('Invalid policy, policy document cannot be false-y');
+      return;
     }
     await this.loadRules(model, Helper.loadPolicyLine);
   }

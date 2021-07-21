@@ -1,15 +1,14 @@
 import { FilteredAdapter } from './filteredAdapter';
 import { Model } from '../model';
-import { FileAdapter } from './fileAdapter';
 import { Helper } from './helper';
-import { readFile } from '../util';
+import { StringAdapter } from './stringAdapter';
 
 export class Filter {
   public g: string[] = [];
   public p: string[] = [];
 }
 
-export class DefaultFilteredAdapter extends FileAdapter implements FilteredAdapter {
+export class DefaultFilteredAdapter extends StringAdapter implements FilteredAdapter {
   private filtered: boolean;
 
   constructor(filePath: string) {
@@ -29,8 +28,8 @@ export class DefaultFilteredAdapter extends FileAdapter implements FilteredAdapt
       return;
     }
 
-    if (!this.filePath) {
-      throw new Error('invalid file path, file path cannot be empty');
+    if (!this.policy) {
+      return;
     }
 
     await this.loadFilteredPolicyFile(model, filter, Helper.loadPolicyLine);
@@ -38,8 +37,7 @@ export class DefaultFilteredAdapter extends FileAdapter implements FilteredAdapt
   }
 
   private async loadFilteredPolicyFile(model: Model, filter: Filter, handler: (line: string, model: Model) => void): Promise<void> {
-    const bodyBuf = await readFile(this.filePath);
-    const lines = bodyBuf.toString().split('\n');
+    const lines = this.policy.split('\n');
     lines.forEach((n: string, index: number) => {
       const line = n;
       if (!line || DefaultFilteredAdapter.filterLine(line, filter)) {

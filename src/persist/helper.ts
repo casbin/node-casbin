@@ -1,5 +1,4 @@
 import { Model } from '../model';
-import * as parse from 'csv-parse/lib/sync';
 
 export class Helper {
   public static loadPolicyLine(line: string, model: Model): void {
@@ -7,11 +6,19 @@ export class Helper {
       return;
     }
 
-    const tokens = parse(line, {
-      delimiter: ',',
-      skip_empty_lines: true,
-      trim: true,
-    });
+    let tokens: any = undefined;
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const parse = require('csv-parse/lib/sync');
+      tokens = parse(line, {
+        delimiter: ',',
+        skip_empty_lines: true,
+        trim: true,
+      });
+    } catch {
+      throw new Error('Please add csv-parse to your dependency.');
+    }
 
     if (!tokens || !tokens[0]) {
       return;
