@@ -46,6 +46,31 @@ function keyMatchFunc(...args: any[]): boolean {
   return keyMatch(name1, name2);
 }
 
+// KeyGet returns the matched part
+// For example, "/foo/bar/foo" matches "/foo/*"
+// "bar/foo" will been returned
+function keyGet(key1: string, key2: string): string {
+  const pos: number = key2.indexOf('*');
+  if (pos === -1) {
+    return '';
+  }
+  if (key1.length > pos) {
+    if (key1.slice(0, pos) === key2.slice(0, pos)) {
+      return key1.slice(pos, key1.length);
+    }
+  }
+  return '';
+}
+
+// keyGetFunc is the wrapper for keyGet.
+function keyGetFunc(...args: any[]): string {
+  const [arg0, arg1] = args;
+  const name1: string = (arg0 || '').toString();
+  const name2: string = (arg1 || '').toString();
+
+  return keyGet(name1, name2);
+}
+
 // keyMatch2 determines whether key1 matches the pattern of key2 (similar to RESTful path),
 // key2 can contain a *.
 // For example, '/foo/bar' matches '/foo/*', '/resource1' matches '/:resource'
@@ -73,6 +98,36 @@ function keyMatch2Func(...args: any[]): boolean {
   const name2: string = (arg1 || '').toString();
 
   return keyMatch2(name1, name2);
+}
+
+// KeyGet2 returns value matched pattern
+// For example, "/resource1" matches "/:resource"
+// if the pathVar == "resource", then "resource1" will be returned
+function keyGet2(key1: string, key2: string, pathVar: string): string {
+  if (keyMatch2(key1, key2)) {
+    const re = new RegExp('[^/]+', 'g');
+    const keys = key2.match(re);
+    const values = key1.match(re);
+    if (!keys || !values) {
+      return '';
+    }
+    const index = keys.indexOf(`:${pathVar}`);
+    if (index === -1) {
+      return '';
+    }
+    return values[index];
+  } else {
+    return '';
+  }
+}
+
+function keyGet2Func(...args: any[]): string {
+  const [arg0, arg1, arg2] = args;
+  const name1: string = (arg0 || '').toString();
+  const name2: string = (arg1 || '').toString();
+  const name3: string = (arg2 || '').toString();
+
+  return keyGet2(name1, name2, name3);
 }
 
 // keyMatch3 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
@@ -261,4 +316,15 @@ function generateGFunction(rm: rbac.RoleManager): any {
   };
 }
 
-export { keyMatchFunc, keyMatch2Func, keyMatch3Func, regexMatchFunc, ipMatchFunc, generateGFunction, keyMatch4Func, globMatch };
+export {
+  keyMatchFunc,
+  keyGetFunc,
+  keyMatch2Func,
+  keyGet2Func,
+  keyMatch3Func,
+  regexMatchFunc,
+  ipMatchFunc,
+  generateGFunction,
+  keyMatch4Func,
+  globMatch,
+};
