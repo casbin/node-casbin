@@ -14,7 +14,7 @@
 
 import * as util from '../util';
 
-export type MatchingFunction = (...arg: any[]) => boolean | number | Promise<boolean> | Promise<number>;
+export type MatchingFunction = (...arg: any[]) => boolean | number | string | Promise<boolean> | Promise<number> | Promise<string>;
 
 // FunctionMap represents the collection of Function.
 export class FunctionMap {
@@ -32,7 +32,9 @@ export class FunctionMap {
     const fm = new FunctionMap();
 
     fm.addFunction('keyMatch', util.keyMatchFunc);
+    fm.addFunction('keyGet', util.keyGetFunc);
     fm.addFunction('keyMatch2', util.keyMatch2Func);
+    fm.addFunction('keyGet2', util.keyGet2Func);
     fm.addFunction('keyMatch3', util.keyMatch3Func);
     fm.addFunction('keyMatch4', util.keyMatch4Func);
     fm.addFunction('regexMatch', util.regexMatchFunc);

@@ -49,12 +49,25 @@ test('test keyMatchFunc', () => {
   expect(util.keyMatchFunc('/bar/foo', '/foo/*')).toEqual(false);
 });
 
+test('test keyGetFunc', () => {
+  expect(util.keyGetFunc('/foo/bar', '/foo/*')).toEqual('bar');
+  expect(util.keyGetFunc('/bar/foo', '/foo/*')).toEqual('');
+});
+
 test('test keyMatch2Func', () => {
   expect(util.keyMatch2Func('/foo/bar', '/foo/*')).toEqual(true);
   expect(util.keyMatch2Func('/foo/baz', '/foo/:bar')).toEqual(true);
   expect(util.keyMatch2Func('/foo/baz/foo', '/foo/:bar/foo')).toEqual(true);
   expect(util.keyMatch2Func('/baz', '/foo')).toEqual(false);
   expect(util.keyMatch2Func('/foo/baz', '/foo')).toEqual(false);
+});
+
+test('test keyGet2Func', () => {
+  expect(util.keyGet2Func('/foo/bar', '/foo/*', 'bar')).toEqual('');
+  expect(util.keyGet2Func('/foo/baz', '/foo/:bar', 'bar')).toEqual('baz');
+  expect(util.keyGet2Func('/foo/baz/foo', '/foo/:bar/foo', 'bar')).toEqual('baz');
+  expect(util.keyGet2Func('/baz', '/foo', 'bar')).toEqual('');
+  expect(util.keyGet2Func('/foo/baz', '/foo', 'bar')).toEqual('');
 });
 
 test('test keyMatch3Func', () => {
