@@ -1,3 +1,10 @@
+# [5.11.0](https://github.com/casbin/node-casbin/compare/v5.10.0...v5.11.0) (2021-07-23)
+
+
+### Features
+
+* add keyGet and keyGet2 ([#302](https://github.com/casbin/node-casbin/issues/302)) ([36e83cf](https://github.com/casbin/node-casbin/commit/36e83cf6fef78d954062ae61d26a74842e6367d2))
+
 # [5.10.0](https://github.com/casbin/node-casbin/compare/v5.9.0...v5.10.0) (2021-07-19)
 
 
