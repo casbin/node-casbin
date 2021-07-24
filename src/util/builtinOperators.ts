@@ -15,6 +15,7 @@
 import * as rbac from '../rbac';
 import { ip } from './ip';
 import * as picomatch from 'picomatch';
+import { DefaultRoleManager } from '../rbac';
 
 // regexMatch determines whether key1 matches the pattern of key2 in regular expression.
 function regexMatch(key1: string, key2: string): boolean {
@@ -305,10 +306,10 @@ function generateGFunction(rm: rbac.RoleManager): any {
     if (!rm) {
       value = name1 === name2;
     } else if (args.length === 2) {
-      value = await rm.hasLink(name1, name2);
+      value = (rm as DefaultRoleManager).syncedHasLink(name1, name2);
     } else {
       const domain: string = args[2].toString();
-      value = await rm.hasLink(name1, name2, domain);
+      value = (rm as DefaultRoleManager).syncedHasLink(name1, name2, domain);
     }
 
     memorized.set(key, value);
