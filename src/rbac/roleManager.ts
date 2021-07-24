@@ -25,6 +25,9 @@ export interface RoleManager {
   // HasLink determines whether a link exists between two roles. role: name1 inherits role: name2.
   // domain is a prefix to the roles (can be used for other purposes).
   hasLink(name1: string, name2: string, ...domain: string[]): Promise<boolean>;
+  // syncedHasLink is same as hasLink, but not wrapped in promise. Should not be called
+  // if the matchers contain an asynchronous method. Can increase performance.
+  syncedHasLink?(name1: string, name2: string, ...domain: string[]): boolean;
   // GetRoles gets the roles that a user inherits.
   // domain is a prefix to the roles (can be used for other purposes).
   getRoles(name: string, ...domain: string[]): Promise<string[]>;
