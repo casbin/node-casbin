@@ -509,14 +509,6 @@ describe('Unimplemented File Adapter methods', () => {
     e = await getEnforcerWithPath('examples/basic_model.conf', a);
   });
 
-  test('addPolicy', async () => {
-    await expect(a.addPolicy('', '', [''])).rejects.toThrow('not implemented');
-  });
-
-  test('removePolicy', async () => {
-    await expect(a.removePolicy('', '', [''])).rejects.toThrow('not implemented');
-  });
-
   test('removeFilteredPolicy', async () => {
     await expect(a.removeFilteredPolicy('', '', 0, '')).rejects.toThrow('not implemented');
   });
@@ -534,14 +526,6 @@ describe('Unimplemented String Adapter methods', () => {
 
   test('savePolicy', async () => {
     await expect(a.savePolicy(e.getModel())).rejects.toThrow('not implemented');
-  });
-
-  test('addPolicy', async () => {
-    await expect(a.addPolicy('', '', [''])).rejects.toThrow('not implemented');
-  });
-
-  test('removePolicy', async () => {
-    await expect(a.removePolicy('', '', [''])).rejects.toThrow('not implemented');
   });
 
   test('removeFilteredPolicy', async () => {

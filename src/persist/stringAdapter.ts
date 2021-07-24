@@ -1,13 +1,16 @@
 import { Adapter } from './adapter';
 import { Model } from '../model';
 import { Helper } from './helper';
+import { BatchAdapter } from './batchAdapter';
+import * as util from '../util';
 
 /**
  * StringAdapter is the string adapter for Casbin.
  * It can load policy from a string.
  */
-export class StringAdapter implements Adapter {
-  public readonly policy: string;
+export class StringAdapter implements Adapter, BatchAdapter {
+  public policy: string;
+  private policies: string[][] = new Array<Array<string>>();
 
   /**
    * StringAdapter is the constructor for StringAdapter.
@@ -46,14 +49,26 @@ export class StringAdapter implements Adapter {
    * addPolicy adds a policy rule to the storage.
    */
   public async addPolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
-    throw new Error('not implemented');
+    const ruleClone = rule.slice();
+    ruleClone.unshift(ptype);
+    this.policies.push(ruleClone);
   }
 
   /**
    * removePolicy removes a policy rule from the storage.
    */
   public async removePolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
-    throw new Error('not implemented');
+    const ruleClone = rule.slice();
+    ruleClone.unshift(ptype);
+    this.policies = this.policies.filter((r) => !util.arrayEquals(ruleClone, r));
+  }
+
+  public async getPolicy(): Promise<string> {
+    return this.policies.map((p) => p.join(', ')).join('\n');
+  }
+
+  public async getPolicies(): Promise<string[][]> {
+    return this.policies;
   }
 
   /**
@@ -61,5 +76,17 @@ export class StringAdapter implements Adapter {
    */
   public async removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<void> {
     throw new Error('not implemented');
+  }
+
+  public async addPolicies(sec: string, ptype: string, rules: string[][]): Promise<void> {
+    rules.forEach((rule) => {
+      this.addPolicy(sec, ptype, rule);
+    });
+  }
+
+  public async removePolicies(sec: string, ptype: string, rules: string[][]): Promise<void> {
+    rules.forEach((rule) => {
+      this.removePolicy(sec, ptype, rule);
+    });
   }
 }
