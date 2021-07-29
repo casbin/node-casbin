@@ -1,3 +1,10 @@
+## [5.11.1](https://github.com/casbin/node-casbin/compare/v5.11.0...v5.11.1) (2021-07-29)
+
+
+### Bug Fixes
+
+* fix `in` opertor ([17f3588](https://github.com/casbin/node-casbin/commit/17f35881522d1ad454de1a70ee1b12db7735788a))
+
 # [5.11.0](https://github.com/casbin/node-casbin/compare/v5.10.0...v5.11.0) (2021-07-23)
 
 
