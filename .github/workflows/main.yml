@@ -6,14 +6,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [^10, ^12, ^14]
+        node-version: [^12, ^14, ^16]
     steps:
       - uses: actions/checkout@v2
 
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install --ignore-engines
+      - run: yarn install
       - run: yarn lint
       - run: yarn test
       - run: yarn coverage
@@ -32,7 +32,7 @@ jobs:
 
       - name: Run semantic-release
         if: github.repository == 'casbin/node-casbin' && github.event_name == 'push'
-        run: yarn install --no-lockfile && yarn semantic-release
+        run: yarn install && yarn semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
