@@ -49,9 +49,7 @@ export class CoreEnforcer {
     const matcherKey = `${asyncCompile ? 'ASYNC[' : 'SYNC['}${exp}]`;
 
     addBinaryOp('in', 1, (a, b) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      return (a in b) as number;
+      return (((b as unknown) as Array<any>).includes(a) as unknown) as number;
     });
 
     let expression = this.matcherMap.get(matcherKey);
