@@ -84,7 +84,15 @@ export class StringAdapter implements Adapter, BatchAdapter {
    * getPolicy get the storage string
    */
   public async getPolicy(): Promise<string> {
-    return this.policies.map((p) => p.join(', ')).join('\n');
+    return this.policies
+      .map((p) =>
+        p
+          .map((value) => {
+            return '"' + value + '"';
+          })
+          .join(', ')
+      )
+      .join('\n');
   }
 
   /**
