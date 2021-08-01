@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Enforcer, Util } from '../src';
-import { getEnforcerWithPath } from './utils';
+import { getEnforcerWithPath, getStringAdapter } from './utils';
 
 let e = {} as Enforcer;
 
@@ -146,21 +146,21 @@ test('addPolicy', async () => {
   expect(await e.hasPolicy(...p)).toBe(true);
 });
 
-// test('addPolicies', async () => {
-//   const a = getStringAdapter('examples/rbac_policy.csv');
-//   e.setAdapter(a);
-//   const rules = [
-//     ['jack', 'data4', 'read'],
-//     ['katy', 'data4', 'write'],
-//     ['leyo', 'data4', 'read'],
-//     ['ham', 'data4', 'write'],
-//   ];
-//   const added = await e.addPolicies(rules);
-//   expect(added).toBe(true);
-//   for (const rule of rules) {
-//     expect(await e.hasPolicy(...rule)).toBe(true);
-//   }
-// }); TODO: implement this for StringAdapter
+test('addPolicies', async () => {
+  const a = getStringAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['jack', 'data4', 'read'],
+    ['katy', 'data4', 'write'],
+    ['leyo', 'data4', 'read'],
+    ['ham', 'data4', 'write'],
+  ];
+  const added = await e.addPolicies(rules);
+  expect(added).toBe(true);
+  for (const rule of rules) {
+    expect(await e.hasPolicy(...rule)).toBe(true);
+  }
+});
 
 test('addNamedPolicy', async () => {
   const p = ['eve', 'data3', 'read'];
@@ -169,21 +169,21 @@ test('addNamedPolicy', async () => {
   expect(await e.hasPolicy(...p)).toBe(true);
 });
 
-// test('addNamedPolicies', async () => {
-//   const a = getStringAdapter('examples/rbac_policy.csv');
-//   e.setAdapter(a);
-//   const rules = [
-//     ['jack', 'data4', 'read'],
-//     ['katy', 'data4', 'write'],
-//     ['leyo', 'data4', 'read'],
-//     ['ham', 'data4', 'write'],
-//   ];
-//   const added = await e.addNamedPolicies('p', rules);
-//   expect(added).toBe(true);
-//   for (const rule of rules) {
-//     expect(await e.hasPolicy(...rule)).toBe(true);
-//   }
-// });  TODO: implement this for StringAdapter
+test('addNamedPolicies', async () => {
+  const a = getStringAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['jack', 'data4', 'read'],
+    ['katy', 'data4', 'write'],
+    ['leyo', 'data4', 'read'],
+    ['ham', 'data4', 'write'],
+  ];
+  const added = await e.addNamedPolicies('p', rules);
+  expect(added).toBe(true);
+  for (const rule of rules) {
+    expect(await e.hasPolicy(...rule)).toBe(true);
+  }
+});
 
 // test('updatePolicy', async () => {
 //   const a = getStringAdapter('examples/rbac_policy.csv');
@@ -194,8 +194,8 @@ test('addNamedPolicy', async () => {
 //   expect(updated).toBe(true);
 //   expect(await e.hasPolicy(...p)).toBe(false);
 //   expect(await e.hasPolicy(...q)).toBe(true);
-// }); TODO: implement this for StringAdapter
-
+// });
+//
 // test('updateNamedPolicy', async () => {
 //   const a = getStringAdapter('examples/rbac_policy.csv');
 //   e.setAdapter(a);
@@ -205,7 +205,7 @@ test('addNamedPolicy', async () => {
 //   expect(updated).toBe(true);
 //   expect(await e.hasPolicy(...p)).toBe(false);
 //   expect(await e.hasPolicy(...q)).toBe(true);
-// }); TODO: implement this for StringAdapter
+// }); // TODO: implement Updatable Interface
 
 test('removePolicy', async () => {
   const p = ['alice', 'data1', 'read'];
@@ -214,23 +214,23 @@ test('removePolicy', async () => {
   expect(await e.hasPolicy(...p)).toBe(false);
 });
 
-// test('removePolicies', async () => {
-//   const a = getStringAdapter('examples/rbac_policy.csv');
-//   e.setAdapter(a);
-//   const rules = [
-//     ['jack', 'data4', 'read'],
-//     ['katy', 'data4', 'write'],
-//     ['leyo', 'data4', 'read'],
-//     ['ham', 'data4', 'write'],
-//   ];
-//   const added = await e.addPolicies(rules);
-//   expect(added).toBe(true);
-//   const removed = await e.removePolicies(rules);
-//   expect(removed).toBe(true);
-//   for (const rule of rules) {
-//     expect(await e.hasPolicy(...rule)).toBe(false);
-//   }
-// }); TODO: implement this for StringAdapter
+test('removePolicies', async () => {
+  const a = getStringAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['jack', 'data4', 'read'],
+    ['katy', 'data4', 'write'],
+    ['leyo', 'data4', 'read'],
+    ['ham', 'data4', 'write'],
+  ];
+  const added = await e.addPolicies(rules);
+  expect(added).toBe(true);
+  const removed = await e.removePolicies(rules);
+  expect(removed).toBe(true);
+  for (const rule of rules) {
+    expect(await e.hasPolicy(...rule)).toBe(false);
+  }
+});
 
 test('removeFilteredPolicy', async () => {
   const p = ['alice', 'data1', 'read'];
@@ -246,23 +246,23 @@ test('removeNamedPolicy', async () => {
   expect(await e.hasPolicy(...p)).toBe(false);
 });
 
-// test('removeNamedPolicies', async () => {
-//   const a = getStringAdapter('examples/rbac_policy.csv');
-//   e.setAdapter(a);
-//   const rules = [
-//     ['jack', 'data4', 'read'],
-//     ['katy', 'data4', 'write'],
-//     ['leyo', 'data4', 'read'],
-//     ['ham', 'data4', 'write'],
-//   ];
-//   const added = await e.addPolicies(rules);
-//   expect(added).toBe(true);
-//   const removed = await e.removeNamedPolicies('p', rules);
-//   expect(removed).toBe(true);
-//   for (const rule of rules) {
-//     expect(await e.hasPolicy(...rule)).toBe(false);
-//   }
-// }); TODO: implement this for StringAdapter
+test('removeNamedPolicies', async () => {
+  const a = getStringAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['jack', 'data4', 'read'],
+    ['katy', 'data4', 'write'],
+    ['leyo', 'data4', 'read'],
+    ['ham', 'data4', 'write'],
+  ];
+  const added = await e.addPolicies(rules);
+  expect(added).toBe(true);
+  const removed = await e.removeNamedPolicies('p', rules);
+  expect(removed).toBe(true);
+  for (const rule of rules) {
+    expect(await e.hasPolicy(...rule)).toBe(false);
+  }
+});
 
 test('removeFilteredNamedPolicy', async () => {
   const p = ['alice', 'data1', 'read'];
@@ -286,50 +286,50 @@ test('addGroupingPolicy', async () => {
   expect(added).toBe(true);
 });
 
-// test('addGroupingPolicies', async () => {
-//   const a = getStringAdapter('examples/rbac_policy.csv');
-//   e.setAdapter(a);
-//   const groupingRules = [
-//     ['ham', 'data4_admin'],
-//     ['jack', 'data5_admin'],
-//   ];
-//   const added = await e.addGroupingPolicies(groupingRules);
-//   expect(added).toBe(true);
-// }); TODO: implement this for StringAdapter
+test('addGroupingPolicies', async () => {
+  const a = getStringAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['ham', 'data4_admin'],
+    ['jack', 'data5_admin'],
+  ];
+  const added = await e.addGroupingPolicies(groupingRules);
+  expect(added).toBe(true);
+});
 
 test('addNamedGroupingPolicy', async () => {
   const added = await e.addNamedGroupingPolicy('g', 'group1', 'data2_admin');
   expect(added).toBe(true);
 });
 
-// test('addNamedGroupingPolicies', async () => {
-//   const a = getStringAdapter('examples/rbac_policy.csv');
-//   e.setAdapter(a);
-//   const groupingRules = [
-//     ['ham', 'data4_admin'],
-//     ['jack', 'data5_admin'],
-//   ];
-//   const added = await e.addNamedGroupingPolicies('g', groupingRules);
-//   expect(added).toBe(true);
-// }); TODO: implement this for StringAdapter
+test('addNamedGroupingPolicies', async () => {
+  const a = getStringAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['ham', 'data4_admin'],
+    ['jack', 'data5_admin'],
+  ];
+  const added = await e.addNamedGroupingPolicies('g', groupingRules);
+  expect(added).toBe(true);
+});
 
 test('removeGroupingPolicy', async () => {
   const removed = await e.removeGroupingPolicy('alice', 'data2_admin');
   expect(removed).toBe(true);
 });
 
-// test('removeGroupingPolicies', async () => {
-//   const a = getStringAdapter('examples/rbac_policy.csv');
-//   e.setAdapter(a);
-//   const groupingRules = [
-//     ['ham', 'data4_admin'],
-//     ['jack', 'data5_admin'],
-//   ];
-//   const added = await e.addGroupingPolicies(groupingRules);
-//   expect(added).toBe(true);
-//   const removed = await e.removeGroupingPolicies(groupingRules);
-//   expect(removed).toBe(true);
-// }); TODO: implement this for StringAdapter
+test('removeGroupingPolicies', async () => {
+  const a = getStringAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['ham', 'data4_admin'],
+    ['jack', 'data5_admin'],
+  ];
+  const added = await e.addGroupingPolicies(groupingRules);
+  expect(added).toBe(true);
+  const removed = await e.removeGroupingPolicies(groupingRules);
+  expect(removed).toBe(true);
+});
 
 test('removeFilteredGroupingPolicy', async () => {
   const removed = await e.removeFilteredGroupingPolicy(0, 'alice');
@@ -341,15 +341,15 @@ test('removeFilteredNamedGroupingPolicy', async () => {
   expect(removed).toBe(true);
 });
 
-// test('removeNamedGroupingPolicies', async () => {
-//   const a = getStringAdapter('examples/rbac_policy.csv');
-//   e.setAdapter(a);
-//   const groupingRules = [
-//     ['ham', 'data4_admin'],
-//     ['jack', 'data5_admin'],
-//   ];
-//   const added = await e.addGroupingPolicies(groupingRules);
-//   expect(added).toBe(true);
-//   const removed = await e.removeNamedGroupingPolicies('g', groupingRules);
-//   expect(removed).toBe(true);
-// }); TODO: implement this for StringAdapter
+test('removeNamedGroupingPolicies', async () => {
+  const a = getStringAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['ham', 'data4_admin'],
+    ['jack', 'data5_admin'],
+  ];
+  const added = await e.addGroupingPolicies(groupingRules);
+  expect(added).toBe(true);
+  const removed = await e.removeNamedGroupingPolicies('g', groupingRules);
+  expect(removed).toBe(true);
+});

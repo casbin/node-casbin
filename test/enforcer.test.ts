@@ -276,11 +276,11 @@ test('TestReloadPolicy', async () => {
   ]);
 });
 
-// test('TestSavePolicy', async () => {
-//   const e = await getEnforcerWithPath('examples/rbac_model.conf', 'examples/rbac_policy.csv');
-//
-//   await e.savePolicy();
-// }); TODO: implement this
+test('TestSavePolicy', async () => {
+  const e = await getEnforcerWithPath('examples/rbac_model.conf', 'examples/rbac_policy.csv');
+
+  await e.savePolicy();
+});
 
 test('TestClearPolicy', async () => {
   const e = await getEnforcerWithPath('examples/rbac_model.conf', 'examples/rbac_policy.csv');
@@ -522,10 +522,6 @@ describe('Unimplemented String Adapter methods', () => {
     const policy = readFileSync('examples/basic_policy.csv').toString();
     a = new StringAdapter(policy);
     e = await getEnforcerWithPath('examples/basic_model.conf', a);
-  });
-
-  test('savePolicy', async () => {
-    await expect(a.savePolicy(e.getModel())).rejects.toThrow('not implemented');
   });
 
   test('removeFilteredPolicy', async () => {
