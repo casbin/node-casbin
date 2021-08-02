@@ -1,4 +1,5 @@
 import { Model } from '../model';
+import { policyStringToArray } from '../util';
 
 export class Helper {
   public static loadPolicyLine(line: string, model: Model): void {
@@ -6,19 +7,7 @@ export class Helper {
       return;
     }
 
-    let tokens: any = undefined;
-
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const parse = require('csv-parse/lib/sync');
-      tokens = parse(line, {
-        delimiter: ',',
-        skip_empty_lines: true,
-        trim: true,
-      });
-    } catch {
-      throw new Error('Please add csv-parse to your dependency.');
-    }
+    const tokens = policyStringToArray(line);
 
     if (!tokens || !tokens[0]) {
       return;

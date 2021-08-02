@@ -7,7 +7,8 @@
     "strictPropertyInitialization": false,
     "declaration": true,
     "downlevelIteration": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
   },
   "include": ["src/**/*", "test/utils.ts"]
 }

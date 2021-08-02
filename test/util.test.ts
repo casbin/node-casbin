@@ -184,3 +184,18 @@ test('bracketCompatible', () => {
     )
   ).toEqual("g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act || r.obj in ['data2', 'data3'] || r.obj in ['data4', 'data5']");
 });
+
+test('test policyStringToArray', () => {
+  expect(util.policyStringToArray('p,alice,data1,read')).toEqual([['p', 'alice', 'data1', 'read']]);
+  expect(util.policyStringToArray(`"p","alice","data1","read"`)).toEqual([['p', 'alice', 'data1', 'read']]);
+  expect(util.policyStringToArray(`"p"," alice","data1 ","read"`)).toEqual([['p', ' alice', 'data1 ', 'read']]);
+  expect(util.policyStringToArray(`p,alice,data1,read\np,bob,data1,write`)).toEqual([
+    ['p', 'alice', 'data1', 'read'],
+    ['p', 'bob', 'data1', 'write'],
+  ]);
+});
+
+test('test policyArrayToString', () => {
+  expect(util.policyArrayToString(['p', 'alice', 'data1', 'read'])).toEqual(`"p","alice","data1","read"`);
+  expect(util.policyArrayToString(['p', 'alice ', ' data1', 'read'])).toEqual(`"p","alice "," data1","read"`);
+});
