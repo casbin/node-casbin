@@ -177,6 +177,28 @@ function customIn(a: number | string, b: number | string): number {
   return ((a in (b as any)) as unknown) as number;
 }
 
+function bracketCompatible(exp: string): string {
+  // TODO: This function didn't support nested bracket.
+  if (!exp.includes(' (')) {
+    return exp;
+  }
+  do {
+    const array = exp.split('');
+    const leftIndex = exp.indexOf(' (') + 1;
+    let rightIndex = -1;
+    for (let i = leftIndex + 1; i < exp.length; i++) {
+      if (exp[i] === ')') {
+        rightIndex = i;
+        break;
+      }
+    }
+    array[leftIndex] = '[';
+    array[rightIndex] = ']';
+    exp = array.join('');
+  } while (exp.includes(' ('));
+  return exp;
+}
+
 export {
   escapeAssertion,
   removeComments,
@@ -195,4 +217,5 @@ export {
   generatorRunAsync,
   deepCopy,
   customIn,
+  bracketCompatible,
 };
