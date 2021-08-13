@@ -179,26 +179,22 @@ function customIn(a: number | string, b: number | string): number {
 
 function bracketCompatible(exp: string): string {
   // TODO: This function didn't support nested bracket.
-  if (!exp.includes(' (')) {
+  if (!(exp.includes(' in ') && exp.includes(' ('))) {
     return exp;
   }
-  do {
-    const array = exp.split('');
-    const leftIndex = exp.indexOf(' (') + 1;
-    let rightIndex = -1;
-    for (let i = leftIndex + 1; i < exp.length; i++) {
-      if (exp[i] === ')') {
-        rightIndex = i;
-        break;
-      }
+
+  const re = / \([^)]*\)/g;
+  const array = exp.split('');
+
+  let reResult: RegExpExecArray | null;
+  while ((reResult = re.exec(exp)) !== null) {
+    if (!(reResult[0] as string).includes(',')) {
+      continue;
     }
-    array[leftIndex] = '[';
-    if (rightIndex === -1) {
-      throw new Error(`Exist unclosed (`);
-    }
-    array[rightIndex] = ']';
-    exp = array.join('');
-  } while (exp.includes(' ('));
+    array[reResult.index + 1] = '[';
+    array[re.lastIndex - 1] = ']';
+  }
+  exp = array.join('');
   return exp;
 }
 
