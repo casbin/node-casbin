@@ -27,6 +27,7 @@ import {
   generatorRunSync,
   generatorRunAsync,
   customIn,
+  bracketCompatible,
 } from './util';
 import { getLogger, logPrint } from './log';
 import { MatchingFunc } from './rbac';
@@ -61,6 +62,7 @@ export class CoreEnforcer {
 
     let expression = this.matcherMap.get(matcherKey);
     if (!expression) {
+      exp = bracketCompatible(exp);
       expression = asyncCompile ? compileAsync(exp) : compile(exp);
       this.matcherMap.set(matcherKey, expression);
     }

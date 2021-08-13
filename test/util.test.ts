@@ -168,3 +168,14 @@ test('test getEvalValue', () => {
   expect(util.arrayEquals(util.getEvalValue('eval(a) && eval(b) && a && b && c'), ['a', 'b']));
   expect(util.arrayEquals(util.getEvalValue('a && eval(a) && eval(b) && b && c'), ['a', 'b']));
 });
+
+test('bracketCompatible', () => {
+  expect(util.bracketCompatible("g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act || r.obj in ('data2', 'data3')")).toEqual(
+    "g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act || r.obj in ['data2', 'data3']"
+  );
+  expect(
+    util.bracketCompatible(
+      "g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act || r.obj in ('data2', 'data3') || r.obj in ('data4', 'data5')"
+    )
+  ).toEqual("g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act || r.obj in ['data2', 'data3'] || r.obj in ['data4', 'data5']");
+});
