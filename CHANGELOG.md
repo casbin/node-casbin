@@ -1,3 +1,10 @@
+## [5.11.3](https://github.com/casbin/node-casbin/compare/v5.11.2...v5.11.3) (2021-08-13)
+
+
+### Bug Fixes
+
+* add support for legacy array definition method ([#313](https://github.com/casbin/node-casbin/issues/313)) ([635eece](https://github.com/casbin/node-casbin/commit/635eece1bead0bb365b9ea50f325860d1df3abc6))
+
 ## [5.11.2](https://github.com/casbin/node-casbin/compare/v5.11.1...v5.11.2) (2021-08-13)
 
 
