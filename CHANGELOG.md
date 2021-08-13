@@ -1,3 +1,10 @@
+## [5.11.2](https://github.com/casbin/node-casbin/compare/v5.11.1...v5.11.2) (2021-08-13)
+
+
+### Bug Fixes
+
+* add full supoort for `in` operator ([#310](https://github.com/casbin/node-casbin/issues/310)) ([446f8c7](https://github.com/casbin/node-casbin/commit/446f8c700ab13cea5413d311da33e80dd6165f0e))
+
 ## [5.11.1](https://github.com/casbin/node-casbin/compare/v5.11.0...v5.11.1) (2021-07-29)
 
 
