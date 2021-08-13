@@ -18,7 +18,16 @@ import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
 import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
-import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval, generatorRunSync, generatorRunAsync } from './util';
+import {
+  escapeAssertion,
+  generateGFunction,
+  getEvalValue,
+  hasEval,
+  replaceEval,
+  generatorRunSync,
+  generatorRunAsync,
+  customIn,
+} from './util';
 import { getLogger, logPrint } from './log';
 import { MatchingFunc } from './rbac';
 
@@ -48,9 +57,7 @@ export class CoreEnforcer {
   private getExpression(asyncCompile: boolean, exp: string): Matcher {
     const matcherKey = `${asyncCompile ? 'ASYNC[' : 'SYNC['}${exp}]`;
 
-    addBinaryOp('in', 1, (a, b) => {
-      return (((b as unknown) as Array<any>).includes(a) as unknown) as number;
-    });
+    addBinaryOp('in', 1, customIn);
 
     let expression = this.matcherMap.get(matcherKey);
     if (!expression) {

@@ -425,9 +425,9 @@ test('ABACModelWithInOperator', async () => {
 
   class TestRule1 {
     public Owner: string;
-    public Doc: number;
+    public Doc: string;
 
-    constructor(Owner: string, Doc: number) {
+    constructor(Owner: string, Doc: string) {
       this.Owner = Owner;
       this.Doc = Doc;
     }
@@ -435,16 +435,16 @@ test('ABACModelWithInOperator', async () => {
 
   class TestRule2 {
     public Owner: string;
-    public Docs: Array<number>;
+    public Docs: Array<string>;
 
-    constructor(Owner: string, Doc: Array<number>) {
+    constructor(Owner: string, Doc: string[]) {
       this.Owner = Owner;
       this.Docs = Doc;
     }
   }
 
-  const rule1 = new TestRule1('alice', 1);
-  const rule2 = new TestRule2('alice', [1, 2]);
+  const rule1 = new TestRule1('alice', 'aa');
+  const rule2 = new TestRule2('alice', ['aa', 'bb']);
 
   await expect(e.enforce(rule1, rule2)).resolves.toBe(true);
 });
