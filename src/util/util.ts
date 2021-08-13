@@ -193,6 +193,9 @@ function bracketCompatible(exp: string): string {
       }
     }
     array[leftIndex] = '[';
+    if (rightIndex === -1) {
+      throw new Error(`Exist unclosed (`);
+    }
     array[rightIndex] = ']';
     exp = array.join('');
   } while (exp.includes(' ('));
