@@ -18,7 +18,17 @@ import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
 import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
-import { escapeAssertion, generateGFunction, getEvalValue, hasEval, replaceEval, generatorRunSync, generatorRunAsync } from './util';
+import {
+  escapeAssertion,
+  generateGFunction,
+  getEvalValue,
+  hasEval,
+  replaceEval,
+  generatorRunSync,
+  generatorRunAsync,
+  customIn,
+  bracketCompatible,
+} from './util';
 import { getLogger, logPrint } from './log';
 import { MatchingFunc } from './rbac';
 
