@@ -434,7 +434,7 @@ export class CoreEnforcer {
           for (const ruleName of ruleNames) {
             if (ruleName in parameters) {
               const rule = escapeAssertion(parameters[ruleName]);
-              expWithRule = replaceEval(expWithRule, rule);
+              expWithRule = replaceEval(expWithRule, ruleName, rule);
             } else {
               throw new Error(`${ruleName} not in ${parameters}`);
             }
