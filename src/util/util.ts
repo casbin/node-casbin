@@ -112,8 +112,8 @@ function hasEval(s: string): boolean {
 }
 
 // replaceEval replace function eval with the value of its parameters
-function replaceEval(s: string, rule: string): string {
-  return s.replace(evalReg, '(' + rule + ')');
+function replaceEval(s: string, ruleName: string, rule: string): string {
+  return s.replace(`eval(${ruleName})`, '(' + rule + ')');
 }
 
 // getEvalValue returns the parameters of function eval

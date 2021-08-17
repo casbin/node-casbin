@@ -158,8 +158,12 @@ test('test hasEval', () => {
 });
 
 test('test replaceEval', () => {
-  expect(util.replaceEval('eval() && a && b && c', 'a')).toEqual('(a) && a && b && c');
-  expect(util.replaceEval('eval() && a && b && c', '(a)')).toEqual('((a)) && a && b && c');
+  expect(util.replaceEval('eval() && a && b && c', '', 'a')).toEqual('(a) && a && b && c');
+  expect(util.replaceEval('eval() && a && b && c', '', '(a)')).toEqual('((a)) && a && b && c');
+  expect(util.replaceEval('eval(p_some_rule) && c', 'p_some_rule', '(a)')).toEqual('((a)) && c');
+  expect(util.replaceEval('eval(p_some_rule) && eval(p_some_other_rule) && c', 'p_some_rule', '(a)')).toEqual(
+    '((a)) && eval(p_some_other_rule) && c'
+  );
 });
 
 test('test getEvalValue', () => {
