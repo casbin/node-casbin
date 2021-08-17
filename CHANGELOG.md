@@ -1,3 +1,10 @@
+## [5.11.4](https://github.com/casbin/node-casbin/compare/v5.11.3...v5.11.4) (2021-08-17)
+
+
+### Bug Fixes
+
+* **replaceeval:** add third param to replaceEval and only replace eval() w/ matching ruleName ([#316](https://github.com/casbin/node-casbin/issues/316)) ([bd4f5bf](https://github.com/casbin/node-casbin/commit/bd4f5bfb726c56b323d1417dc415deca21d2c170)), closes [#315](https://github.com/casbin/node-casbin/issues/315) [#315](https://github.com/casbin/node-casbin/issues/315)
+
 ## [5.11.3](https://github.com/casbin/node-casbin/compare/v5.11.2...v5.11.3) (2021-08-13)
 
 
