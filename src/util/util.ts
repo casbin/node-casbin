@@ -186,23 +186,14 @@ function policyStringToArray(policy: string): string[][] {
 
       if (slice.includes('""')) {
         // "" Escape processing
-        const quotaSequence: number[] = [];
-
-        let pos = slice.indexOf('"');
-        while (pos !== -1) {
-          quotaSequence.push(pos);
-          pos = slice.indexOf('"', pos + 1);
-        }
-
-        if (quotaSequence.length % 2 !== 0) {
-          throw new Error('Number of quotation marks does not match');
-        }
-
-        for (let i = 0; i < quotaSequence.length; ) {
-          if (quotaSequence[i] !== quotaSequence[i + 1] - 1) {
-            throw new Error(`Unescaped " at ${line}`);
+        for (let i = 0; i < slice.length; ) {
+          if (slice[i] === '"') {
+            if (slice[i + 1] !== '"') {
+              throw new Error(`Unescaped " at ${line}`);
+            }
+            i += 2;
           }
-          i += 2;
+          i += 1;
         }
 
         slice = slice.replace(/""/g, '"');
