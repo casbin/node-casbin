@@ -71,6 +71,8 @@ export class Enforcer extends ManagementEnforcer {
     this.model = m;
     this.model.printModel();
 
+    this.initRmMap();
+
     if (!lazyLoad && this.adapter) {
       await this.loadPolicy();
     }

@@ -48,7 +48,7 @@ export class CoreEnforcer {
 
   protected adapter: UpdatableAdapter | FilteredAdapter | Adapter | BatchAdapter;
   protected watcher: Watcher | null = null;
-  protected rmMap: Map<string, RoleManager> = new Map<string, RoleManager>([['g', new DefaultRoleManager(10)]]);
+  protected rmMap: Map<string, RoleManager>;
 
   protected enabled = true;
   protected autoSave = true;
@@ -198,8 +198,6 @@ export class CoreEnforcer {
 
     this.sortPolicies();
 
-    this.initRmMap();
-
     if (this.autoBuildRoleLinks) {
       await this.buildRoleLinksInternal();
     }
@@ -231,8 +229,6 @@ export class CoreEnforcer {
     }
 
     this.sortPolicies();
-
-    this.initRmMap();
 
     if (this.autoBuildRoleLinks) {
       await this.buildRoleLinksInternal();
