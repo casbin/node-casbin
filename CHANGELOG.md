@@ -1,3 +1,10 @@
+## [5.11.5](https://github.com/casbin/node-casbin/compare/v5.11.4...v5.11.5) (2021-08-18)
+
+
+### Bug Fixes
+
+* fix error overloading for role manager ([#319](https://github.com/casbin/node-casbin/issues/319)) ([e69450b](https://github.com/casbin/node-casbin/commit/e69450b53a06be4abda9b1669d578ef1e27dc19d))
+
 ## [5.11.4](https://github.com/casbin/node-casbin/compare/v5.11.3...v5.11.4) (2021-08-17)
 
 
