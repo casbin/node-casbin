@@ -186,7 +186,8 @@ test('bracketCompatible', () => {
 });
 
 test('test policyStringToArray', () => {
-  expect(util.policyStringToArray('p,alice,data1,read')).toEqual([['p', 'alice', 'data1', 'read']]);
+  expect(util.policyStringToArray('p,alice,data1,read#testtest')).toEqual([['p', 'alice', 'data1', 'read']]);
+  expect(util.policyStringToArray('p,ali""ce,data1,read')).toEqual([['p', 'ali"ce', 'data1', 'read']]);
   expect(util.policyStringToArray(`"p","alice","data1","read"`)).toEqual([['p', 'alice', 'data1', 'read']]);
   expect(util.policyStringToArray(`"p"," alice","data1 ","read"`)).toEqual([['p', ' alice', 'data1 ', 'read']]);
   expect(util.policyStringToArray(`p,alice,data1,read\np,bob,data1,write`)).toEqual([

@@ -54,7 +54,6 @@
   },
   "peerDependencies": {
     "picomatch": "^2.2.3",
-    "csv-parse": "^4.15.3",
     "buffer": "^6.0.3"
   },
   "dependencies": {
