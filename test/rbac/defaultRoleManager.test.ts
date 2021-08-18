@@ -1,4 +1,4 @@
-import { DefaultRoleManager } from '../../src/rbac';
+import { DefaultRoleManager } from '../../src';
 import { keyMatch2Func } from '../../src/util';
 
 test('TestAllMatchingFunc', async () => {
