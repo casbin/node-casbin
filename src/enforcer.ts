@@ -14,7 +14,7 @@
 
 import { ManagementEnforcer } from './managementEnforcer';
 import { Model, newModel } from './model';
-import { Adapter, StringAdapter } from './persist';
+import { Adapter, MemoryAdapter } from './persist';
 import { getLogger } from './log';
 import { arrayRemoveDuplicates } from './util';
 
@@ -29,7 +29,7 @@ export class Enforcer extends ManagementEnforcer {
    * @param lazyLoad whether to load policy at initial time
    */
   public async initWithString(modelPath: string, policyString: string, lazyLoad = false): Promise<void> {
-    const a = new StringAdapter(policyString);
+    const a = new MemoryAdapter(policyString);
     await this.initWithAdapter(modelPath, a, lazyLoad);
   }
 

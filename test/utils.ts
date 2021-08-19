@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { Adapter, Enforcer, Model, newEnforcer, StringAdapter } from '../src';
+import { Adapter, Enforcer, Model, newEnforcer, MemoryAdapter } from '../src';
 
 export function path2Content(path: string): string {
   return readFileSync(path).toString().replace(new RegExp('\r\n', 'g'), '\n');
@@ -28,6 +28,6 @@ export async function getEnforcerWithPath(
   return await newEnforcer(modelPath, policyPath, logOption);
 }
 
-export function getStringAdapter(path: string): StringAdapter {
-  return new StringAdapter(path2Content(path));
+export function getStringAdapter(path: string): MemoryAdapter {
+  return new MemoryAdapter(path2Content(path));
 }

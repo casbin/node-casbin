@@ -14,7 +14,7 @@
 
 import { readFileSync } from 'fs';
 
-import { newModel, newEnforcer, Enforcer, StringAdapter, Util } from '../src';
+import { newModel, newEnforcer, Enforcer, MemoryAdapter, Util } from '../src';
 import { getEnforcerWithPath, getStringAdapter } from './utils';
 
 async function testEnforce(e: Enforcer, sub: any, obj: string, act: string, res: boolean): Promise<void> {
@@ -279,7 +279,7 @@ test('TestReloadPolicy', async () => {
 test('TestSavePolicy', async () => {
   const e = await getEnforcerWithPath('examples/rbac_model.conf', 'examples/rbac_policy.csv');
 
-  await e.savePolicy();
+  expect(e.savePolicy()).rejects.toThrowError(new Error('not implemented'));
 });
 
 test('TestClearPolicy', async () => {
@@ -392,7 +392,7 @@ test('TestInitWithAdapter', async () => {
 
 test('TestInitWithStringAdapter', async () => {
   const policy = readFileSync('examples/basic_policy.csv').toString();
-  const adapter = new StringAdapter(policy);
+  const adapter = new MemoryAdapter(policy);
   const e = await getEnforcerWithPath('examples/basic_model.conf', adapter);
 
   await testEnforce(e, 'alice', 'data1', 'read', true);
@@ -456,7 +456,7 @@ test('TestSetAdapterFromString', async () => {
 
   const policy = readFileSync('examples/basic_policy.csv').toString();
 
-  const a = new StringAdapter(policy);
+  const a = new MemoryAdapter(policy);
   e.setAdapter(a);
   await e.loadPolicy();
 
@@ -491,7 +491,7 @@ test('TestInitEmpty with String Adapter', async () => {
   m.addDef('m', 'm', 'r.sub == p.sub && keyMatch(r.obj, p.obj) && regexMatch(r.act, p.act)');
 
   const policy = readFileSync('examples/keymatch_policy.csv').toString();
-  const a = new StringAdapter(policy);
+  const a = new MemoryAdapter(policy);
 
   e.setModel(m);
   e.setAdapter(a);
@@ -502,7 +502,7 @@ test('TestInitEmpty with String Adapter', async () => {
 
 describe('Unimplemented File Adapter methods', () => {
   let e = {} as Enforcer;
-  let a = {} as StringAdapter;
+  let a = {} as MemoryAdapter;
 
   beforeEach(async () => {
     a = getStringAdapter('examples/basic_policy.csv');
@@ -516,11 +516,11 @@ describe('Unimplemented File Adapter methods', () => {
 
 describe('Unimplemented String Adapter methods', () => {
   let e = {} as Enforcer;
-  let a = {} as StringAdapter;
+  let a = {} as MemoryAdapter;
 
   beforeEach(async () => {
     const policy = readFileSync('examples/basic_policy.csv').toString();
-    a = new StringAdapter(policy);
+    a = new MemoryAdapter(policy);
     e = await getEnforcerWithPath('examples/basic_model.conf', a);
   });
 
@@ -567,7 +567,7 @@ test('test ABAC multiple eval()', async () => {
   m.addDef('e', 'e', 'some(where (p.eft == allow))');
   m.addDef('m', 'm', 'eval(p.sub_rule_1) && eval(p.sub_rule_2) && r.act == p.act');
 
-  const policy = new StringAdapter(
+  const policy = new MemoryAdapter(
     `
     p, r.sub > 50, r.obj > 50, read
     `
@@ -606,8 +606,8 @@ test('TestEnforceEx', async () => {
 
   await e.addPermissionForUser('alice', 'data1', 'invalid');
 
-  testEnforceEx(e, 'alice', 'data1', 'read', [false, []]);
-  testEnforceEx(e, 'alice', 'data1', 'invalid', [true, ['alice', 'data1', 'invalid']]);
+  await testEnforceEx(e, 'alice', 'data1', 'read', [false, []]);
+  await testEnforceEx(e, 'alice', 'data1', 'invalid', [true, ['alice', 'data1', 'invalid']]);
 });
 
 test('TestSyncEnforceEx', async () => {
@@ -630,6 +630,25 @@ test('Test RBAC G2', async () => {
   const e = await getEnforcerWithPath('examples/rbac_g2_model.conf', 'examples/rbac_g2_policy.csv');
   expect(await e.enforce('alice', 'data1', 'read')).toBe(false);
   expect(await e.enforce('admin', 'data1', 'read')).toBe(true);
+});
+
+test('test ABAC multiple eval()', async () => {
+  const m = newModel();
+  m.addDef('r', 'r', 'sub, obj, act');
+  m.addDef('p', 'p', 'sub_rule_1, sub_rule_2, act');
+  m.addDef('e', 'e', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm', 'eval(p.sub_rule_1) && eval(p.sub_rule_2) && r.act == p.act');
+
+  const policy = new MemoryAdapter(
+    `
+    p, r.sub > 50, r.obj > 50, read
+    `
+  );
+
+  const e = await newEnforcer(m, policy);
+  await testEnforce(e, 56, (98 as unknown) as string, 'read', true);
+  await testEnforce(e, 23, (67 as unknown) as string, 'read', false);
+  await testEnforce(e, 78, (34 as unknown) as string, 'read', false);
 });
 
 test('TestBatchEnforce', async () => {

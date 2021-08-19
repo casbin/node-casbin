@@ -2,24 +2,28 @@ import { Adapter } from './adapter';
 import { Model } from '../model';
 import { Helper } from './helper';
 import { BatchAdapter } from './batchAdapter';
-import * as util from '../util';
-import { arrayEquals } from '../util';
+import { arrayEquals, policyArrayToString, policyStringToArray } from '../util';
 
 /**
- * StringAdapter is the string adapter for Casbin.
+ * MemoryAdapter is the memory adapter for Casbin.
  * It can load policy from a string.
  */
-export class StringAdapter implements Adapter, BatchAdapter {
-  public policy: string;
-  private policies: string[][] = [];
+export class MemoryAdapter implements Adapter, BatchAdapter {
+  protected policies: string[][] = [];
 
   /**
-   * StringAdapter is the constructor for StringAdapter.
-   * @param {string} policy policy formatted as a CSV string.
+   * MemoryAdapter is the constructor for MemoryAdapter.
+   * @param policy - policy formatted as a CSV string, or policy array.
    */
-
-  constructor(policy: string) {
-    this.policy = policy;
+  constructor(policy: string | string[][]) {
+    if (!policy) {
+      return;
+    }
+    if (typeof policy === 'string') {
+      this.policies = policyStringToArray(policy);
+    } else {
+      this.policies = policy;
+    }
   }
 
   /**
@@ -27,7 +31,7 @@ export class StringAdapter implements Adapter, BatchAdapter {
    */
   public hasPolicy(policy: string[]): boolean {
     return this.policies.some((prePolicy) => {
-      return util.arrayEquals(prePolicy, policy);
+      return arrayEquals(prePolicy, policy);
     });
   }
 
@@ -36,19 +40,11 @@ export class StringAdapter implements Adapter, BatchAdapter {
    * @param model
    */
   public async loadPolicy(model: Model): Promise<void> {
-    if (!this.policy) {
-      return;
-    }
-    await this.loadRules(model, Helper.loadPolicyLine);
-  }
-
-  private async loadRules(model: Model, handler: (line: string, model: Model) => void): Promise<void> {
-    const rules = this.policy.split('\n');
-    rules.forEach((n: string, index: number) => {
+    this.policies.forEach((n: string[]) => {
       if (!n) {
         return;
       }
-      handler(n, model);
+      Helper.loadPolicyLine(policyArrayToString(n), model);
     });
   }
 
@@ -56,8 +52,7 @@ export class StringAdapter implements Adapter, BatchAdapter {
    * savePolicy saves all policy rules to the storage.
    */
   public async savePolicy(model: Model): Promise<boolean> {
-    this.policy = await this.getPolicy();
-    return true;
+    throw new Error('not implemented');
   }
 
   /**
@@ -77,29 +72,7 @@ export class StringAdapter implements Adapter, BatchAdapter {
   public async removePolicy(sec: string, ptype: string, rule: string[]): Promise<void> {
     const ruleClone = rule.slice();
     ruleClone.unshift(ptype);
-    this.policies.filter((r) => !util.arrayEquals(ruleClone, r));
-  }
-
-  /**
-   * getPolicy get the storage string
-   */
-  public async getPolicy(): Promise<string> {
-    return this.policies
-      .map((p) =>
-        p
-          .map((value) => {
-            return '"' + value + '"';
-          })
-          .join(', ')
-      )
-      .join('\n');
-  }
-
-  /**
-   * getPolicies get policies array
-   */
-  public async getPolicies(): Promise<string[][]> {
-    return this.policies;
+    this.policies = this.policies.filter((r) => !arrayEquals(ruleClone, r));
   }
 
   /**

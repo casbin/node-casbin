@@ -1,18 +1,19 @@
 import { FilteredAdapter } from './filteredAdapter';
 import { Model } from '../model';
 import { Helper } from './helper';
-import { StringAdapter } from './stringAdapter';
+import { MemoryAdapter } from './memoryAdapter';
+import { policyArrayToString, policyStringToArray } from '../util';
 
 export class Filter {
   public g: string[] = [];
   public p: string[] = [];
 }
 
-export class DefaultFilteredAdapter extends StringAdapter implements FilteredAdapter {
+export class DefaultFilteredAdapter extends MemoryAdapter implements FilteredAdapter {
   private filtered: boolean;
 
-  constructor(filePath: string) {
-    super(filePath);
+  constructor(policy: string) {
+    super(policy);
     this.filtered = false;
   }
 
@@ -28,18 +29,13 @@ export class DefaultFilteredAdapter extends StringAdapter implements FilteredAda
       return;
     }
 
-    if (!this.policy) {
-      return;
-    }
-
     await this.loadFilteredPolicyFile(model, filter, Helper.loadPolicyLine);
     this.filtered = true;
   }
 
   private async loadFilteredPolicyFile(model: Model, filter: Filter, handler: (line: string, model: Model) => void): Promise<void> {
-    const lines = this.policy.split('\n');
-    lines.forEach((n: string, index: number) => {
-      const line = n;
+    this.policies.forEach((n: string[]) => {
+      const line = policyArrayToString(n);
       if (!line || DefaultFilteredAdapter.filterLine(line, filter)) {
         return;
       }
