@@ -18,6 +18,8 @@ import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
 import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
+import { EnforceContext } from './enforceContext';
+
 import {
   escapeAssertion,
   generateGFunction,
@@ -45,6 +47,8 @@ export class CoreEnforcer {
   protected fm: FunctionMap = FunctionMap.loadFunctionMap();
   protected eft: Effector = new DefaultEffector();
   private matcherMap: Map<string, Matcher> = new Map();
+  private defaultEnforceContext: EnforceContext = new EnforceContext('r', 'p', 'e', 'm');
+  private enforceContext: EnforceContext = this.defaultEnforceContext;
 
   protected adapter: UpdatableAdapter | FilteredAdapter | Adapter | BatchAdapter;
   protected watcher: Watcher | null = null;
@@ -368,7 +372,12 @@ export class CoreEnforcer {
     }
   }
 
-  private *privateEnforce(asyncCompile = true, explain = false, ...rvals: any[]): EnforceResult {
+  private *privateEnforce(
+    asyncCompile = true,
+    explain = false,
+    enforceContext: EnforceContext = new EnforceContext('r', 'p', 'e', 'm'),
+    ...rvals: any[]
+  ): EnforceResult {
     if (!this.enabled) {
       return true;
     }
@@ -387,12 +396,12 @@ export class CoreEnforcer {
       functions[key] = generateGFunction(rm);
     });
 
-    const expString = this.model.model.get('m')?.get('m')?.value;
+    const expString = this.model.model.get('m')?.get(enforceContext.mtype)?.value;
     if (!expString) {
       throw new Error('Unable to find matchers in model');
     }
 
-    const effectExpr = this.model.model.get('e')?.get('e')?.value;
+    const effectExpr = this.model.model.get('e')?.get(enforceContext.etype)?.value;
     if (!effectExpr) {
       throw new Error('Unable to find policy_effect in model');
     }
@@ -400,10 +409,10 @@ export class CoreEnforcer {
     const HasEval: boolean = hasEval(expString);
     let expression: Matcher | undefined = undefined;
 
-    const p = this.model.model.get('p')?.get('p');
+    const p = this.model.model.get('p')?.get(enforceContext.ptype);
     const policyLen = p?.policy?.length;
 
-    const rTokens = this.model.model.get('r')?.get('r')?.tokens;
+    const rTokens = this.model.model.get('r')?.get(enforceContext.rtype)?.tokens;
     const rTokensLen = rTokens?.length;
 
     const effectStream = this.eft.newStream(effectExpr);
@@ -541,7 +550,7 @@ export class CoreEnforcer {
    * @return whether to allow the request.
    */
   public enforceSync(...rvals: any[]): boolean {
-    return generatorRunSync(this.privateEnforce(false, false, ...rvals));
+    return generatorRunSync(this.privateEnforce(false, false, this.defaultEnforceContext, ...rvals));
   }
 
   /**
@@ -555,7 +564,7 @@ export class CoreEnforcer {
    * @return whether to allow the request and the reason rule.
    */
   public enforceExSync(...rvals: any[]): [boolean, string[]] {
-    return generatorRunSync(this.privateEnforce(false, true, ...rvals));
+    return generatorRunSync(this.privateEnforce(false, true, this.defaultEnforceContext, ...rvals));
   }
 
   /**
@@ -574,7 +583,7 @@ export class CoreEnforcer {
    * @return whether to allow the request.
    */
   public async enforce(...rvals: any[]): Promise<boolean> {
-    return generatorRunAsync(this.privateEnforce(true, false, ...rvals));
+    return generatorRunAsync(this.privateEnforce(true, false, this.defaultEnforceContext, ...rvals));
   }
 
   /**
@@ -586,6 +595,10 @@ export class CoreEnforcer {
    * @return whether to allow the request and the reason rule.
    */
   public async enforceEx(...rvals: any[]): Promise<[boolean, string[]]> {
-    return generatorRunAsync(this.privateEnforce(true, true, ...rvals));
+    return generatorRunAsync(this.privateEnforce(true, true, this.defaultEnforceContext, ...rvals));
+  }
+
+  public useEnforceContext(rType: string, pType: string, eType: string, mType: string): void {
+    this.enforceContext = new EnforceContext(rType, pType, eType, mType);
   }
 }
