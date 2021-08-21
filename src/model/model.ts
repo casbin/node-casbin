@@ -120,9 +120,9 @@ export class Model {
     return true;
   }
 
-  // loadModel loads the model from model CONF file.
-  public loadModel(path: string): void {
-    const cfg = Config.newConfig(path);
+  // loadModel loads the model from model CONF string.
+  public loadModel(string: string): void {
+    const cfg = Config.newConfig(string);
 
     this.loadModelFromConfig(cfg);
   }

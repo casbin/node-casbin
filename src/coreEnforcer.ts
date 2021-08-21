@@ -70,7 +70,7 @@ export class CoreEnforcer {
   }
 
   /**
-   * loadModel reloads the model from the model CONF file.
+   * loadModel reloads the model from the model CONF string.
    * Because the policy is attached to a model,
    * so the policy is invalidated and needs to be reloaded by calling LoadPolicy().
    */
@@ -190,7 +190,7 @@ export class CoreEnforcer {
   }
 
   /**
-   * loadPolicy reloads the policy from file/database.
+   * loadPolicy reloads the policy from adapter.
    */
   public async loadPolicy(): Promise<void> {
     this.model.clearPolicy();
@@ -204,7 +204,7 @@ export class CoreEnforcer {
   }
 
   /**
-   * loadFilteredPolicy reloads a filtered policy from file/database.
+   * loadFilteredPolicy reloads a filtered policy from adapter.
    *
    * @param filter the filter used to specify which type of policy should be loaded.
    */
@@ -216,7 +216,7 @@ export class CoreEnforcer {
   }
 
   /**
-   * LoadIncrementalFilteredPolicy append a filtered policy from file/database.
+   * LoadIncrementalFilteredPolicy append a filtered policy from adapter.
    *
    * @param filter the filter used to specify which type of policy should be appended.
    */
@@ -250,7 +250,7 @@ export class CoreEnforcer {
 
   /**
    * savePolicy saves the current policy (usually after changed with
-   * Casbin API) back to file/database.
+   * Casbin API) back to adapter.
    */
   public async savePolicy(): Promise<boolean> {
     if (this.isFiltered()) {

@@ -33,7 +33,7 @@ export class SyncedEnforcer extends Enforcer {
   }
 
   /**
-   * loadPolicy reloads the policy from file/database.
+   * loadPolicy reloads the policy from adapter.
    */
   public async loadPolicy(): Promise<void> {
     await this.lock.acquireAsync();
@@ -51,7 +51,7 @@ export class SyncedEnforcer extends Enforcer {
   }
 
   /**
-   * savePolicy saves the current policy (usually after changed with Casbin API) back to file/database.
+   * savePolicy saves the current policy (usually after changed with Casbin API) back to adapter.
    */
   public async savePolicy(): Promise<boolean> {
     await this.lock.acquireAsync();
@@ -502,7 +502,7 @@ export class SyncedEnforcer extends Enforcer {
   }
 }
 
-// newSyncedEnforcer creates a synchronized enforcer via file or DB.
+// newSyncedEnforcer creates a synchronized enforcer via adapter.
 export async function newSyncedEnforcer(...params: any[]): Promise<SyncedEnforcer> {
   return newEnforcerWithClass(SyncedEnforcer, ...params);
 }

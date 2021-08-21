@@ -74,7 +74,7 @@ export class CachedEnforcer extends Enforcer {
   }
 }
 
-// newCachedEnforcer creates a cached enforcer via file or DB.
+// newCachedEnforcer creates a cached enforcer via string or DB.
 export async function newCachedEnforcer(...params: any[]): Promise<CachedEnforcer> {
   return newEnforcerWithClass(CachedEnforcer, ...params);
 }

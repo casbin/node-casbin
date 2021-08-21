@@ -362,8 +362,6 @@ test('TestEnableAutoSave', async () => {
   // but also affects the policy in the storage.
   // await e.removePolicy('alice', 'data1', 'read');
 
-  // However, the file adapter doesn't implement the AutoSave feature, so enabling it has no effect at all here.
-
   // Reload the policy from the storage to see the effect.
   // await e.loadPolicy();
   await testEnforce(e, 'alice', 'data1', 'read', true); // Will not be false here.
