@@ -14,7 +14,9 @@
 
 import { readFileSync } from 'fs';
 
-import { newModel, newEnforcer, Enforcer, FileAdapter, StringAdapter, Util } from '../src';
+import { NewEnforceContext, EnforceContext } from '../src/enforceContext';
+import { newModel, newEnforcer, Enforcer, MemoryAdapter, Util } from '../src';
+import { getEnforcerWithPath, getStringAdapter } from './utils';
 
 async function testEnforce(e: Enforcer, sub: any, obj: string, act: string, res: boolean): Promise<void> {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
@@ -660,9 +662,70 @@ test('TestBatchEnforce', async () => {
   expect(await e.batchEnforce(requests)).toEqual([true, true]);
 });
 
-test('TestKeyGet2', async () => {
-  const e = await newEnforcer('examples/basic_keyget2_model.conf', 'examples/basic_keyget2_policy.csv');
-  expect(await e.enforce('alice', 'data')).toBe(false);
-  expect(await e.enforce('alice', '/data')).toBe(false);
-  expect(await e.enforce('alice', '/data/1')).toBe(true);
+test('TestEnforce Multiple policies config', async () => {
+  const m = newModel();
+  m.addDef('r', 'r2', 'sub, obj, act');
+  m.addDef('p', 'p2', 'sub, obj, act');
+  m.addDef('g', 'g', '_, _');
+  m.addDef('e', 'e2', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
+  const a = getStringAdapter('examples/mulitple_policy.csv');
+
+  const e = await newEnforcer(m, a);
+
+  //const e = await getEnforcerWithPath(m);
+  const enforceContext = new EnforceContext('r2', 'p2', 'e2', 'm2');
+  await expect(e.enforce(enforceContext, 'alice', 'data1', 'read')).resolves.toStrictEqual(true);
+  await expect(e.enforce(enforceContext, 'bob', 'data2', 'write')).resolves.toStrictEqual(true);
+});
+
+test('new EnforceContext config', async () => {
+  const m = newModel();
+  m.addDef('r', 'r2', 'sub, obj, act');
+  m.addDef('p', 'p2', 'sub, obj, act');
+  m.addDef('g', 'g', '_, _');
+  m.addDef('e', 'e2', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
+  const a = getStringAdapter('examples/mulitple_policy.csv');
+
+  const e = await newEnforcer(m, a);
+
+  //const e = await getEnforcerWithPath(m);
+  const enforceContext = new NewEnforceContext('2');
+  await expect(e.enforce(enforceContext, 'alice', 'data1', 'read')).resolves.toStrictEqual(true);
+  await expect(e.enforce(enforceContext, 'bob', 'data2', 'write')).resolves.toStrictEqual(true);
+});
+
+test('TestEnforceEX Multiple policies config', async () => {
+  const m = newModel();
+  m.addDef('r', 'r2', 'sub, obj, act');
+  m.addDef('p', 'p2', 'sub, obj, act');
+  m.addDef('g', 'g', '_, _');
+  m.addDef('e', 'e2', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
+  const a = getStringAdapter('examples/mulitple_policy.csv');
+
+  const e = await newEnforcer(m, a);
+
+  //const e = await getEnforcerWithPath(m);
+  const enforceContext = new EnforceContext('r2', 'p2', 'e2', 'm2');
+  await expect(e.enforceEx(enforceContext, 'alice', 'data1', 'read')).resolves.toStrictEqual([true, ['alice', 'data1', 'read']]);
+  await expect(e.enforceEx(enforceContext, 'bob', 'data2', 'write')).resolves.toStrictEqual([true, ['bob', 'data2', 'write']]);
+});
+
+test('new EnforceContextEX config', async () => {
+  const m = newModel();
+  m.addDef('r', 'r2', 'sub, obj, act');
+  m.addDef('p', 'p2', 'sub, obj, act');
+  m.addDef('g', 'g', '_, _');
+  m.addDef('e', 'e2', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
+  const a = getStringAdapter('examples/mulitple_policy.csv');
+
+  const e = await newEnforcer(m, a);
+
+  //const e = await getEnforcerWithPath(m);
+  const enforceContext = new NewEnforceContext('2');
+  await expect(e.enforceEx(enforceContext, 'alice', 'data1', 'read')).resolves.toStrictEqual([true, ['alice', 'data1', 'read']]);
+  await expect(e.enforceEx(enforceContext, 'bob', 'data2', 'write')).resolves.toStrictEqual([true, ['bob', 'data2', 'write']]);
 });
