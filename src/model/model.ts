@@ -42,8 +42,11 @@ export class Model {
   /**
    * constructor is the constructor for Model.
    */
-  constructor() {
+  constructor(text?: string) {
     this.model = new Map<string, Map<string, Assertion>>();
+    if (text) {
+      this.loadModelFromText(text);
+    }
   }
 
   private loadAssertion(cfg: ConfigInterface, sec: string, key: string): boolean {

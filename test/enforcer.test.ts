@@ -14,7 +14,9 @@
 
 import { readFileSync } from 'fs';
 
-import { newModel, newEnforcer, Enforcer, FileAdapter, StringAdapter, Util } from '../src';
+import { newModel, newEnforcer, Enforcer, FileAdapter, MemoryAdapter, Util } from '../src';
+import { NewEnforceContext, EnforceContext } from '../src/enforceContext';
+import { getEnforcerWithPath, getStringAdapter } from './utils';
 
 async function testEnforce(e: Enforcer, sub: any, obj: string, act: string, res: boolean): Promise<void> {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
@@ -391,7 +393,7 @@ test('TestInitWithAdapter', async () => {
 
 test('TestInitWithStringAdapter', async () => {
   const policy = readFileSync('examples/basic_policy.csv').toString();
-  const adapter = new StringAdapter(policy);
+  const adapter = new MemoryAdapter(policy);
   const e = await newEnforcer('examples/basic_model.conf', adapter);
 
   await testEnforce(e, 'alice', 'data1', 'read', true);
@@ -455,7 +457,7 @@ test('TestSetAdapterFromString', async () => {
 
   const policy = readFileSync('examples/basic_policy.csv').toString();
 
-  const a = new StringAdapter(policy);
+  const a = new MemoryAdapter(policy);
   e.setAdapter(a);
   await e.loadPolicy();
 
@@ -490,7 +492,7 @@ test('TestInitEmpty with String Adapter', async () => {
   m.addDef('m', 'm', 'r.sub == p.sub && keyMatch(r.obj, p.obj) && regexMatch(r.act, p.act)');
 
   const policy = readFileSync('examples/keymatch_policy.csv').toString();
-  const a = new StringAdapter(policy);
+  const a = new MemoryAdapter(policy);
 
   e.setModel(m);
   e.setAdapter(a);
@@ -523,24 +525,16 @@ describe('Unimplemented File Adapter methods', () => {
 
 describe('Unimplemented String Adapter methods', () => {
   let e = {} as Enforcer;
-  let a = {} as StringAdapter;
+  let a = {} as MemoryAdapter;
 
   beforeEach(async () => {
     const policy = readFileSync('examples/basic_policy.csv').toString();
-    a = new StringAdapter(policy);
+    a = new MemoryAdapter(policy);
     e = await newEnforcer('examples/basic_model.conf', a);
   });
 
   test('savePolicy', async () => {
     await expect(a.savePolicy(e.getModel())).rejects.toThrow('not implemented');
-  });
-
-  test('addPolicy', async () => {
-    await expect(a.addPolicy('', '', [''])).rejects.toThrow('not implemented');
-  });
-
-  test('removePolicy', async () => {
-    await expect(a.removePolicy('', '', [''])).rejects.toThrow('not implemented');
   });
 
   test('removeFilteredPolicy', async () => {
@@ -586,7 +580,7 @@ test('test ABAC multiple eval()', async () => {
   m.addDef('e', 'e', 'some(where (p.eft == allow))');
   m.addDef('m', 'm', 'eval(p.sub_rule_1) && eval(p.sub_rule_2) && r.act == p.act');
 
-  const policy = new StringAdapter(
+  const policy = new MemoryAdapter(
     `
     p, r.sub > 50, r.obj > 50, read
     `
@@ -696,4 +690,72 @@ test('TestEnforceExWithPriorityModel', async () => {
   testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
   testEnforceEx(e, 'bob', 'data2', 'read', [true, ['data2_allow_group', 'data2', 'read', 'allow']]);
   testEnforceEx(e, 'alice', 'data2', 'read', [false, []]);
+});
+
+test('TestEnforce Multiple policies config', async () => {
+  const m = newModel();
+  m.addDef('r', 'r2', 'sub, obj, act');
+  m.addDef('p', 'p2', 'sub, obj, act');
+  m.addDef('g', 'g', '_, _');
+  m.addDef('e', 'e2', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
+  const a = getStringAdapter('examples/mulitple_policy.csv');
+
+  const e = await newEnforcer(m, a);
+
+  //const e = await getEnforcerWithPath(m);
+  const enforceContext = new EnforceContext('r2', 'p2', 'e2', 'm2');
+  await expect(e.enforce(enforceContext, 'alice', 'data1', 'read')).resolves.toStrictEqual(true);
+  await expect(e.enforce(enforceContext, 'bob', 'data2', 'write')).resolves.toStrictEqual(true);
+});
+
+test('new EnforceContext config', async () => {
+  const m = newModel();
+  m.addDef('r', 'r2', 'sub, obj, act');
+  m.addDef('p', 'p2', 'sub, obj, act');
+  m.addDef('g', 'g', '_, _');
+  m.addDef('e', 'e2', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
+  const a = getStringAdapter('examples/mulitple_policy.csv');
+
+  const e = await newEnforcer(m, a);
+
+  //const e = await getEnforcerWithPath(m);
+  const enforceContext = new NewEnforceContext('2');
+  await expect(e.enforce(enforceContext, 'alice', 'data1', 'read')).resolves.toStrictEqual(true);
+  await expect(e.enforce(enforceContext, 'bob', 'data2', 'write')).resolves.toStrictEqual(true);
+});
+
+test('TestEnforceEX Multiple policies config', async () => {
+  const m = newModel();
+  m.addDef('r', 'r2', 'sub, obj, act');
+  m.addDef('p', 'p2', 'sub, obj, act');
+  m.addDef('g', 'g', '_, _');
+  m.addDef('e', 'e2', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
+  const a = getStringAdapter('examples/mulitple_policy.csv');
+
+  const e = await newEnforcer(m, a);
+
+  //const e = await getEnforcerWithPath(m);
+  const enforceContext = new EnforceContext('r2', 'p2', 'e2', 'm2');
+  await expect(e.enforceEx(enforceContext, 'alice', 'data1', 'read')).resolves.toStrictEqual([true, ['alice', 'data1', 'read']]);
+  await expect(e.enforceEx(enforceContext, 'bob', 'data2', 'write')).resolves.toStrictEqual([true, ['bob', 'data2', 'write']]);
+});
+
+test('new EnforceContextEX config', async () => {
+  const m = newModel();
+  m.addDef('r', 'r2', 'sub, obj, act');
+  m.addDef('p', 'p2', 'sub, obj, act');
+  m.addDef('g', 'g', '_, _');
+  m.addDef('e', 'e2', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
+  const a = getStringAdapter('examples/mulitple_policy.csv');
+
+  const e = await newEnforcer(m, a);
+
+  //const e = await getEnforcerWithPath(m);
+  const enforceContext = new NewEnforceContext('2');
+  await expect(e.enforceEx(enforceContext, 'alice', 'data1', 'read')).resolves.toStrictEqual([true, ['alice', 'data1', 'read']]);
+  await expect(e.enforceEx(enforceContext, 'bob', 'data2', 'write')).resolves.toStrictEqual([true, ['bob', 'data2', 'write']]);
 });

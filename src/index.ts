@@ -23,5 +23,6 @@ export * from './model';
 export * from './persist';
 export * from './rbac';
 export * from './log';
+export { EnforceContext } from './enforceContext';
 export * from './frontend';
 export { Util };
