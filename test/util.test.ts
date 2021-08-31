@@ -193,3 +193,49 @@ test('bracketCompatible', () => {
     )
   ).toEqual("g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act || r.obj in ['data2', 'data3'] || r.obj in ['data4', 'data5']");
 });
+
+test('test policyStringToArray', () => {
+  expect(util.policyStringToArray('p,ali""ce,data1,read')).toEqual([['p', 'ali"ce', 'data1', 'read']]);
+  expect(util.policyStringToArray(`"p","alice","data1","read"`)).toEqual([['p', 'alice', 'data1', 'read']]);
+  expect(util.policyStringToArray(`"p"," alice","data1 ","read"`)).toEqual([['p', ' alice', 'data1 ', 'read']]);
+  expect(util.policyStringToArray(`p,alice,data1,read\np,bob,data1,write`)).toEqual([
+    ['p', 'alice', 'data1', 'read'],
+    ['p', 'bob', 'data1', 'write'],
+  ]);
+});
+
+test('test policyArrayToString', () => {
+  expect(util.policyArrayToString(['p', 'alice', 'data1', 'read'])).toEqual(`"p","alice","data1","read"`);
+  expect(util.policyArrayToString(['p', 'alice ', ' data1', 'read'])).toEqual(`"p","alice "," data1","read"`);
+});
+
+test('test keyGetFunc', () => {
+  expect(util.keyGetFunc('/foo/bar', '/foo/*')).toEqual('bar');
+  expect(util.keyGetFunc('/bar/foo', '/foo/*')).toEqual('');
+});
+
+test('test keyGet2Func', () => {
+  expect(util.keyGet2Func('/foo/bar', '/foo/*', 'bar')).toEqual('');
+  expect(util.keyGet2Func('/foo/baz', '/foo/:bar', 'bar')).toEqual('baz');
+  expect(util.keyGet2Func('/foo/baz/foo', '/foo/:bar/foo', 'bar')).toEqual('baz');
+  expect(util.keyGet2Func('/baz', '/foo', 'bar')).toEqual('');
+  expect(util.keyGet2Func('/foo/baz', '/foo', 'bar')).toEqual('');
+});
+
+test('test escapeAssertion', () => {
+  expect(util.escapeAssertion('r.attr.value == p.attr')).toEqual('r_attr.value == p_attr');
+  expect(util.escapeAssertion('r.attp.value || p.attr')).toEqual('r_attp.value || p_attr');
+  expect(util.escapeAssertion('r.attp.value && p.attr')).toEqual('r_attp.value && p_attr');
+  expect(util.escapeAssertion('r.attp.value >p.attr')).toEqual('r_attp.value >p_attr');
+  expect(util.escapeAssertion('r.attp.value <p.attr')).toEqual('r_attp.value <p_attr');
+  expect(util.escapeAssertion('r.attp.value +p.attr')).toEqual('r_attp.value +p_attr');
+  expect(util.escapeAssertion('r.attp.value -p.attr')).toEqual('r_attp.value -p_attr');
+  expect(util.escapeAssertion('r.attp.value *p.attr')).toEqual('r_attp.value *p_attr');
+  expect(util.escapeAssertion('r.attp.value /p.attr')).toEqual('r_attp.value /p_attr');
+  expect(util.escapeAssertion('!r.attp.value /p.attr')).toEqual('!r_attp.value /p_attr');
+  expect(util.escapeAssertion('g(r.sub, p.sub) == p.attr')).toEqual('g(r_sub, p_sub) == p_attr');
+  expect(util.escapeAssertion('g(r.sub,p.sub) == p.attr')).toEqual('g(r_sub,p_sub) == p_attr');
+  expect(util.escapeAssertion('(r.attp.value || p.attr)p.u')).toEqual('(r_attp.value || p_attr)p_u');
+  expect(util.escapeAssertion('r1.value == p1.value')).toEqual('r1_value == p1_value');
+  expect(util.escapeAssertion('r2.value == p4.value')).toEqual('r2_value == p4_value');
+});
