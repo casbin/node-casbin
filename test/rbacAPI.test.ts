@@ -180,3 +180,24 @@ test('test getImplicitUsersForRole', async () => {
   expect(await e.getImplicitUsersForRole('admin')).toEqual(['alice']);
   expect(await e.getImplicitUsersForRole('data1_admin')).toEqual(['admin', 'alice']);
 });
+
+test('test getPermissionsForUserInDomain', async () => {
+  const e = await getEnforcerWithPath('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
+  expect(await e.getPermissionsForUserInDomain('alice', 'domain1')).toEqual([
+    ['admin', 'domain1', 'data1', 'read'],
+    ['admin', 'domain1', 'data1', 'write'],
+  ]);
+  expect(await e.getPermissionsForUserInDomain('bob', 'domain2')).toEqual([
+    ['admin', 'domain2', 'data2', 'read'],
+    ['admin', 'domain2', 'data2', 'write'],
+  ]);
+});
+test('test add/deleteRoleForUserInDomain', async () => {
+  const e = await getEnforcerWithPath('examples/rbac_with_domains_model.conf', 'examples/rbac_with_hierarchy_with_domains_policy.csv');
+  expect(await e.addRoleForUserInDomain('bob', 'role:global_admin', 'domain1')).toEqual(true);
+  expect(await e.hasRoleForUser('bob', 'role:global_admin', 'domain1')).toEqual(true);
+  expect(await e.getUsersForRole('role:global_admin', 'domain1')).toEqual(['alice', 'bob']);
+  expect(await e.deleteRoleForUserInDomain('bob', 'role:global_admin', 'domain1')).toEqual(true);
+  expect(await e.hasRoleForUser('bob', 'role:global_admin', 'domain1')).toEqual(false);
+  expect(await e.getUsersForRole('role:global_admin', 'domain1')).toEqual(['alice']);
+});
