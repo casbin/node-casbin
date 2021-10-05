@@ -2,24 +2,26 @@
   "name": "casbin",
   "version": "5.13.1",
   "description": "An authorization library that supports access control models like ACL, RBAC, ABAC in Node.JS",
-  "main": "lib/cjs/index.js",
-  "typings": "lib/cjs/index.d.ts",
-  "module": "lib/esm/index.js",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "module": "es/index.js",
   "scripts": {
     "prepack": "run-s lint test build",
     "postpack": "run-s clean",
-    "build": "run-s clean && run-p build:*",
-    "build:cjs": "tsc -p tsconfig.cjs.json",
-    "build:esm": "tsc -p tsconfig.esm.json",
+    "build": "run-s clean && run-p build:**",
+    "build:lib:cjs": "tsc -p tsconfig.cjs.json",
+    "build:lib:esm": "tsc -p tsconfig.esm.json",
+    "build:dist": "rollup -c",
     "test": "jest",
     "lint": "eslint . --ext .js,.ts",
     "fmt": "eslint . --ext .js,.ts --fix",
     "semantic-release": "semantic-release",
     "commit": "git-cz",
-    "clean": "rimraf lib",
+    "clean": "rimraf lib es dist",
     "coverage": "jest --coverage"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^8.2.5",
     "@semantic-release/changelog": "^5.0.1",
     "@semantic-release/commit-analyzer": "^8.0.1",
     "@semantic-release/git": "^9.0.0",
@@ -28,8 +30,8 @@
     "@semantic-release/release-notes-generator": "^9.0.3",
     "@types/jest": "^26.0.20",
     "@types/lodash": "^4.14.168",
-    "@types/picomatch": "^2.2.2",
     "@types/node": "^10.5.3",
+    "@types/picomatch": "^2.2.2",
     "@typescript-eslint/eslint-plugin": "^4.17.0",
     "@typescript-eslint/parser": "^4.17.0",
     "coveralls": "^3.0.2",
@@ -44,25 +46,30 @@
     "prettier": "^2.2.1",
     "pretty-quick": "^3.1.0",
     "rimraf": "^3.0.2",
+    "rollup": "^2.58.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-sourcemaps": "^0.6.3",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.30.0",
     "semantic-release": "^17.4.4",
     "ts-jest": "^26.5.3",
     "tslint": "^5.11.0",
-    "typescript": "^4.3.5",
-    "picomatch": "^2.2.3",
-    "csv-parse": "^4.15.3",
-    "buffer": "^6.0.3"
+    "typescript": "^4.3.5"
   },
-  "peerDependencies": {
-    "picomatch": "^2.2.3",
-    "buffer": "^6.0.3"
-  },
+  "peerDependencies": {},
   "dependencies": {
     "await-lock": "^2.0.1",
-    "expression-eval": "^4.0.0"
+    "buffer": "^6.0.3",
+    "expression-eval": "^4.0.0",
+    "path-browserify": "^1.0.1",
+    "picomatch": "^2.3.0"
   },
   "files": [
     "lib",
-    "examples"
+    "examples",
+    "es",
+    "dist"
   ],
   "homepage": "https://casbin.org",
   "repository": {
@@ -80,5 +87,12 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "tag": "next"
+  },
+  "browser": {
+    "path": "path-browserify"
   }
 }

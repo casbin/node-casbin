@@ -3,6 +3,6 @@
   "compilerOptions": {
     "target": "ES2017",
     "module": "CommonJS",
-    "outDir": "lib/cjs"
+    "outDir": "lib"
   }
 }

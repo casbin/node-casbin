@@ -16,6 +16,7 @@ jobs:
       - run: yarn install
       - run: yarn lint
       - run: yarn test
+      - run: yarn build
       - run: yarn coverage
       - name: Coveralls
         uses: coverallsapp/github-action@master

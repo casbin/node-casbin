@@ -1,7 +1,10 @@
 .idea
 .vscode
 node_modules
-lib
 yarn-error.log
 package-lock.json
 coverage
+
+lib
+es
+dist
