@@ -338,8 +338,10 @@ export class DefaultRoleManager implements RoleManager {
    */
   public async printRoles(): Promise<void> {
     if (getLogger().isEnable()) {
-      [...this.allDomains.values()].forEach((n) => {
-        logPrint(n.toString());
+      [...this.allDomains.values()].forEach((roles) => {
+        roles.forEach((n) => { 
+          logPrint(n.toString());
+        });
       });
     }
   }
