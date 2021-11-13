@@ -195,7 +195,6 @@ export class CoreEnforcer {
   public async loadPolicy(): Promise<void> {
     this.model.clearPolicy();
     await this.adapter.loadPolicy(this.model);
-    this.model.printPolicy();
     this.sortPolicies();
 
     if (this.autoBuildRoleLinks) {
