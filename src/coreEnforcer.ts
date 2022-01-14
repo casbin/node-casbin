@@ -588,4 +588,18 @@ export class CoreEnforcer {
   public async enforceEx(...rvals: any[]): Promise<[boolean, string[]]> {
     return generatorRunAsync(this.privateEnforce(true, true, ...rvals));
   }
+
+  /**
+   * batchEnforce enforces each request and returns result in a bool array.
+   * @param rvals the request need to be mediated, usually an array
+   *              of array of strings, can be class instances if ABAC is used.
+   * @returns whether to allow the requests.
+   */
+  public async batchEnforce(rvals: any[]): Promise<boolean[]> {
+    let results: boolean[] = [];
+    for (const rval of rvals) {
+      results.push(await this.enforce(...rval))
+    }
+    return results;
+  }
 }
