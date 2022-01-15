@@ -596,9 +596,9 @@ export class CoreEnforcer {
    * @returns whether to allow the requests.
    */
   public async batchEnforce(rvals: any[]): Promise<boolean[]> {
-    let results: boolean[] = [];
+    const results: boolean[] = [];
     for (const rval of rvals) {
-      results.push(await this.enforce(...rval))
+      results.push(await this.enforce(...rval));
     }
     return results;
   }
