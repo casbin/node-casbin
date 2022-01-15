@@ -651,8 +651,11 @@ test('Test RBAC G2', async () => {
   expect(await e.enforce('admin', 'data1', 'read')).toBe(true);
 });
 
-test('TestBatchEnforce', async() => {
+test('TestBatchEnforce', async () => {
   const e = await newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
-  const requests: string[][] = [["alice", "data1", "read"], ["bob", "data2", "write"]];
+  const requests: string[][] = [
+    ['alice', 'data1', 'read'],
+    ['bob', 'data2', 'write'],
+  ];
   expect(await e.batchEnforce(requests)).toEqual([true, true]);
 });
