@@ -1,3 +1,10 @@
+# [5.12.0](https://github.com/casbin/node-casbin/compare/v5.11.5...v5.12.0) (2022-01-16)
+
+
+### Features
+
+* **batchenforce:** added batchEnforce ([#338](https://github.com/casbin/node-casbin/issues/338)) ([56e55bd](https://github.com/casbin/node-casbin/commit/56e55bd58b0f5be4a45e753f5ad58b01a27ef8b2)), closes [#321](https://github.com/casbin/node-casbin/issues/321)
+
 ## [5.11.5](https://github.com/casbin/node-casbin/compare/v5.11.4...v5.11.5) (2021-08-18)
 
 
