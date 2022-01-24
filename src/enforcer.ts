@@ -343,6 +343,35 @@ export class Enforcer extends ManagementEnforcer {
   }
 
   /**
+   * getImplicitUsersForRole gets implicit users that a role has.
+   * Compared to getUsersForRole(), this function retrieves indirect users besides direct users.
+   * For example:
+   * g, alice, role:admin
+   * g, role:admin, role:user
+   *
+   * getUsersForRole("user") can only get: ["role:admin"].
+   * But getImplicitUsersForRole("user") will get: ["role:admin", "alice"].
+   */
+  public async getImplicitUsersForRole(role: string, ...domain: string[]): Promise<string[]> {
+    const res = new Set<string>();
+    const q = [role];
+    let n: string | undefined;
+    while ((n = q.shift()) !== undefined) {
+      for (const rm of this.rmMap.values()) {
+        const user = await rm.getUsers(n, ...domain);
+        user.forEach((u) => {
+          if (!res.has(u)) {
+            res.add(u);
+            q.push(u);
+          }
+        });
+      }
+    }
+
+    return Array.from(res);
+  }
+
+  /**
    * getImplicitUsersForPermission gets implicit users for a permission.
    * For example:
    * p, admin, data1, read
