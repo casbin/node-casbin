@@ -174,3 +174,9 @@ test('test getImplicitUsersForPermission', async () => {
 
   expect(await e.getImplicitUsersForPermission('data1', 'read')).toEqual(['bob', 'alice']);
 });
+
+test('test getImplicitUsersForRole', async () => {
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  expect(await e.getImplicitUsersForRole('admin')).toEqual(['alice']);
+  expect(await e.getImplicitUsersForRole('data1_admin')).toEqual(['admin', 'alice']);
+});
