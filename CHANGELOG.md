@@ -1,3 +1,10 @@
+# [5.13.0](https://github.com/casbin/node-casbin/compare/v5.12.0...v5.13.0) (2022-01-25)
+
+
+### Features
+
+* getImplicitUsersForRole ([#341](https://github.com/casbin/node-casbin/issues/341)) ([ebfaede](https://github.com/casbin/node-casbin/commit/ebfaede003cf0a4eef8a16f815f06518e74974fb))
+
 # [5.12.0](https://github.com/casbin/node-casbin/compare/v5.11.5...v5.12.0) (2022-01-16)
 
 
