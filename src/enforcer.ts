@@ -396,6 +396,44 @@ export class Enforcer extends ManagementEnforcer {
 
     return res.filter((n) => !inherits.some((m) => n === m));
   }
+
+  /**
+   * getImplicitResourcesForUser returns all policies that user obtaining in domain.
+   */
+  public async getImplicitResourcesForUser(user: string, ...domain: string[]): Promise<string[][]> {
+    const permissions = await this.getImplicitPermissionsForUser(user, ...domain);
+    let res: string[][] = [];
+    for (const permission of permissions) {
+      if (permission[0] === user) {
+        res.push(permission);
+        continue;
+      }
+      let resLocal: string[][] = [[user]];
+      const tokensLength: number = permission.length;
+      let t: string[][] = [[]];
+      for (const token of permission) {
+        if (token === permission[0]) {
+          continue;
+        }
+        const tokens: string[] = await this.getImplicitUsersForRole(token, ...domain);
+        tokens.push(token);
+        t.push(tokens);
+      }
+      for (let i = 1; i < tokensLength; i++) {
+        let n: string[][] = [];
+        for (const tokens of t[i]) {
+          for (const policy of resLocal) {
+            const t: string[] = [...policy];
+            t.push(tokens);
+            n.push(t);
+          }
+        }
+        resLocal = n;
+      }
+      res.push(...resLocal);
+    }
+    return res;
+  }
 }
 
 export async function newEnforcerWithClass<T extends Enforcer>(enforcer: new () => T, ...params: any[]): Promise<T> {
