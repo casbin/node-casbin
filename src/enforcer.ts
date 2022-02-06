@@ -402,7 +402,7 @@ export class Enforcer extends ManagementEnforcer {
    */
   public async getImplicitResourcesForUser(user: string, ...domain: string[]): Promise<string[][]> {
     const permissions = await this.getImplicitPermissionsForUser(user, ...domain);
-    let res: string[][] = [];
+    const res: string[][] = [];
     for (const permission of permissions) {
       if (permission[0] === user) {
         res.push(permission);
@@ -410,7 +410,7 @@ export class Enforcer extends ManagementEnforcer {
       }
       let resLocal: string[][] = [[user]];
       const tokensLength: number = permission.length;
-      let t: string[][] = [[]];
+      const t: string[][] = [[]];
       for (const token of permission) {
         if (token === permission[0]) {
           continue;
@@ -420,7 +420,7 @@ export class Enforcer extends ManagementEnforcer {
         t.push(tokens);
       }
       for (let i = 1; i < tokensLength; i++) {
-        let n: string[][] = [];
+        const n: string[][] = [];
         for (const tokens of t[i]) {
           for (const policy of resLocal) {
             const t: string[] = [...policy];
