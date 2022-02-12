@@ -457,6 +457,13 @@ export class CoreEnforcer {
               eftRes = result;
             }
             break;
+          case 'string':
+            if (result === '') {
+              eftRes = Effect.Indeterminate;
+            } else {
+              eftRes = Effect.Allow;
+            }
+            break;
           default:
             throw new Error('matcher result should be boolean or number');
         }
