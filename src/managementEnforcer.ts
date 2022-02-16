@@ -495,6 +495,14 @@ export class ManagementEnforcer extends InternalEnforcer {
     return this.removePoliciesInternal('g', ptype, rules);
   }
 
+  public async updateGroupingPolicy(oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.updateNamedGroupingPolicy('g', oldRule, newRule);
+  }
+
+  public async updateNamedGroupingPolicy(ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.updatePolicyInternal('g', ptype, oldRule, newRule);
+  }
+
   /**
    * removeFilteredNamedGroupingPolicy removes a role inheritance rule from the current named policy, field filters can be specified.
    *
