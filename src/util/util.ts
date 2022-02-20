@@ -108,7 +108,9 @@ const evalReg = new RegExp(/\beval\(([^),]*)\)/g);
 
 // hasEval determine whether matcher contains function eval
 function hasEval(s: string): boolean {
-  return evalReg.test(s);
+  const res: boolean = evalReg.test(s);
+  evalReg.lastIndex = 0;
+  return res;
 }
 
 // replaceEval replace function eval with the value of its parameters
