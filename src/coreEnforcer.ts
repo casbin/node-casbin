@@ -465,7 +465,7 @@ export class CoreEnforcer {
             }
             break;
           default:
-            throw new Error('matcher result should be boolean or number');
+            throw new Error('matcher result should only be of type boolean, number, or string');
         }
 
         const eft = parameters['p_eft'];
