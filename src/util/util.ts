@@ -104,7 +104,8 @@ function writeFile(path: string, file: string, encoding?: string): any {
   });
 }
 
-const evalReg = new RegExp(/\beval\(([^),]*)\)/g);
+const evalRegG = new RegExp(/\beval\(([^),]*)\)/g);
+const evalReg = new RegExp(/\beval\(([^),]*)\)/);
 
 // hasEval determine whether matcher contains function eval
 function hasEval(s: string): boolean {
@@ -118,7 +119,7 @@ function replaceEval(s: string, ruleName: string, rule: string): string {
 
 // getEvalValue returns the parameters of function eval
 function getEvalValue(s: string): string[] {
-  const subMatch = s.match(evalReg);
+  const subMatch = s.match(evalRegG);
   const rules: string[] = [];
   if (!subMatch) {
     return [];

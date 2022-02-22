@@ -151,6 +151,7 @@ test('test globMatch', () => {
 
 test('test hasEval', () => {
   expect(util.hasEval('eval() && a && b && c')).toEqual(true);
+  expect(util.hasEval('eval() && a && b && c')).toEqual(true);
   expect(util.hasEval('eval) && a && b && c')).toEqual(false);
   expect(util.hasEval('eval)( && a && b && c')).toEqual(false);
   expect(util.hasEval('xeval() && a && b && c')).toEqual(false);
