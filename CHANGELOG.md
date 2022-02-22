@@ -1,3 +1,11 @@
+## [5.13.1](https://github.com/casbin/node-casbin/compare/v5.13.0...v5.13.1) (2022-02-22)
+
+
+### Bug Fixes
+
+* 'eval' not detected ([86e2add](https://github.com/casbin/node-casbin/commit/86e2add7c5aaa7901d21c1c4b9cb8e6d0b8bef75))
+* created two regex expressions ([de5f2f4](https://github.com/casbin/node-casbin/commit/de5f2f4f27f40941b125bf068b8f90e44ba69fb1))
+
 # [5.13.0](https://github.com/casbin/node-casbin/compare/v5.12.0...v5.13.0) (2022-01-25)
 
 
