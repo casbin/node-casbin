@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import { readFileSync } from 'fs';
-import { newEnforcer } from '../src';
 import { casbinJsGetPermissionForUser } from '../src';
+import { getEnforcerWithPath } from './utils';
 
 test('TestCasbinJsGetPermissionForUser', async () => {
-  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  const e = await getEnforcerWithPath('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
   const a = await casbinJsGetPermissionForUser(e, 'alice');
   const b = await casbinJsGetPermissionForUser(e, 'alice');
   if (a !== b) {

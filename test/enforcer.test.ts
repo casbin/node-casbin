@@ -653,7 +653,7 @@ test('Test RBAC G2', async () => {
 });
 
 test('TestBatchEnforce', async () => {
-  const e = await newEnforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
+  const e = await getEnforcerWithPath('examples/basic_model.conf', 'examples/basic_policy.csv');
   const requests: string[][] = [
     ['alice', 'data1', 'read'],
     ['bob', 'data2', 'write'],
