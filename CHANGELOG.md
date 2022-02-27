@@ -1,3 +1,22 @@
+# [5.14.0-beta.1](https://github.com/casbin/node-casbin/compare/v5.13.1...v5.14.0-beta.1) (2022-02-27)
+
+
+### Bug Fixes
+
+* fix logic error and add unittests ([e36cc23](https://github.com/casbin/node-casbin/commit/e36cc239b1588e884453e5441eda184350fdae39))
+* rename StringAdapter to MemoryAdapter ([0b1019a](https://github.com/casbin/node-casbin/commit/0b1019aa2324ea4ea4c37119728dadac1bcf1fc3))
+* use csv-like format ([3b54c93](https://github.com/casbin/node-casbin/commit/3b54c934d0d9d08a4af18799c1292f9dc728e6a4))
+
+
+### Features
+
+* add policyArrayToString and policyStringToArray to util ([0f66bc1](https://github.com/casbin/node-casbin/commit/0f66bc1b2fcddfd9c6e847dd06fd4a5f53c55fa9))
+* Extend multiple sections type of escapeAssertion ([#180](https://github.com/casbin/node-casbin/issues/180)) ([33c784c](https://github.com/casbin/node-casbin/commit/33c784cbdc0d650ba75b8177b69f41dc0ca11fae))
+* implement csv parser ([968a232](https://github.com/casbin/node-casbin/commit/968a23237b3193e594910f5f798bf349d6bff04c))
+* implement string adapater ([0c59cae](https://github.com/casbin/node-casbin/commit/0c59cae0eba851509ff754b6f523a4feafc11f80))
+* Multiple sections type ([cc58c57](https://github.com/casbin/node-casbin/commit/cc58c57ae4a7c3202c7217497bef8016df93fe26))
+* RBAC with Domains API ([3e38bb5](https://github.com/casbin/node-casbin/commit/3e38bb5a7223657fae21896ba2e0b9b39e099481))
+
 ## [5.13.1](https://github.com/casbin/node-casbin/compare/v5.13.0...v5.13.1) (2022-02-22)
 
 
