@@ -10,5 +10,5 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*", "test/utils.ts"]
+  "include": ["src/**/*"]
 }

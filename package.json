@@ -1,7 +1,7 @@
 {
   "name": "casbin",
   "version": "5.13.1",
-  "description": "An authorization library that supports access control models like ACL, RBAC, ABAC in Node.JS",
+  "description": "An authorization library that supports access control models like ACL, RBAC, ABAC in JavaScript",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "module": "es/index.js",
@@ -89,8 +89,7 @@
     }
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/",
-    "tag": "next"
+    "registry": "https://registry.npmjs.org/"
   },
   "browser": {
     "path": "path-browserify"

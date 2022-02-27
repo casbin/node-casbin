@@ -40,34 +40,58 @@
 
 https://casbin.org/docs/en/overview
 
+## Feature
+
+- 😎 Written in TypeScript to provide the type definitions
+- 🎯 Support multiple access model such as ACL, RBAC, ABAC
+- 🎮 Run everywhere on JavaScript platforms such as WEB, Node.js, React-Native, Electron, etc.
+
 ## Installation
 
 ```shell script
 # NPM
-npm install casbin --save
+npm install casbin@beta --save
 
 # Yarn
-yarn add casbin
+yarn add casbin@beta
 ```
 
 ## Get started
 
-New a `node-casbin` enforcer with a model file and a policy file, see [Model](#official-model) section for details:
+New an enforcer with a model string and a memory policy, see [Model](#official-model) section for details:
 
-```node.js
-// For Node.js:
-const { newEnforcer } = require('casbin');
-// For browser:
-// import { newEnforcer } from 'casbin';
+```typescript
+import { newEnforcer, newModel, MemoryAdapter } from 'casbin';
 
-const enforcer = await newEnforcer('basic_model.conf', 'basic_policy.csv');
+const model = newModel(`
+[request_definition]
+r = sub, obj, act
+[policy_definition]
+p = sub, obj, act
+[role_definition]
+g = _, _
+[policy_effect]
+e = some(where (p.eft == allow))
+[matchers]
+m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
+`);
+
+const adapter = new MemoryAdapter(`
+p, alice, data1, read
+p, bob, data2, write
+p, data2_admin, data2, read
+p, data2_admin, data2, write
+g, alice, data2_admin
+`);
+
+const enforcer = await newEnforcer(model, adapter);
 ```
 
 > **Note**: you can also initialize an enforcer with policy in DB instead of file, see [Persistence](#policy-persistence) section for details.
 
 Add an enforcement hook into your code right before the access happens:
 
-```node.js
+```typescript
 const sub = 'alice'; // the user that wants to access a resource.
 const obj = 'data1'; // the resource that is going to be accessed.
 const act = 'read'; // the operation that the user performs on the resource.
@@ -87,7 +111,7 @@ if (res) {
 Besides the static policy file, `node-casbin` also provides API for permission management at run-time.
 For example, You can get all the roles assigned to a user as below:
 
-```node.js
+```typescript
 const roles = await enforcer.getRolesForUser('alice');
 ```
 
