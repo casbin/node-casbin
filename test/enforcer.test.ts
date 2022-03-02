@@ -659,3 +659,10 @@ test('TestBatchEnforce', async () => {
   ];
   expect(await e.batchEnforce(requests)).toEqual([true, true]);
 });
+
+test('TestKeyGet2', async () => {
+  const e = await newEnforcer('examples/basic_keyget2_model.conf', 'examples/basic_keyget2_policy.csv');
+  expect(await e.enforce('alice', 'data')).toBe(false);
+  expect(await e.enforce('alice', '/data')).toBe(false);
+  expect(await e.enforce('alice', '/data/1')).toBe(true);
+});
