@@ -1,3 +1,10 @@
+## [5.13.2](https://github.com/casbin/node-casbin/compare/v5.13.1...v5.13.2) (2022-03-02)
+
+
+### Bug Fixes
+
+* *matcher result should be boolean or number* for KeyGet2 ([#347](https://github.com/casbin/node-casbin/issues/347)) ([0257078](https://github.com/casbin/node-casbin/commit/0257078e1302f5ef081ec143afe5c470f4f862e9))
+
 ## [5.13.1](https://github.com/casbin/node-casbin/compare/v5.13.0...v5.13.1) (2022-02-22)
 
 
