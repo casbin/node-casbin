@@ -1,3 +1,10 @@
+# [5.14.0](https://github.com/casbin/node-casbin/compare/v5.13.2...v5.14.0) (2022-03-18)
+
+
+### Features
+
+* **rbac:** add `getUsersForRoleInDomain` & `getRolesForUserInDomain` ([#351](https://github.com/casbin/node-casbin/issues/351)) ([4896ca2](https://github.com/casbin/node-casbin/commit/4896ca260c2f35672b9b520969898155ec616f0b)), closes [#304](https://github.com/casbin/node-casbin/issues/304)
+
 ## [5.13.2](https://github.com/casbin/node-casbin/compare/v5.13.1...v5.13.2) (2022-03-02)
 
 
