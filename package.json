@@ -62,8 +62,7 @@
     "await-lock": "^2.0.1",
     "buffer": "^6.0.3",
     "expression-eval": "^4.0.0",
-    "path": "^0.12.7",
-    "picomatch": "^2.3.0"
+    "minimatch": "^5.0.1"
   },
   "files": [
     "lib",
