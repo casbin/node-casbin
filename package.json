@@ -62,7 +62,7 @@
     "await-lock": "^2.0.1",
     "buffer": "^6.0.3",
     "expression-eval": "^4.0.0",
-    "path-browserify": "^1.0.1",
+    "path": "^0.12.7",
     "picomatch": "^2.3.0"
   },
   "files": [
@@ -90,8 +90,5 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
-  },
-  "browser": {
-    "path": "path-browserify"
   }
 }
