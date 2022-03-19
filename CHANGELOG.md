@@ -1,3 +1,10 @@
+# [5.14.0-beta.2](https://github.com/casbin/node-casbin/compare/v5.14.0-beta.1...v5.14.0-beta.2) (2022-03-19)
+
+
+### Bug Fixes
+
+* fix library ([164a29a](https://github.com/casbin/node-casbin/commit/164a29acd4900fc65f8f1005281a4fbf3ed18873))
+
 # [5.14.0-beta.1](https://github.com/casbin/node-casbin/compare/v5.13.1...v5.14.0-beta.1) (2022-02-27)
 
 
