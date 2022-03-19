@@ -1,3 +1,10 @@
+# [5.14.0-beta.3](https://github.com/casbin/node-casbin/compare/v5.14.0-beta.2...v5.14.0-beta.3) (2022-03-19)
+
+
+### Bug Fixes
+
+* use minimatch instead of picomatch ([90e7128](https://github.com/casbin/node-casbin/commit/90e7128d6ed502a72f6f92cbcaafa63dccb6ebf3))
+
 # [5.14.0-beta.2](https://github.com/casbin/node-casbin/compare/v5.14.0-beta.1...v5.14.0-beta.2) (2022-03-19)
 
 
