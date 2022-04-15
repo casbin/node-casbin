@@ -92,6 +92,15 @@ test('test keyMatch4Func', () => {
   expect(util.keyMatch4Func('/parent/123/child/456', '/parent/{id}/child/{id}/book/{id}')).toEqual(false);
 });
 
+test('test keyMatch5Func', () => {
+  expect(util.keyMatch5Func('/parent/child?status=1&type=2', '/parent/child')).toEqual(true);
+  expect(util.keyMatch5Func('/parent?status=1&type=2', '/parent/child')).toEqual(false);
+
+  expect(util.keyMatch5Func('/parent/child/?status=1&type=2', '/parent/child/')).toEqual(true);
+  expect(util.keyMatch5Func('/parent/child/?status=1&type=2', '/parent/child')).toEqual(false);
+  expect(util.keyMatch5Func('/parent/child?status=1&type=2', '/parent/child/')).toEqual(false);
+});
+
 test('test ipMatchFunc', () => {
   expect(util.ipMatchFunc('::1', '::0:1')).toEqual(true);
   expect(util.ipMatchFunc('192.168.1.1', '192.168.1.1')).toEqual(true);
