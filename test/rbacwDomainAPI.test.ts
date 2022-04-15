@@ -13,9 +13,10 @@
 // limitations under the License.
 
 import { newEnforcer } from '../src';
+import { getEnforcerWithPath } from './utils';
 
 test('test getRolesForUserInDomain', async () => {
-  const e = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
+  const e = await getEnforcerWithPath('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
   expect(await e.getRolesForUserInDomain('alice', 'domain1')).toEqual(['admin']);
   expect(await e.getRolesForUserInDomain('alice', 'domain2')).toEqual([]);
   expect(await e.getRolesForUserInDomain('bob', 'domain1')).toEqual([]);
@@ -23,7 +24,7 @@ test('test getRolesForUserInDomain', async () => {
 });
 
 test('test getUsersForRoleInDomain', async () => {
-  const e = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
+  const e = await getEnforcerWithPath('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
   expect(await e.getUsersForRoleInDomain('admin', 'domain1')).toEqual(['alice']);
   expect(await e.getUsersForRoleInDomain('admin', 'domain2')).toEqual(['bob']);
   expect(await e.getUsersForRoleInDomain('superadmin', 'domain1')).toEqual([]);
