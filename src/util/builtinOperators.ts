@@ -233,6 +233,26 @@ function keyMatch4Func(...args: any[]): boolean {
   return keyMatch4(name1, name2);
 }
 
+// KeyMatch determines whether key1 matches the pattern of key2 and ignores the parameters in key2.
+// For example, "/foo/bar?status=1&type=2" matches "/foo/bar"
+function KeyMatch5(key1: string, key2: string): boolean {
+  const i: number = key1.indexOf('?');
+  if (i === -1) {
+    return key1 === key2;
+  }
+
+  return key1.slice(0, i) === key2;
+}
+
+// keyMatch5Func is the wrapper for KeyMatch5.
+function keyMatch5Func(...args: any[]): boolean {
+  const [arg0, arg1] = args;
+  const name1: string = (arg0 || '').toString();
+  const name2: string = (arg1 || '').toString();
+
+  return KeyMatch5(name1, name2);
+}
+
 // regexMatchFunc is the wrapper for regexMatch.
 function regexMatchFunc(...args: any[]): boolean {
   const [arg0, arg1] = args;
@@ -332,5 +352,6 @@ export {
   ipMatchFunc,
   generateGFunction,
   keyMatch4Func,
+  keyMatch5Func,
   globMatch,
 };

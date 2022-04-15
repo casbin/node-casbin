@@ -409,6 +409,30 @@ export class Enforcer extends ManagementEnforcer {
   }
 
   /**
+   * getRolesForUserInDomain gets the roles that a user has inside a domain
+   * An alias for getRolesForUser with the domain params.
+   *
+   * @param name the user.
+   * @param domain the domain.
+   * @return the roles that the user has.
+   */
+  public async getRolesForUserInDomain(name: string, domain: string): Promise<string[]> {
+    return this.getRolesForUser(name, domain);
+  }
+
+  /**
+   * getUsersForRoleInFomain gets the users that has a role inside a domain
+   * An alias for getUsesForRole with the domain params.
+   *
+   * @param name the role.
+   * @param domain the domain.
+   * @return the users that has the role.
+   */
+  public async getUsersForRoleInDomain(name: string, domain: string): Promise<string[]> {
+    return this.getUsersForRole(name, domain);
+  }
+
+  /**
    * getImplicitUsersForPermission gets implicit users for a permission.
    * For example:
    * p, admin, data1, read
