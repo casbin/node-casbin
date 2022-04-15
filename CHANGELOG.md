@@ -1,3 +1,10 @@
+# [5.14.0-beta.4](https://github.com/casbin/node-casbin/compare/v5.14.0-beta.3...v5.14.0-beta.4) (2022-04-15)
+
+
+### Features
+
+* trigger new release ([7f19769](https://github.com/casbin/node-casbin/commit/7f19769fd5de806b6e30886c6b0e0a6a1035935a))
+
 # [5.14.0-beta.3](https://github.com/casbin/node-casbin/compare/v5.14.0-beta.2...v5.14.0-beta.3) (2022-03-19)
 
 
