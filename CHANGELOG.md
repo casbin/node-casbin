@@ -1,3 +1,10 @@
+# [5.15.0](https://github.com/casbin/node-casbin/compare/v5.14.0...v5.15.0) (2022-04-15)
+
+
+### Features
+
+* [#357](https://github.com/casbin/node-casbin/issues/357) Support keyMatch5 ([#359](https://github.com/casbin/node-casbin/issues/359)) ([e6a6d8a](https://github.com/casbin/node-casbin/commit/e6a6d8ab253af70bb46ef7c27c6ebf48c55d76c8))
+
 # [5.14.0](https://github.com/casbin/node-casbin/compare/v5.13.2...v5.14.0) (2022-03-18)
 
 
