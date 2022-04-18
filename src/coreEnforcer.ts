@@ -479,10 +479,13 @@ export class CoreEnforcer {
           }
         }
 
-        const [res, done] = effectStream.pushEffect(eftRes);
+        const [res, rec, done] = effectStream.pushEffect(eftRes);
+
+        if (rec) {
+          explainIndex = i;
+        }
 
         if (done) {
-          explainIndex = i;
           break;
         }
       }

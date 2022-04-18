@@ -666,3 +666,34 @@ test('TestKeyGet2', async () => {
   expect(await e.enforce('alice', '/data')).toBe(false);
   expect(await e.enforce('alice', '/data/1')).toBe(true);
 });
+
+test('TestEnforceExWithRBACDenyModel', async () => {
+  const e = await newEnforcer('examples/rbac_with_deny_model.conf', 'examples/rbac_with_deny_policy.csv');
+  testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
+  testEnforceEx(e, 'bob', 'data2', 'write', [true, ['bob', 'data2', 'write', 'allow']]);
+  testEnforceEx(e, 'alice', 'data2', 'write', [false, ['alice', 'data2', 'write', 'deny']]);
+  testEnforceEx(e, 'data2_admin', 'data2', 'read', [true, ['data2_admin', 'data2', 'read', 'allow']]);
+  testEnforceEx(e, 'data2_admin', 'data2', 'write', [true, ['data2_admin', 'data2', 'write', 'allow']]);
+  testEnforceEx(e, 'data2_admin', 'data1', 'read', [false, []]);
+  testEnforceEx(e, 'data2_admin', 'data1', 'write', [false, []]);
+});
+
+test('TestEnforceExWithGlobModel', async () => {
+  const e = await newEnforcer('examples/glob_model.conf', 'examples/glob_policy.csv');
+  testEnforceEx(e, 'u1', '/foo/1', 'read', [true, ['u1', '/foo/*', 'read']]);
+  testEnforceEx(e, 'u2', '/foo1', 'read', [true, ['u2', '/foo*', 'read']]);
+  testEnforceEx(e, 'u3', '/foo/2', 'read', [false, []]);
+});
+
+test('TestEnforceExWithKeyMatchModel', async () => {
+  const e = await newEnforcer('examples/keymatch_model.conf', 'examples/keymatch_policy.csv');
+  testEnforceEx(e, 'alice', '/alice_data/1', 'GET', [true, ['alice', '/alice_data/*', 'GET']]);
+  testEnforceEx(e, 'bob', '/alice_data/1', 'POST', [false, []]);
+});
+
+test('TestEnforceExWithPriorityModel', async () => {
+  const e = await newEnforcer('examples/priority_model.conf', 'examples/priority_policy.csv');
+  testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
+  testEnforceEx(e, 'bob', 'data2', 'read', [true, ['data2_allow_group', 'data2', 'read', 'allow']]);
+  testEnforceEx(e, 'alice', 'data2', 'read', [false, []]);
+});

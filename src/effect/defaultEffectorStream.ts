@@ -21,6 +21,7 @@ import { Effect } from './effector';
 export class DefaultEffectorStream implements EffectorStream {
   private done = false;
   private res = false;
+  private rec = false;
   private readonly expr: string;
 
   constructor(expr: string) {
@@ -31,12 +32,13 @@ export class DefaultEffectorStream implements EffectorStream {
     return this.res;
   }
 
-  public pushEffect(eft: Effect): [boolean, boolean] {
+  public pushEffect(eft: Effect): [boolean, boolean, boolean] {
     switch (this.expr) {
       case 'some(where (p_eft == allow))':
         if (eft === Effect.Allow) {
           this.res = true;
           this.done = true;
+          this.rec = true;
         }
         break;
       case '!some(where (p_eft == deny))':
@@ -44,25 +46,31 @@ export class DefaultEffectorStream implements EffectorStream {
         if (eft === Effect.Deny) {
           this.res = false;
           this.done = true;
+          this.rec = true;
         }
         break;
       case 'some(where (p_eft == allow)) && !some(where (p_eft == deny))':
         if (eft === Effect.Allow) {
           this.res = true;
+          this.rec = true;
         } else if (eft === Effect.Deny) {
           this.res = false;
           this.done = true;
+          this.rec = true;
+        } else {
+          this.rec = false;
         }
         break;
       case 'priority(p_eft) || deny':
         if (eft !== Effect.Indeterminate) {
           this.res = eft === Effect.Allow;
           this.done = true;
+          this.rec = true;
         }
         break;
       default:
         throw new Error('unsupported effect');
     }
-    return [this.res, this.done];
+    return [this.res, this.rec, this.done];
   }
 }
