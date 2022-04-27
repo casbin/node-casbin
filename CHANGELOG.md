@@ -1,3 +1,10 @@
+## [5.15.1](https://github.com/casbin/node-casbin/compare/v5.15.0...v5.15.1) (2022-04-27)
+
+
+### Bug Fixes
+
+* EnforceEx return allow reason ([#363](https://github.com/casbin/node-casbin/issues/363)) ([6353283](https://github.com/casbin/node-casbin/commit/635328328caf200093e89443d32e9f2fa736509a))
+
 # [5.15.0](https://github.com/casbin/node-casbin/compare/v5.14.0...v5.15.0) (2022-04-15)
 
 
