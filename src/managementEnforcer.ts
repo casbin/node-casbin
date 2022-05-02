@@ -508,6 +508,14 @@ export class ManagementEnforcer extends InternalEnforcer {
     return this.removeFilteredPolicyInternal('g', ptype, fieldIndex, fieldValues);
   }
 
+  public async updateGroupingPolicy(oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.updateNamedGroupingPolicy('g', oldRule, newRule);
+  }
+
+  public async updateNamedGroupingPolicy(ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.updatePolicyInternal('g', ptype, oldRule, newRule);
+  }
+
   /**
    * addFunction adds a customized function.
    * @param name custom function name

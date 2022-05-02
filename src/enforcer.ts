@@ -434,7 +434,7 @@ export class Enforcer extends ManagementEnforcer {
       }
       let resLocal: string[][] = [[user]];
       const tokensLength: number = permission.length;
-      const t: string[][] = [[]];
+      const t: string[][] = [];
       for (const token of permission) {
         if (token === permission[0]) {
           continue;
@@ -443,7 +443,7 @@ export class Enforcer extends ManagementEnforcer {
         tokens.push(token);
         t.push(tokens);
       }
-      for (let i = 1; i < tokensLength; i++) {
+      for (let i = 0; i < tokensLength - 1; i++) {
         const n: string[][] = [];
         for (const tokens of t[i]) {
           for (const policy of resLocal) {
