@@ -697,3 +697,25 @@ test('TestEnforceExWithPriorityModel', async () => {
   testEnforceEx(e, 'bob', 'data2', 'read', [true, ['data2_allow_group', 'data2', 'read', 'allow']]);
   testEnforceEx(e, 'alice', 'data2', 'read', [false, []]);
 });
+
+test('TestGetImplicitResourcesForUser', async () => {
+  const e = await newEnforcer('examples/rbac_with_pattern_model.conf', 'examples/rbac_with_pattern_policy.csv');
+  expect(await e.getImplicitResourcesForUser('alice')).toEqual([
+    ['alice', '/pen/1', 'GET'],
+    ['alice', '/pen2/1', 'GET'],
+    ['alice', '/book/*', 'GET'],
+    ['alice', '/book/:id', 'GET'],
+    ['alice', '/book2/{id}', 'GET'],
+    ['alice', 'book_group', 'GET'],
+  ]);
+  expect(await e.getImplicitResourcesForUser('bob')).toEqual([
+    ['bob', '/pen/:id', 'GET'],
+    ['bob', '/pen2/{id}', 'GET'],
+    ['bob', 'pen_group', 'GET'],
+  ]);
+  expect(await e.getImplicitResourcesForUser('cathy')).toEqual([
+    ['cathy', '/pen/:id', 'GET'],
+    ['cathy', '/pen2/{id}', 'GET'],
+    ['cathy', 'pen_group', 'GET'],
+  ]);
+});
