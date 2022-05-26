@@ -426,10 +426,19 @@ export async function newEnforcerWithClass<T extends Enforcer>(enforcer: new () 
   const e = new enforcer();
 
   let parsedParamLen = 0;
+  let lazyLoading = false;
   if (params.length >= 1) {
     const enableLog = params[params.length - 1];
     if (typeof enableLog === 'boolean') {
       getLogger().enableLog(enableLog);
+      parsedParamLen++;
+    }
+  }
+
+  if (params.length - parsedParamLen > 2) {
+    const enableLazyLoad = params[params.length - 2];
+    if (typeof enableLazyLoad === 'boolean') {
+      lazyLoading = enableLazyLoad;
       parsedParamLen++;
     }
   }
@@ -439,7 +448,7 @@ export async function newEnforcerWithClass<T extends Enforcer>(enforcer: new () 
       if (typeof params[1] === 'string') {
         await e.initWithFile(params[0].toString(), params[1].toString());
       } else {
-        await e.initWithAdapter(params[0].toString(), params[1]);
+        await e.initWithAdapter(params[0].toString(), params[1], lazyLoading);
       }
     } else {
       if (typeof params[1] === 'string') {
