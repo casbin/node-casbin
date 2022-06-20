@@ -1,0 +1,15 @@
+name: Platform_test
+on: [push, pull_request]
+jobs:
+  reactjs:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [^14, ^16, ^18]
+    steps:
+      - uses: actions/checkout@v2
+      - run: yarn install && yarn build && yarn link
+      - run: cd test/reactjs && yarn install && yarn link casbin-core
+      - run: cd test/reactjs && yarn test
+      - run: cd test/reactjs && yarn build
