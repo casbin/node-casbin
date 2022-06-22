@@ -1,3 +1,10 @@
+## [5.15.2](https://github.com/casbin/node-casbin/compare/v5.15.1...v5.15.2) (2022-06-22)
+
+
+### Bug Fixes
+
+* enable esModuleInterop support ([#366](https://github.com/casbin/node-casbin/issues/366)) ([20db339](https://github.com/casbin/node-casbin/commit/20db3390ef70656b8e06a6738d4c377b4dbe5017))
+
 ## [5.15.1](https://github.com/casbin/node-casbin/compare/v5.15.0...v5.15.1) (2022-04-27)
 
 
