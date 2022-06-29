@@ -7,5 +7,5 @@ module.exports = {
     'csv-parse': '<rootDir>/node_modules/csv-parse/dist/cjs/sync.cjs',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-  modulePathIgnorePatterns: ['test/reactjs'],
+  modulePathIgnorePatterns: ['test/reactjs', 'test/angular'],
 };
