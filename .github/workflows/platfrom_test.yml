@@ -24,3 +24,16 @@ jobs:
       - run: yarn install && yarn build && yarn link
       - run: cd test/reactnative && yarn install && yarn global add jest
       - run: cd test/reactnative && yarn test
+  angular:
+      runs-on: ubuntu-latest
+      strategy:
+        fail-fast: false
+        matrix:
+          node-version: [^14, ^16, ^18]
+      steps:
+        - uses: actions/checkout@v2
+        - run: yarn install && yarn build && yarn link
+        - run: yarn global add @angular/cli
+        - run: cd test/angular && yarn install && yarn link casbin-core
+        - run: cd test/angular && ng test --watch=false --browsers=ChromeHeadless
+        - run: cd test/angular && yarn build
