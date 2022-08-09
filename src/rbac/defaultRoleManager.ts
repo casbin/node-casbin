@@ -123,6 +123,8 @@ export class DefaultRoleManager implements RoleManager {
   private maxHierarchyLevel: number;
   private hasPattern = false;
   private hasDomainPattern = false;
+  private hasDomainHierarchy = false;
+  private domainHierarchyManager: RoleManager;
   private matchingFunc: MatchingFunc;
   private domainMatchingFunc: MatchingFunc;
 
@@ -179,21 +181,36 @@ export class DefaultRoleManager implements RoleManager {
     this.domainMatchingFunc = fn;
   }
 
-  private generateTempRoles(domain: string): Roles {
-    loadOrDefault(this.allDomains, domain, new Roles());
+  /**
+   * addDomainHierarchy sets a rolemanager to define role inheritance between domains
+   * @param rm RoleManager to define domain hierarchy
+   */
+  public async addDomainHierarchy(rm: RoleManager): Promise<void> {
+    if (!rm?.syncedHasLink) throw Error('Domain hierarchy must be syncronous.');
+    this.hasDomainHierarchy = true;
+    this.domainHierarchyManager = rm;
+  }
 
-    const patternDomain = new Set([domain]);
-    if (this.hasDomainPattern) {
+  private generateTempRoles(domain: string): Roles {
+    if (!this.hasPattern && !this.hasDomainPattern && !this.hasDomainHierarchy) {
+      return loadOrDefault(this.allDomains, domain, new Roles());
+    }
+
+    const extraDomain = new Set([domain]);
+    if (this.hasDomainPattern || this.hasDomainHierarchy) {
       this.allDomains.forEach((value, key) => {
-        if (this.domainMatchingFunc(domain, key)) {
-          patternDomain.add(key);
+        if (
+          (this.hasDomainPattern && this.domainMatchingFunc(domain, key)) ||
+          (this.domainHierarchyManager?.syncedHasLink && this.domainHierarchyManager.syncedHasLink(key, domain))
+        ) {
+          extraDomain.add(key);
         }
       });
     }
 
     const allRoles = new Roles();
-    patternDomain.forEach((domain) => {
-      loadOrDefault(this.allDomains, domain, new Roles()).forEach((value, key) => {
+    extraDomain.forEach((dom) => {
+      loadOrDefault(this.allDomains, dom, new Roles()).forEach((value, key) => {
         const role1 = allRoles.createRole(value.name, this.matchingFunc);
         value.getRoles().forEach((n) => {
           role1.addRole(allRoles.createRole(n, this.matchingFunc));
@@ -268,12 +285,7 @@ export class DefaultRoleManager implements RoleManager {
       return true;
     }
 
-    let allRoles: Roles;
-    if (this.hasPattern || this.hasDomainPattern) {
-      allRoles = this.generateTempRoles(domain[0]);
-    } else {
-      allRoles = loadOrDefault(this.allDomains, domain[0], new Roles());
-    }
+    const allRoles = this.generateTempRoles(domain[0]);
 
     if (!allRoles.hasRole(name1, this.matchingFunc) || !allRoles.hasRole(name2, this.matchingFunc)) {
       return false;
@@ -298,12 +310,7 @@ export class DefaultRoleManager implements RoleManager {
       throw new Error('error: domain should be 1 parameter');
     }
 
-    let allRoles: Roles;
-    if (this.hasPattern || this.hasDomainPattern) {
-      allRoles = this.generateTempRoles(domain[0]);
-    } else {
-      allRoles = loadOrDefault(this.allDomains, domain[0], new Roles());
-    }
+    const allRoles = this.generateTempRoles(domain[0]);
 
     if (!allRoles.hasRole(name, this.matchingFunc)) {
       return [];
@@ -323,18 +330,16 @@ export class DefaultRoleManager implements RoleManager {
       throw new Error('error: domain should be 1 parameter');
     }
 
-    let allRoles: Roles;
-    if (this.hasPattern || this.hasDomainPattern) {
-      allRoles = this.generateTempRoles(domain[0]);
-    } else {
-      allRoles = loadOrDefault(this.allDomains, domain[0], new Roles());
-    }
+    const allRoles = this.generateTempRoles(domain[0]);
 
     if (!allRoles.hasRole(name, this.matchingFunc)) {
       return [];
     }
-
-    return [...allRoles.values()].filter((n) => n.hasDirectRole(name)).map((n) => n.name);
+    const users = [];
+    for (const user of allRoles.values()) {
+      if (user.hasDirectRole(name)) users.push(user.name);
+    }
+    return users;
   }
 
   /**
