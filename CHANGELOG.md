@@ -1,3 +1,10 @@
+# [5.16.0](https://github.com/casbin/node-casbin/compare/v5.15.2...v5.16.0) (2022-08-11)
+
+
+### Features
+
+* add support for g() in SyncedEnforcer ([#378](https://github.com/casbin/node-casbin/issues/378)) ([a74067a](https://github.com/casbin/node-casbin/commit/a74067a66aec755e89bd32964e9da4252c117881))
+
 ## [5.15.2](https://github.com/casbin/node-casbin/compare/v5.15.1...v5.15.2) (2022-06-22)
 
 
