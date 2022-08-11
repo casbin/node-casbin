@@ -257,7 +257,7 @@ export class DefaultRoleManager implements RoleManager {
    * hasLink determines whether role: name1 inherits role: name2.
    * domain is a prefix to the roles.
    */
-  public async hasLink(name1: string, name2: string, ...domain: string[]): Promise<boolean> {
+  public syncedHasLink(name1: string, name2: string, ...domain: string[]): boolean {
     if (domain.length === 0) {
       domain = [DEFAULT_DOMAIN];
     } else if (domain.length > 1) {
@@ -281,6 +281,10 @@ export class DefaultRoleManager implements RoleManager {
 
     const role1 = allRoles.createRole(name1, this.matchingFunc);
     return role1.hasRole(name2, this.maxHierarchyLevel);
+  }
+
+  public async hasLink(name1: string, name2: string, ...domain: string[]): Promise<boolean> {
+    return new Promise((resolve) => resolve(this.syncedHasLink(name1, name2, ...domain)));
   }
 
   /**

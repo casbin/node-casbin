@@ -21,6 +21,7 @@ import { DefaultRoleManager, RoleManager } from './rbac';
 import {
   escapeAssertion,
   generateGFunction,
+  generateSyncedGFunction,
   getEvalValue,
   hasEval,
   replaceEval,
@@ -384,7 +385,7 @@ export class CoreEnforcer {
 
     astMap?.forEach((value, key) => {
       const rm = value.rm;
-      functions[key] = generateGFunction(rm);
+      functions[key] = asyncCompile ? generateGFunction(rm) : generateSyncedGFunction(rm);
     });
 
     const expString = this.model.model.get('m')?.get('m')?.value;
