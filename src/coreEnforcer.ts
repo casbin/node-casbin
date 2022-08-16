@@ -16,7 +16,7 @@ import { compile, compileAsync, addBinaryOp } from 'expression-eval';
 
 import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
-import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter } from './persist';
+import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter, WatcherEx } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 import {
   escapeAssertion,
@@ -48,6 +48,7 @@ export class CoreEnforcer {
 
   protected adapter: UpdatableAdapter | FilteredAdapter | Adapter | BatchAdapter;
   protected watcher: Watcher | null = null;
+  protected watcherEx: WatcherEx | null = null;
   protected rmMap: Map<string, RoleManager>;
 
   protected enabled = true;
@@ -124,6 +125,15 @@ export class CoreEnforcer {
   public setWatcher(watcher: Watcher): void {
     this.watcher = watcher;
     watcher.setUpdateCallback(async () => await this.loadPolicy());
+  }
+
+  /**
+   * setWatcherEx sets the current watcherEx.
+   *
+   * @param watcherEx the watcherEx.
+   */
+  public setWatcherEx(watcherEx: WatcherEx): void {
+    this.watcherEx = watcherEx;
   }
 
   /**
@@ -260,7 +270,9 @@ export class CoreEnforcer {
     if (!flag) {
       return false;
     }
-    if (this.watcher) {
+    if (this.watcherEx) {
+      return await this.watcherEx.updateForSavePolicy(this.model);
+    } else if (this.watcher) {
       return await this.watcher.update();
     }
     return true;
