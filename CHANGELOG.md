@@ -1,3 +1,10 @@
+# [5.17.0](https://github.com/casbin/node-casbin/compare/v5.16.0...v5.17.0) (2022-08-18)
+
+
+### Features
+
+* add WatcherEx ([#381](https://github.com/casbin/node-casbin/issues/381)) ([10d7086](https://github.com/casbin/node-casbin/commit/10d7086c810ff18d9a3c792a3ec1173744bceeef))
+
 # [5.16.0](https://github.com/casbin/node-casbin/compare/v5.15.2...v5.16.0) (2022-08-11)
 
 
