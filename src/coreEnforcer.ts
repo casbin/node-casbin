@@ -29,6 +29,7 @@ import {
   generatorRunAsync,
   customIn,
   bracketCompatible,
+  removeComments,
 } from './util';
 import { getLogger, logPrint } from './log';
 import { MatchingFunc } from './rbac';
@@ -381,7 +382,7 @@ export class CoreEnforcer {
     }
   }
 
-  private *privateEnforce(asyncCompile = true, explain = false, ...rvals: any[]): EnforceResult {
+  private *privateEnforce(asyncCompile = true, explain = false, matcher: string, ...rvals: any[]): EnforceResult {
     if (!this.enabled) {
       return true;
     }
@@ -400,7 +401,13 @@ export class CoreEnforcer {
       functions[key] = asyncCompile ? generateGFunction(rm) : generateSyncedGFunction(rm);
     });
 
-    const expString = this.model.model.get('m')?.get('m')?.value;
+    let expString;
+    if (!matcher) {
+      expString = this.model.model.get('m')?.get('m')?.value;
+    } else {
+      expString = removeComments(escapeAssertion(matcher));
+    }
+
     if (!expString) {
       throw new Error('Unable to find matchers in model');
     }
@@ -564,7 +571,7 @@ export class CoreEnforcer {
    * @return whether to allow the request.
    */
   public enforceSync(...rvals: any[]): boolean {
-    return generatorRunSync(this.privateEnforce(false, false, ...rvals));
+    return generatorRunSync(this.privateEnforce(false, false, '', ...rvals));
   }
 
   /**
@@ -578,7 +585,7 @@ export class CoreEnforcer {
    * @return whether to allow the request and the reason rule.
    */
   public enforceExSync(...rvals: any[]): [boolean, string[]] {
-    return generatorRunSync(this.privateEnforce(false, true, ...rvals));
+    return generatorRunSync(this.privateEnforce(false, true, '', ...rvals));
   }
 
   /**
@@ -597,7 +604,21 @@ export class CoreEnforcer {
    * @return whether to allow the request.
    */
   public async enforce(...rvals: any[]): Promise<boolean> {
-    return generatorRunAsync(this.privateEnforce(true, false, ...rvals));
+    return generatorRunAsync(this.privateEnforce(true, false, '', ...rvals));
+  }
+
+  /**
+   * enforceWithMatcher decides whether a "subject" can access a "object" with
+   * the operation "action" but with the matcher passed,
+   * input parameters are usually: (matcher, sub, obj, act).
+   *
+   * @param matcher matcher string.
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request.
+   */
+  public async enforceWithMatcher(matcher: string, ...ravls: any[]): Promise<boolean> {
+    return generatorRunAsync(this.privateEnforce(true, false, matcher, ...ravls));
   }
 
   /**
@@ -609,7 +630,21 @@ export class CoreEnforcer {
    * @return whether to allow the request and the reason rule.
    */
   public async enforceEx(...rvals: any[]): Promise<[boolean, string[]]> {
-    return generatorRunAsync(this.privateEnforce(true, true, ...rvals));
+    return generatorRunAsync(this.privateEnforce(true, true, '', ...rvals));
+  }
+
+  /**
+   * enforceExWithMatcher decides whether a "subject" can access a "object" with
+   * the operation "action" but with the matcher passed,
+   *  input parameters are usually: (matcher, sub, obj, act).
+   *
+   * @param matcher matcher string.
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request and the reason rule.
+   */
+  public async enforceExWithMatcher(matcher: string, ...rvals: any[]): Promise<[boolean, string[]]> {
+    return generatorRunAsync(this.privateEnforce(true, true, matcher, ...rvals));
   }
 
   /**

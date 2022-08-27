@@ -697,3 +697,19 @@ test('TestEnforceExWithPriorityModel', async () => {
   testEnforceEx(e, 'bob', 'data2', 'read', [true, ['data2_allow_group', 'data2', 'read', 'allow']]);
   testEnforceEx(e, 'alice', 'data2', 'read', [false, []]);
 });
+
+test('TestEnforceWithMatcher', async () => {
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
+  expect(await e.enforce('bob', 'data2', 'read')).toBe(false);
+  expect(await e.enforce('bob', 'data1', 'read')).toBe(false);
+  expect(await e.enforce('alice', 'data1', 'write')).toBe(false);
+  expect(await e.enforce('data2_admin', 'data1', 'read')).toBe(false);
+  expect(await e.enforce('data2_admin', 'data1', 'write')).toBe(false);
+  const m1 = 'g(r.sub, p.sub) && r.obj == p.obj';
+  expect(await e.enforceWithMatcher(m1, 'bob', 'data2', 'read')).toBe(true);
+  expect(await e.enforceWithMatcher(m1, 'alice', 'data1', 'write')).toBe(true);
+  const m2 = 'g(r.sub, p.sub)';
+  expect(await e.enforceWithMatcher(m2, 'bob', 'data1', 'read')).toBe(true);
+  expect(await e.enforceWithMatcher(m2, 'data2_admin', 'data1', 'read')).toBe(true);
+  expect(await e.enforceWithMatcher(m2, 'data2_admin', 'data1', 'write')).toBe(true);
+});
