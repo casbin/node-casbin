@@ -311,7 +311,7 @@ function globMatch(string: string, pattern: string): boolean {
 // generateGFunction is the factory method of the g(_, _) function.
 function generateGFunction(rm: rbac.RoleManager): any {
   const memorized = new Map<string, boolean>();
-  return async function func(...args: any[]): Promise<boolean> {
+  return async function (...args: any[]): Promise<boolean> {
     const key = args.toString();
     let value = memorized.get(key);
     if (value) {
@@ -336,6 +336,36 @@ function generateGFunction(rm: rbac.RoleManager): any {
   };
 }
 
+// generateSyncedGFunction is the synchronous factory method of the g(_, _) function.
+function generateSyncedGFunction(rm: rbac.RoleManager): any {
+  const memorized = new Map<string, boolean>();
+  return function (...args: any[]): boolean {
+    const key = args.toString();
+    let value = memorized.get(key);
+    if (value) {
+      return value;
+    }
+
+    const [arg0, arg1] = args;
+    const name1: string = (arg0 || '').toString();
+    const name2: string = (arg1 || '').toString();
+
+    if (!rm) {
+      value = name1 === name2;
+    } else if (!rm?.syncedHasLink) {
+      throw new Error('RoleManager requires syncedHasLink for synchronous execution');
+    } else if (args.length === 2) {
+      value = rm.syncedHasLink(name1, name2);
+    } else {
+      const domain: string = args[2].toString();
+      value = rm.syncedHasLink(name1, name2, domain);
+    }
+
+    memorized.set(key, value);
+    return value;
+  };
+}
+
 export {
   keyMatchFunc,
   keyGetFunc,
@@ -344,6 +374,7 @@ export {
   keyMatch3Func,
   regexMatchFunc,
   ipMatchFunc,
+  generateSyncedGFunction,
   generateGFunction,
   keyMatch4Func,
   keyMatch5Func,

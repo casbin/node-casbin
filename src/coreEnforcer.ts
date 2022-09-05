@@ -16,13 +16,14 @@ import { compile, compileAsync, addBinaryOp } from 'expression-eval';
 
 import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModel, PolicyOp } from './model';
-import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter } from './persist';
+import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter, WatcherEx } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 import { EnforceContext } from './enforceContext';
 
 import {
   escapeAssertion,
   generateGFunction,
+  generateSyncedGFunction,
   getEvalValue,
   hasEval,
   replaceEval,
@@ -51,6 +52,7 @@ export class CoreEnforcer {
 
   protected adapter: UpdatableAdapter | FilteredAdapter | Adapter | BatchAdapter;
   protected watcher: Watcher | null = null;
+  protected watcherEx: WatcherEx | null = null;
   protected rmMap: Map<string, RoleManager>;
 
   protected enabled = true;
@@ -127,6 +129,15 @@ export class CoreEnforcer {
   public setWatcher(watcher: Watcher): void {
     this.watcher = watcher;
     watcher.setUpdateCallback(async () => await this.loadPolicy());
+  }
+
+  /**
+   * setWatcherEx sets the current watcherEx.
+   *
+   * @param watcherEx the watcherEx.
+   */
+  public setWatcherEx(watcherEx: WatcherEx): void {
+    this.watcherEx = watcherEx;
   }
 
   /**
@@ -263,7 +274,9 @@ export class CoreEnforcer {
     if (!flag) {
       return false;
     }
-    if (this.watcher) {
+    if (this.watcherEx) {
+      return await this.watcherEx.updateForSavePolicy(this.model);
+    } else if (this.watcher) {
       return await this.watcher.update();
     }
     return true;
@@ -392,7 +405,7 @@ export class CoreEnforcer {
 
     astMap?.forEach((value, key) => {
       const rm = value.rm;
-      functions[key] = generateGFunction(rm);
+      functions[key] = asyncCompile ? generateGFunction(rm) : generateSyncedGFunction(rm);
     });
 
     const expString = this.model.model.get('m')?.get(enforceContext.mType)?.value;
