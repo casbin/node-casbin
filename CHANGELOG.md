@@ -1,3 +1,10 @@
+# [5.18.0](https://github.com/casbin/node-casbin/compare/v5.17.0...v5.18.0) (2022-09-14)
+
+
+### Features
+
+* add management api for watcherEx callbacks ([#384](https://github.com/casbin/node-casbin/issues/384)) ([591233f](https://github.com/casbin/node-casbin/commit/591233f4b80dec422a7dc299c605f7a0e22dba9f))
+
 # [5.17.0](https://github.com/casbin/node-casbin/compare/v5.16.0...v5.17.0) (2022-08-18)
 
 
