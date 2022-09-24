@@ -455,7 +455,7 @@ export class Model {
    * return the field index in fieldMap, if no this field in fieldMap, add it.
    */
   public getFieldIndex(ptype: string, field: string): number {
-    const assertion = this.model.get('p')!.get(ptype);
+    const assertion = this.model.get('p')?.get(ptype);
     if (!assertion) {
       return -1;
     }
