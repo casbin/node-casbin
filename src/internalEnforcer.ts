@@ -257,4 +257,19 @@ export class InternalEnforcer extends CoreEnforcer {
     }
     return ok;
   }
+
+  /**
+   * get field index in model.fieldMap.
+   */
+  public getFieldIndex(ptype: string, field: string): number {
+    return this.model.getFieldIndex(ptype, field);
+  }
+
+  /**
+   *  set index of field
+   */
+  public setFieldIndex(ptype: string, field: string, index: number): void {
+    const assertion = this.model.model.get('p')?.get(ptype);
+    assertion?.fieldIndexMap.set(field, index);
+  }
 }
