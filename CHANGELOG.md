@@ -1,3 +1,10 @@
+# [5.19.0](https://github.com/casbin/node-casbin/compare/v5.18.0...v5.19.0) (2022-09-24)
+
+
+### Features
+
+* add `fieldIndexMap` ([#391](https://github.com/casbin/node-casbin/issues/391)) ([8f6e2c3](https://github.com/casbin/node-casbin/commit/8f6e2c39a19725e467aafda8b7fa948e3e471ce8))
+
 # [5.18.0](https://github.com/casbin/node-casbin/compare/v5.17.0...v5.18.0) (2022-09-14)
 
 
