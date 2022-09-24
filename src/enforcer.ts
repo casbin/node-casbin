@@ -17,6 +17,7 @@ import { Model, newModel } from './model';
 import { Adapter, FileAdapter, StringAdapter } from './persist';
 import { getLogger } from './log';
 import { arrayRemoveDuplicates } from './util';
+import { FieldIndex } from './constants';
 
 /**
  * Enforcer = ManagementEnforcer + RBAC API.
@@ -181,7 +182,8 @@ export class Enforcer extends ManagementEnforcer {
    */
   public async deleteRolesForUser(user: string, domain?: string): Promise<boolean> {
     if (domain === undefined) {
-      return this.removeFilteredGroupingPolicy(0, user);
+      const subIndex = this.getFieldIndex('p', FieldIndex.Subject);
+      return this.removeFilteredGroupingPolicy(subIndex, user);
     } else {
       return this.removeFilteredGroupingPolicy(0, user, '', domain);
     }
@@ -195,8 +197,9 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deleteUser(user: string): Promise<boolean> {
-    const res1 = await this.removeFilteredGroupingPolicy(0, user);
-    const res2 = await this.removeFilteredPolicy(0, user);
+    const subIndex = this.getFieldIndex('p', FieldIndex.Subject);
+    const res1 = await this.removeFilteredGroupingPolicy(subIndex, user);
+    const res2 = await this.removeFilteredPolicy(subIndex, user);
     return res1 || res2;
   }
 
@@ -208,8 +211,9 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deleteRole(role: string): Promise<boolean> {
-    const res1 = await this.removeFilteredGroupingPolicy(1, role);
-    const res2 = await this.removeFilteredPolicy(0, role);
+    const subIndex = this.getFieldIndex('p', FieldIndex.Subject);
+    const res1 = await this.removeFilteredGroupingPolicy(subIndex, role);
+    const res2 = await this.removeFilteredPolicy(subIndex, role);
     return res1 || res2;
   }
 
@@ -258,7 +262,8 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deletePermissionsForUser(user: string): Promise<boolean> {
-    return this.removeFilteredPolicy(0, user);
+    const subIndex = this.getFieldIndex('p', FieldIndex.Subject);
+    return this.removeFilteredPolicy(subIndex, user);
   }
 
   /**
@@ -268,7 +273,8 @@ export class Enforcer extends ManagementEnforcer {
    * @return the permissions, a permission is usually like (obj, act). It is actually the rule without the subject.
    */
   public async getPermissionsForUser(user: string): Promise<string[][]> {
-    return this.getFilteredPolicy(0, user);
+    const subIndex = this.getFieldIndex('p', FieldIndex.Subject);
+    return this.getFilteredPolicy(subIndex, user);
   }
 
   /**

@@ -14,6 +14,7 @@
 
 import { EffectorStream } from './effectorStream';
 import { Effect } from './effector';
+import { EffectExpress } from '../constants';
 
 /**
  * DefaultEffectorStream is the default implementation of EffectorStream.
@@ -34,14 +35,14 @@ export class DefaultEffectorStream implements EffectorStream {
 
   public pushEffect(eft: Effect): [boolean, boolean, boolean] {
     switch (this.expr) {
-      case 'some(where (p_eft == allow))':
+      case EffectExpress.ALLOW:
         if (eft === Effect.Allow) {
           this.res = true;
           this.done = true;
           this.rec = true;
         }
         break;
-      case '!some(where (p_eft == deny))':
+      case EffectExpress.DENY:
         this.res = true;
         if (eft === Effect.Deny) {
           this.res = false;
@@ -49,7 +50,7 @@ export class DefaultEffectorStream implements EffectorStream {
           this.rec = true;
         }
         break;
-      case 'some(where (p_eft == allow)) && !some(where (p_eft == deny))':
+      case EffectExpress.ALLOW_AND_DENY:
         if (eft === Effect.Allow) {
           this.res = true;
           this.rec = true;
@@ -61,7 +62,7 @@ export class DefaultEffectorStream implements EffectorStream {
           this.rec = false;
         }
         break;
-      case 'priority(p_eft) || deny':
+      case EffectExpress.PRIORITY:
         if (eft !== Effect.Indeterminate) {
           this.res = eft === Effect.Allow;
           this.done = true;
