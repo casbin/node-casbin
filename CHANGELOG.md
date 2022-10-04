@@ -1,3 +1,10 @@
+## [5.19.1](https://github.com/casbin/node-casbin/compare/v5.19.0...v5.19.1) (2022-10-04)
+
+
+### Bug Fixes
+
+* escape assertion bug ([#394](https://github.com/casbin/node-casbin/issues/394)) ([5a339d8](https://github.com/casbin/node-casbin/commit/5a339d858a9cfb7d8899355cbd179ec962b43cfa))
+
 # [5.19.0](https://github.com/casbin/node-casbin/compare/v5.18.0...v5.19.0) (2022-09-24)
 
 
