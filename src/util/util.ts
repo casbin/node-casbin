@@ -17,8 +17,10 @@ import * as fs from 'fs';
 // escapeAssertion escapes the dots in the assertion,
 // because the expression evaluation doesn't support such variable names.
 function escapeAssertion(s: string): string {
-  s = s.replace(/r\./g, 'r_');
-  s = s.replace(/p\./g, 'p_');
+  s = ' ' + s;
+  s = s.replace(/(?<=[\(| ])r\./g, 'r_');
+  s = s.replace(/(?<=[\(| ])p\./g, 'p_');
+  s = s.trim();
   return s;
 }
 
