@@ -697,3 +697,17 @@ test('TestEnforceExWithPriorityModel', async () => {
   testEnforceEx(e, 'bob', 'data2', 'read', [true, ['data2_allow_group', 'data2', 'read', 'allow']]);
   testEnforceEx(e, 'alice', 'data2', 'read', [false, []]);
 });
+
+test('TestABACAtrrModel', async () => {
+  const e = await newEnforcer('examples/abac_attr_model.conf', 'examples/abac_attr_policy.csv');
+  expect(
+    await e.enforce(
+      {
+        attr: {
+          id: 'alice',
+        },
+      },
+      'read'
+    )
+  ).toBe(true);
+});
