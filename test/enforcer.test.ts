@@ -14,9 +14,8 @@
 
 import { readFileSync } from 'fs';
 
-import { newModel, newEnforcer, Enforcer, FileAdapter, MemoryAdapter, Util } from '../src';
+import { newModel, newEnforcer, Enforcer, FileAdapter, StringAdapter, Util } from '../src';
 import { NewEnforceContext, EnforceContext } from '../src/enforceContext';
-import { getEnforcerWithPath, getStringAdapter } from './utils';
 
 async function testEnforce(e: Enforcer, sub: any, obj: string, act: string, res: boolean): Promise<void> {
   await expect(e.enforce(sub, obj, act)).resolves.toBe(res);
@@ -699,7 +698,8 @@ test('TestEnforce Multiple policies config', async () => {
   m.addDef('g', 'g', '_, _');
   m.addDef('e', 'e2', 'some(where (p.eft == allow))');
   m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
-  const a = getStringAdapter('examples/mulitple_policy.csv');
+  const policy = readFileSync('examples/mulitple_policy.csv').toString();
+  const a = new StringAdapter(policy);
 
   const e = await newEnforcer(m, a);
 
@@ -716,7 +716,8 @@ test('new EnforceContext config', async () => {
   m.addDef('g', 'g', '_, _');
   m.addDef('e', 'e2', 'some(where (p.eft == allow))');
   m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
-  const a = getStringAdapter('examples/mulitple_policy.csv');
+  const policy = readFileSync('examples/mulitple_policy.csv').toString();
+  const a = new StringAdapter(policy);
 
   const e = await newEnforcer(m, a);
 
@@ -733,7 +734,8 @@ test('TestEnforceEX Multiple policies config', async () => {
   m.addDef('g', 'g', '_, _');
   m.addDef('e', 'e2', 'some(where (p.eft == allow))');
   m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
-  const a = getStringAdapter('examples/mulitple_policy.csv');
+  const policy = readFileSync('examples/mulitple_policy.csv').toString();
+  const a = new StringAdapter(policy);
 
   const e = await newEnforcer(m, a);
 
@@ -750,8 +752,8 @@ test('new EnforceContextEX config', async () => {
   m.addDef('g', 'g', '_, _');
   m.addDef('e', 'e2', 'some(where (p.eft == allow))');
   m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
-  const a = getStringAdapter('examples/mulitple_policy.csv');
-
+  const policy = readFileSync('examples/multiple_policy.csv').toString();
+  const a = new StringAdapter(policy);
   const e = await newEnforcer(m, a);
 
   //const e = await getEnforcerWithPath(m);

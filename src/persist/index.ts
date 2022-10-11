@@ -1,6 +1,6 @@
 export * from './adapter';
 export * from './fileAdapter';
-export * from './memoryAdapter';
+export * from './stringAdapter';
 export * from './helper';
 export * from './watcher';
 export * from './watcherEx';
