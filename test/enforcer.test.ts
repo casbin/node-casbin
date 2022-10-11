@@ -761,3 +761,17 @@ test('new EnforceContextEX config', async () => {
   await expect(e.enforceEx(enforceContext, 'alice', 'data1', 'read')).resolves.toStrictEqual([true, ['alice', 'data1', 'read']]);
   await expect(e.enforceEx(enforceContext, 'bob', 'data2', 'write')).resolves.toStrictEqual([true, ['bob', 'data2', 'write']]);
 });
+
+test('TestABACAtrrModel', async () => {
+  const e = await newEnforcer('examples/abac_attr_model.conf', 'examples/abac_attr_policy.csv');
+  expect(
+    await e.enforce(
+      {
+        attr: {
+          id: 'alice',
+        },
+      },
+      'read'
+    )
+  ).toBe(true);
+});

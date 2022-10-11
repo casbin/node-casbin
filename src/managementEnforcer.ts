@@ -260,7 +260,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async addNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    return this.addPolicyInternal('p', ptype, params);
+    return this.addPolicyInternal('p', ptype, params, true);
   }
 
   /**
@@ -273,7 +273,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async addNamedPolicies(ptype: string, rules: string[][]): Promise<boolean> {
-    return this.addPoliciesInternal('p', ptype, rules);
+    return this.addPoliciesInternal('p', ptype, rules, true);
   }
 
   /**
@@ -300,7 +300,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async updateNamedPolicy(ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
-    return this.updatePolicyInternal('p', ptype, oldRule, newRule);
+    return this.updatePolicyInternal('p', ptype, oldRule, newRule, true);
   }
 
   /**
@@ -343,7 +343,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    return this.removePolicyInternal('p', ptype, params);
+    return this.removePolicyInternal('p', ptype, params, true);
   }
 
   /**
@@ -354,7 +354,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeNamedPolicies(ptype: string, rules: string[][]): Promise<boolean> {
-    return this.removePoliciesInternal('p', ptype, rules);
+    return this.removePoliciesInternal('p', ptype, rules, true);
   }
 
   /**
@@ -367,7 +367,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeFilteredNamedPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
-    return this.removeFilteredPolicyInternal('p', ptype, fieldIndex, fieldValues);
+    return this.removeFilteredPolicyInternal('p', ptype, fieldIndex, fieldValues, true);
   }
 
   /**
@@ -425,7 +425,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async addNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    return this.addPolicyInternal('g', ptype, params);
+    return this.addPolicyInternal('g', ptype, params, true);
   }
 
   /**
@@ -438,7 +438,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async addNamedGroupingPolicies(ptype: string, rules: string[][]): Promise<boolean> {
-    return this.addPoliciesInternal('g', ptype, rules);
+    return this.addPoliciesInternal('g', ptype, rules, true);
   }
 
   /**
@@ -481,7 +481,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
-    return this.removePolicyInternal('g', ptype, params);
+    return this.removePolicyInternal('g', ptype, params, true);
   }
 
   /**
@@ -492,7 +492,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeNamedGroupingPolicies(ptype: string, rules: string[][]): Promise<boolean> {
-    return this.removePoliciesInternal('g', ptype, rules);
+    return this.removePoliciesInternal('g', ptype, rules, true);
   }
 
   /**
@@ -505,7 +505,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @return succeeds or not.
    */
   public async removeFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
-    return this.removeFilteredPolicyInternal('g', ptype, fieldIndex, fieldValues);
+    return this.removeFilteredPolicyInternal('g', ptype, fieldIndex, fieldValues, true);
   }
 
   /**
@@ -515,5 +515,29 @@ export class ManagementEnforcer extends InternalEnforcer {
    */
   public async addFunction(name: string, func: MatchingFunction): Promise<void> {
     this.fm.addFunction(name, func);
+  }
+
+  public async selfAddPolicy(sec: string, ptype: string, rule: string[]): Promise<boolean> {
+    return this.addPolicyInternal(sec, ptype, rule, false);
+  }
+
+  public async selfRemovePolicy(sec: string, ptype: string, rule: string[]): Promise<boolean> {
+    return this.removePolicyInternal(sec, ptype, rule, false);
+  }
+
+  public async selfRemoveFilteredPolicy(sec: string, ptype: string, fieldIndex: number, fieldValues: string[]): Promise<boolean> {
+    return this.removeFilteredPolicyInternal(sec, ptype, fieldIndex, fieldValues, false);
+  }
+
+  public async selfUpdatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.updatePolicyInternal(sec, ptype, oldRule, newRule, false);
+  }
+
+  public async selfAddPolicies(sec: string, ptype: string, rule: string[][]): Promise<boolean> {
+    return this.addPoliciesInternal(sec, ptype, rule, false);
+  }
+
+  public async selfRemovePolicies(sec: string, ptype: string, rule: string[][]): Promise<boolean> {
+    return this.removePoliciesInternal(sec, ptype, rule, false);
   }
 }

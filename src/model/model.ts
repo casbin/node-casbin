@@ -83,6 +83,7 @@ export class Model {
     const ast = new Assertion();
     ast.key = key;
     ast.value = value;
+    ast.fieldIndexMap = new Map<string, number>();
 
     if (sec === 'r' || sec === 'p') {
       const tokens = value.split(',').map((n) => n.trim());
@@ -451,6 +452,35 @@ export class Model {
         });
       }
     });
+  }
+
+  /**
+   * return the field index in fieldMap, if no this field in fieldMap, add it.
+   */
+  public getFieldIndex(ptype: string, field: string): number {
+    const assertion = this.model.get('p')?.get(ptype);
+    if (!assertion) {
+      return -1;
+    }
+
+    let index = assertion.fieldIndexMap.get(field);
+    if (index) {
+      return index;
+    }
+
+    const pattern = ptype + '_' + field;
+    index = -1;
+    for (let i = 0; i < assertion.tokens.length; i++) {
+      if (assertion.tokens[i] === pattern) {
+        index = i;
+        break;
+      }
+    }
+    if (index === -1) {
+      return index;
+    }
+    assertion.fieldIndexMap.set(field, index);
+    return index;
   }
 }
 

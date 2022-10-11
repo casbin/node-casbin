@@ -1,3 +1,24 @@
+## [5.19.1](https://github.com/casbin/node-casbin/compare/v5.19.0...v5.19.1) (2022-10-04)
+
+
+### Bug Fixes
+
+* escape assertion bug ([#394](https://github.com/casbin/node-casbin/issues/394)) ([5a339d8](https://github.com/casbin/node-casbin/commit/5a339d858a9cfb7d8899355cbd179ec962b43cfa))
+
+# [5.19.0](https://github.com/casbin/node-casbin/compare/v5.18.0...v5.19.0) (2022-09-24)
+
+
+### Features
+
+* add `fieldIndexMap` ([#391](https://github.com/casbin/node-casbin/issues/391)) ([8f6e2c3](https://github.com/casbin/node-casbin/commit/8f6e2c39a19725e467aafda8b7fa948e3e471ce8))
+
+# [5.18.0](https://github.com/casbin/node-casbin/compare/v5.17.0...v5.18.0) (2022-09-14)
+
+
+### Features
+
+* add management api for watcherEx callbacks ([#384](https://github.com/casbin/node-casbin/issues/384)) ([591233f](https://github.com/casbin/node-casbin/commit/591233f4b80dec422a7dc299c605f7a0e22dba9f))
+
 # [5.17.0](https://github.com/casbin/node-casbin/compare/v5.16.0...v5.17.0) (2022-08-18)
 
 

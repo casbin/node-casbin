@@ -366,7 +366,7 @@ export class SyncedEnforcer extends Enforcer {
    */
   public async removeNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
     await this.lock.acquireAsync();
-    return this.removePolicyInternal('p', ptype, params).finally(() => this.lock.release());
+    return this.removePolicyInternal('p', ptype, params, true).finally(() => this.lock.release());
   }
 
   /**

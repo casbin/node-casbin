@@ -17,12 +17,11 @@ import * as fs from 'fs';
 // escapeAssertion escapes the dots in the assertion,
 // because the expression evaluation doesn't support such variable names.
 function escapeAssertion(s: string): string {
-  if (s.startsWith('r') || s.startsWith('p')) {
-    s = s.replace('.', '_');
-  }
-  return s.replace(/([| =)(&<>,+\-!*\/])([rp][0-9]*)\./g, (match) => {
-    return match.replace('.', '_');
-  });
+  s = ' ' + s;
+  s = s.replace(/(?<=[\(| ])r\./g, 'r_');
+  s = s.replace(/(?<=[\(| ])p\./g, 'p_');
+  s = s.trim();
+  return s;
 }
 
 // removeComments removes the comments starting with # in the text.

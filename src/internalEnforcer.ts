@@ -24,7 +24,7 @@ export class InternalEnforcer extends CoreEnforcer {
   /**
    * addPolicyInternal adds a rule to the current policy.
    */
-  public async addPolicyInternal(sec: string, ptype: string, rule: string[]): Promise<boolean> {
+  protected async addPolicyInternal(sec: string, ptype: string, rule: string[], useWatcher: boolean): Promise<boolean> {
     if (this.model.hasPolicy(sec, ptype, rule)) {
       return false;
     }
@@ -39,10 +39,15 @@ export class InternalEnforcer extends CoreEnforcer {
       }
     }
 
-    if (this.autoNotifyWatcher) {
-      // error intentionally ignored
-      if (this.watcherEx) await this.watcherEx.updateForAddPolicy(sec, ptype, ...rule);
-      else if (this.watcher) await this.watcher.update();
+    if (useWatcher) {
+      if (this.autoNotifyWatcher) {
+        // error intentionally ignored
+        if (this.watcherEx) {
+          this.watcherEx.updateForAddPolicy(sec, ptype, ...rule);
+        } else if (this.watcher) {
+          this.watcher.update();
+        }
+      }
     }
 
     const ok = this.model.addPolicy(sec, ptype, rule);
@@ -55,7 +60,7 @@ export class InternalEnforcer extends CoreEnforcer {
 
   // addPolicies adds rules to the current policy.
   // removePolicies removes rules from the current policy.
-  public async addPoliciesInternal(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
+  protected async addPoliciesInternal(sec: string, ptype: string, rules: string[][], useWatcher: boolean): Promise<boolean> {
     for (const rule of rules) {
       if (this.model.hasPolicy(sec, ptype, rule)) {
         return false;
@@ -76,10 +81,15 @@ export class InternalEnforcer extends CoreEnforcer {
       }
     }
 
-    if (this.autoNotifyWatcher) {
-      // error intentionally ignored
-      if (this.watcherEx) await this.watcherEx.updateForAddPolicies(sec, ptype, ...rules);
-      else if (this.watcher) this.watcher.update();
+    if (useWatcher) {
+      if (this.autoNotifyWatcher) {
+        // error intentionally ignored
+        if (this.watcherEx) {
+          this.watcherEx.updateForAddPolicies(sec, ptype, ...rules);
+        } else if (this.watcher) {
+          this.watcher.update();
+        }
+      }
     }
 
     const [ok, effects] = await this.model.addPolicies(sec, ptype, rules);
@@ -92,7 +102,13 @@ export class InternalEnforcer extends CoreEnforcer {
   /**
    * updatePolicyInternal updates a rule from the current policy.
    */
-  public async updatePolicyInternal(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+  protected async updatePolicyInternal(
+    sec: string,
+    ptype: string,
+    oldRule: string[],
+    newRule: string[],
+    useWatcher: boolean
+  ): Promise<boolean> {
     if (!this.model.hasPolicy(sec, ptype, oldRule)) {
       return false;
     }
@@ -111,10 +127,12 @@ export class InternalEnforcer extends CoreEnforcer {
       }
     }
 
-    if (this.watcher && this.autoNotifyWatcher) {
-      // In fact I think it should wait for the respond, but they implement add_policy() like this
-      // error intentionally ignored
-      this.watcher.update();
+    if (useWatcher) {
+      if (this.watcher && this.autoNotifyWatcher) {
+        // In fact I think it should wait for the respond, but they implement add_policy() like this
+        // error intentionally ignored
+        this.watcher.update();
+      }
     }
 
     const ok = this.model.updatePolicy(sec, ptype, oldRule, newRule);
@@ -129,7 +147,7 @@ export class InternalEnforcer extends CoreEnforcer {
   /**
    * removePolicyInternal removes a rule from the current policy.
    */
-  public async removePolicyInternal(sec: string, ptype: string, rule: string[]): Promise<boolean> {
+  protected async removePolicyInternal(sec: string, ptype: string, rule: string[], useWatcher: boolean): Promise<boolean> {
     if (!this.model.hasPolicy(sec, ptype, rule)) {
       return false;
     }
@@ -144,10 +162,15 @@ export class InternalEnforcer extends CoreEnforcer {
       }
     }
 
-    if (this.watcher && this.autoNotifyWatcher) {
-      // error intentionally ignored
-      if (this.watcherEx) await this.watcherEx.updateForRemovePolicy(sec, ptype, ...rule);
-      else if (this.watcher) await this.watcher.update();
+    if (useWatcher) {
+      if (this.watcher && this.autoNotifyWatcher) {
+        // error intentionally ignored
+        if (this.watcherEx) {
+          this.watcherEx.updateForRemovePolicy(sec, ptype, ...rule);
+        } else if (this.watcher) {
+          this.watcher.update();
+        }
+      }
     }
 
     const ok = await this.model.removePolicy(sec, ptype, rule);
@@ -158,7 +181,7 @@ export class InternalEnforcer extends CoreEnforcer {
   }
 
   // removePolicies removes rules from the current policy.
-  public async removePoliciesInternal(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
+  protected async removePoliciesInternal(sec: string, ptype: string, rules: string[][], useWatcher: boolean): Promise<boolean> {
     for (const rule of rules) {
       if (!this.model.hasPolicy(sec, ptype, rule)) {
         return false;
@@ -179,10 +202,15 @@ export class InternalEnforcer extends CoreEnforcer {
       }
     }
 
-    if (this.watcher && this.autoNotifyWatcher) {
-      // error intentionally ignored
-      if (this.watcherEx) await this.watcherEx.updateForRemovePolicies(sec, ptype, ...rules);
-      else if (this.watcher) await this.watcher.update();
+    if (useWatcher) {
+      if (this.watcher && this.autoNotifyWatcher) {
+        // error intentionally ignored
+        if (this.watcherEx) {
+          this.watcherEx.updateForRemovePolicies(sec, ptype, ...rules);
+        } else if (this.watcher) {
+          this.watcher.update();
+        }
+      }
     }
 
     const [ok, effects] = this.model.removePolicies(sec, ptype, rules);
@@ -195,7 +223,13 @@ export class InternalEnforcer extends CoreEnforcer {
   /**
    * removeFilteredPolicyInternal removes rules based on field filters from the current policy.
    */
-  public async removeFilteredPolicyInternal(sec: string, ptype: string, fieldIndex: number, fieldValues: string[]): Promise<boolean> {
+  protected async removeFilteredPolicyInternal(
+    sec: string,
+    ptype: string,
+    fieldIndex: number,
+    fieldValues: string[],
+    useWatcher: boolean
+  ): Promise<boolean> {
     if (this.adapter && this.autoSave) {
       try {
         await this.adapter.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
@@ -206,10 +240,15 @@ export class InternalEnforcer extends CoreEnforcer {
       }
     }
 
-    if (this.watcher && this.autoNotifyWatcher) {
-      // error intentionally ignored
-      if (this.watcherEx) await this.watcherEx.updateForRemoveFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
-      else if (this.watcher) await this.watcher.update();
+    if (useWatcher) {
+      if (this.watcher && this.autoNotifyWatcher) {
+        // error intentionally ignored
+        if (this.watcherEx) {
+          this.watcherEx.updateForRemoveFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
+        } else if (this.watcher) {
+          this.watcher.update();
+        }
+      }
     }
 
     const [ok, effects] = this.model.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
@@ -217,5 +256,20 @@ export class InternalEnforcer extends CoreEnforcer {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, effects);
     }
     return ok;
+  }
+
+  /**
+   * get field index in model.fieldMap.
+   */
+  public getFieldIndex(ptype: string, field: string): number {
+    return this.model.getFieldIndex(ptype, field);
+  }
+
+  /**
+   *  set index of field
+   */
+  public setFieldIndex(ptype: string, field: string, index: number): void {
+    const assertion = this.model.model.get('p')?.get(ptype);
+    assertion?.fieldIndexMap.set(field, index);
   }
 }

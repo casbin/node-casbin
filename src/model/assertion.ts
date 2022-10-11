@@ -24,6 +24,7 @@ export class Assertion {
   public tokens: string[];
   public policy: string[][];
   public rm: rbac.RoleManager;
+  public fieldIndexMap: Map<string, number>;
 
   /**
    * constructor is the constructor for Assertion.
@@ -34,6 +35,7 @@ export class Assertion {
     this.tokens = [];
     this.policy = [];
     this.rm = new rbac.DefaultRoleManager(10);
+    this.fieldIndexMap = new Map<string, number>();
   }
 
   public async buildIncrementalRoleLinks(rm: rbac.RoleManager, op: PolicyOp, rules: string[][]): Promise<void> {
