@@ -698,7 +698,7 @@ test('TestEnforce Multiple policies config', async () => {
   m.addDef('g', 'g', '_, _');
   m.addDef('e', 'e2', 'some(where (p.eft == allow))');
   m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
-  const policy = readFileSync('examples/mulitple_policy.csv').toString();
+  const policy = readFileSync('examples/multiple_policy.csv').toString();
   const a = new StringAdapter(policy);
 
   const e = await newEnforcer(m, a);
@@ -716,7 +716,7 @@ test('new EnforceContext config', async () => {
   m.addDef('g', 'g', '_, _');
   m.addDef('e', 'e2', 'some(where (p.eft == allow))');
   m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
-  const policy = readFileSync('examples/mulitple_policy.csv').toString();
+  const policy = readFileSync('examples/multiple_policy.csv').toString();
   const a = new StringAdapter(policy);
 
   const e = await newEnforcer(m, a);
@@ -734,7 +734,7 @@ test('TestEnforceEX Multiple policies config', async () => {
   m.addDef('g', 'g', '_, _');
   m.addDef('e', 'e2', 'some(where (p.eft == allow))');
   m.addDef('m', 'm2', 'g(r2.sub, p2.sub) && r2.obj == p2.obj && r2.act == p2.act');
-  const policy = readFileSync('examples/mulitple_policy.csv').toString();
+  const policy = readFileSync('examples/multiple_policy.csv').toString();
   const a = new StringAdapter(policy);
 
   const e = await newEnforcer(m, a);
