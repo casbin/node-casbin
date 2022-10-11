@@ -524,7 +524,7 @@ describe('Unimplemented File Adapter methods', () => {
 
 describe('Unimplemented String Adapter methods', () => {
   let e = {} as Enforcer;
-  let a = {} as StringAdapter;
+  const a = {} as StringAdapter;
 
   beforeEach(async () => {
     const policy = readFileSync('examples/basic_policy.csv').toString();

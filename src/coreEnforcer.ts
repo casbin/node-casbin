@@ -623,7 +623,7 @@ export class CoreEnforcer {
         return generatorRunAsync(this.privateEnforce(true, false, enforceContext, ...rvals));
       }
     }
-      return generatorRunAsync(this.privateEnforce(true, false, this.defaultEnforceContext, ...rvals));
+    return generatorRunAsync(this.privateEnforce(true, false, this.defaultEnforceContext, ...rvals));
   }
 
   /**
