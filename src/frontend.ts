@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Enforcer } from './enforcer';
-import { deepCopy } from './util';
 
 /**
  * Experiment!
@@ -39,11 +38,11 @@ export async function casbinJsGetPermissionForUser(e: Enforcer, user?: string): 
   s += `e = ${m.get('e')?.get('e')?.value.replace(/_/g, '.')}\n`;
   s += '[matchers]\n';
   s += `m = ${m.get('m')?.get('m')?.value.replace(/_/g, '.')}`;
-  obj['m'] = s;
-  obj['p'] = deepCopy(await e.getPolicy());
-  for (const arr of obj['p']) {
-    arr.splice(0, 0, 'p');
-  }
+  obj.m = s;
+  obj.p = [
+    ...(await e.getPolicy()).map(policy => ['p', ...policy]),
+    ...(await e.getPolicy()).map(policy => ['g', ...policy]),
+  ];
 
   return JSON.stringify(obj);
 }
