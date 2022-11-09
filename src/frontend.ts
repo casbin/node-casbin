@@ -41,7 +41,7 @@ export async function casbinJsGetPermissionForUser(e: Enforcer, user?: string): 
   obj.m = s;
   obj.p = [
     ...(await e.getPolicy()).map(policy => ['p', ...policy]),
-    ...(await e.getPolicy()).map(policy => ['g', ...policy]),
+    ...(await e.getGroupingPolicy()).map(policy => ['g', ...policy]),
   ];
 
   return JSON.stringify(obj);
