@@ -1,3 +1,10 @@
+## [5.19.2](https://github.com/casbin/node-casbin/compare/v5.19.1...v5.19.2) (2022-11-12)
+
+
+### Bug Fixes
+
+* Revert "fix: escape assertion bug ([#394](https://github.com/casbin/node-casbin/issues/394))" ([#398](https://github.com/casbin/node-casbin/issues/398)) ([6127584](https://github.com/casbin/node-casbin/commit/61275848007386550dc211e3ed0b13388e654a29))
+
 ## [5.19.1](https://github.com/casbin/node-casbin/compare/v5.19.0...v5.19.1) (2022-10-04)
 
 
