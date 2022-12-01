@@ -2885,10 +2885,10 @@ expect@^26.6.2:
     jest-message-util "^26.6.2"
     jest-regex-util "^26.0.0"
 
-expression-eval@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/expression-eval/-/expression-eval-4.0.0.tgz#d6a07c93e8b33e635710419d4a595d9208b9cc5e"
-  integrity sha512-YHSnLTyIb9IKaho2IdQbvlei/pElxnGm48UgaXJ1Fe5au95Ck0R9ftm6rHJQuKw3FguZZ4eXVllJFFFc7LX0WQ==
+expression-eval@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/expression-eval/-/expression-eval-5.0.0.tgz#0add5fa9e12c9bbaa8e81f16fc9e560599523afd"
+  integrity sha512-2H7OBTa/UKBgTVRRb3/lXd+D89cLjClNtldnzOpZYWZK1zBLIlrz8BLWp5f81AAYOc37GbhkCRXtl5Z/q4D91g==
   dependencies:
     jsep "^0.3.0"
 
