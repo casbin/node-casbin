@@ -18,11 +18,11 @@
 
 <a href="https://casdoor.org/"><img src="https://user-images.githubusercontent.com/3787410/147868267-6ac74908-5654-4f9c-ac79-8852af9ff925.png" alt="casdoor" style="width: 50%; height: 50%"/></a>
 
-**News**: still worry about how to write the correct `node-casbin` policy? [Casbin online editor](http://casbin.org/en/editor) is coming to help!
+**News**: still worry about how to write the correct `node-casbin` policy? [Casbin online editor](http://casbin.org/editor) is coming to help!
 
 ![casbin Logo](casbin-logo.png)
 
-`node-casbin` is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https://en.wikipedia.org/wiki/Computer_security_model).
+`node-casbin` is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https:/.wikipedia.org/wiki/Computer_security_model).
 
 ## All the languages supported by Casbin:
 
@@ -38,7 +38,7 @@
 
 ## Documentation
 
-https://casbin.org/docs/en/overview
+https://casbin.org/docs/overview
 
 ## Installation
 
@@ -97,24 +97,24 @@ See [Policy management APIs](#policy-management) for more usage.
 
 Casbin provides two sets of APIs to manage permissions:
 
-- [Management API](https://casbin.org/docs/en/management-api): the primitive API that provides full support for Casbin policy management.
-- [RBAC API](https://casbin.org/docs/en/rbac-api): a more friendly API for RBAC. This API is a subset of Management API. The RBAC users could use this API to simplify the code.
+- [Management API](https://casbin.org/docs/management-api): the primitive API that provides full support for Casbin policy management.
+- [RBAC API](https://casbin.org/docs/rbac-api): a more friendly API for RBAC. This API is a subset of Management API. The RBAC users could use this API to simplify the code.
 
 ## Official Model
 
-https://casbin.org/docs/en/supported-models
+https://casbin.org/docs/supported-models
 
 ## Policy persistence
 
-https://casbin.org/docs/en/adapters
+https://casbin.org/docs/adapters
 
 ## Policy consistence between multiple nodes
 
-https://casbin.org/docs/en/watchers
+https://casbin.org/docs/watchers
 
 ## Role manager
 
-https://casbin.org/docs/en/role-managers
+https://casbin.org/docs/role-managers
 
 ## Contributors
 
