@@ -1,3 +1,10 @@
+## [5.19.3](https://github.com/casbin/node-casbin/compare/v5.19.2...v5.19.3) (2022-12-02)
+
+
+### Bug Fixes
+
+* update express-eval dependency to v5 ([#400](https://github.com/casbin/node-casbin/issues/400)) ([02a9496](https://github.com/casbin/node-casbin/commit/02a94967aa182fbc588e4ca7da70c7b55e5e8407))
+
 ## [5.19.2](https://github.com/casbin/node-casbin/compare/v5.19.1...v5.19.2) (2022-11-12)
 
 
