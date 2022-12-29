@@ -1,3 +1,10 @@
+# [5.20.0](https://github.com/casbin/node-casbin/compare/v5.19.3...v5.20.0) (2022-12-29)
+
+
+### Features
+
+* **defaultrolemanager.ts:** add hierarchical domain support for rbac ([#380](https://github.com/casbin/node-casbin/issues/380)) ([da980af](https://github.com/casbin/node-casbin/commit/da980afd80303d37a5c3e073250ed64c217c3225)), closes [#377](https://github.com/casbin/node-casbin/issues/377)
+
 ## [5.19.3](https://github.com/casbin/node-casbin/compare/v5.19.2...v5.19.3) (2022-12-02)
 
 
