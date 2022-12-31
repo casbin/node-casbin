@@ -1,3 +1,10 @@
+## [5.20.1](https://github.com/casbin/node-casbin/compare/v5.20.0...v5.20.1) (2022-12-31)
+
+
+### Bug Fixes
+
+* delete unused files in examples ([#407](https://github.com/casbin/node-casbin/issues/407)) ([323a750](https://github.com/casbin/node-casbin/commit/323a7500e9860e5530b858d09344d92d3a15706a))
+
 # [5.20.0](https://github.com/casbin/node-casbin/compare/v5.19.3...v5.20.0) (2022-12-29)
 
 
