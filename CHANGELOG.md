@@ -1,3 +1,10 @@
+## [5.20.2](https://github.com/casbin/node-casbin/compare/v5.20.1...v5.20.2) (2023-01-08)
+
+
+### Bug Fixes
+
+* Upgraded CI Nodejs version to v14.16.18. ([#410](https://github.com/casbin/node-casbin/issues/410)) ([9aadcd7](https://github.com/casbin/node-casbin/commit/9aadcd796cc474e8417b7ce78ecebb7096010a77))
+
 ## [5.20.1](https://github.com/casbin/node-casbin/compare/v5.20.0...v5.20.1) (2022-12-31)
 
 
