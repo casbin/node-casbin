@@ -1,3 +1,10 @@
+## [5.20.3](https://github.com/casbin/node-casbin/compare/v5.20.2...v5.20.3) (2023-01-10)
+
+
+### Bug Fixes
+
+* Multiline Separator Handling ([#411](https://github.com/casbin/node-casbin/issues/411)) ([ab3467a](https://github.com/casbin/node-casbin/commit/ab3467a40004d48d323ebc79078077c8e1593514))
+
 ## [5.20.2](https://github.com/casbin/node-casbin/compare/v5.20.1...v5.20.2) (2023-01-08)
 
 
