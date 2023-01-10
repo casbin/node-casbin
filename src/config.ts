@@ -124,7 +124,7 @@ export class Config implements ConfigInterface {
         section = line.substring(1, line.length - 1);
       } else {
         let shouldWrite = false;
-        if (line.includes(Config.DEFAULT_MULTI_LINE_SEPARATOR)) {
+        if (line.endsWith(Config.DEFAULT_MULTI_LINE_SEPARATOR)) {
           currentLine += line.substring(0, line.length - 1).trim();
         } else {
           currentLine += line;
