@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { concat } from 'lodash';
 import { Enforcer } from './enforcer';
 import { deepCopy } from './util';
 
@@ -40,10 +41,19 @@ export async function casbinJsGetPermissionForUser(e: Enforcer, user?: string): 
   s += '[matchers]\n';
   s += `m = ${m.get('m')?.get('m')?.value.replace(/_/g, '.')}`;
   obj['m'] = s;
-  obj['p'] = deepCopy(await e.getPolicy());
-  for (const arr of obj['p']) {
-    arr.splice(0, 0, 'p');
-  }
+
+  const policy = deepCopy(await e.getPolicy());
+  const groupPolicy = deepCopy(await e.getGroupingPolicy());
+
+  policy.forEach((item: string[]) => {
+    item.unshift('p');
+  });
+
+  groupPolicy.forEach((item: string[]) => {
+    item.unshift('g');
+  });
+
+  obj['p'] = concat(policy, groupPolicy);
 
   return JSON.stringify(obj);
 }
