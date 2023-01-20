@@ -1,3 +1,10 @@
+## [5.20.4](https://github.com/casbin/node-casbin/compare/v5.20.3...v5.20.4) (2023-01-20)
+
+
+### Bug Fixes
+
+* add groupPolicy for GetPermissionForUser in frontend.ts ([#415](https://github.com/casbin/node-casbin/issues/415)) ([5d1a679](https://github.com/casbin/node-casbin/commit/5d1a6795f94af487218f10dce85fe191fb0dea37))
+
 ## [5.20.3](https://github.com/casbin/node-casbin/compare/v5.20.2...v5.20.3) (2023-01-10)
 
 
