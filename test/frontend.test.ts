@@ -28,6 +28,8 @@ test('TestCasbinJsGetPermissionForUser', async () => {
   // If you enable CR_LF auto transfer on Windows platform, this can lead to some unexpected behavior.
   expect(received['m']).toBe(expectedModelStr.replace(/\n\n/g, '\n'));
   const expectedPoliciesStr = readFileSync('examples/rbac_with_hierarchy_policy.csv').toString();
+
+  expectedPoliciesStr.replace(/\n[\n]+/g, '\n')
   const expectedPolicyItem = expectedPoliciesStr.split(RegExp(',|\n'));
   let i = 0;
   for (const sArr of received['p']) {
