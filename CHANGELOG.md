@@ -1,3 +1,10 @@
+# [5.21.0](https://github.com/casbin/node-casbin/compare/v5.20.4...v5.21.0) (2023-01-21)
+
+
+### Features
+
+* support setNamedRoleManager() ([#416](https://github.com/casbin/node-casbin/issues/416)) ([869e8f9](https://github.com/casbin/node-casbin/commit/869e8f989b899073e071fa90777584f12cde0856))
+
 ## [5.20.4](https://github.com/casbin/node-casbin/compare/v5.20.3...v5.20.4) (2023-01-20)
 
 
