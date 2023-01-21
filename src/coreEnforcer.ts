@@ -147,6 +147,16 @@ export class CoreEnforcer {
   }
 
   /**
+   * setRoleManager sets the role manager for the named policy.
+   *
+   * @param ptype the named policy.
+   * @param rm the role manager.
+   */
+  public setNamedRoleManager(ptype: string, rm: RoleManager): void {
+    this.rmMap.set(ptype, rm);
+  }
+
+  /**
    * getRoleManager gets the current role manager.
    */
   public getRoleManager(): RoleManager {
