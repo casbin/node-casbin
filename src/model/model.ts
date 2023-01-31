@@ -495,18 +495,17 @@ export class Model {
     this.model.get('p')?.forEach((assertion, ptype) => {
       const domainIndex = this.getFieldIndex(ptype, FieldIndex.Domain);
       const subIndex = this.getFieldIndex(ptype, FieldIndex.Subject);
-      const subjectHierarchyMap = this.getSubjectHierarchyMap(this.model.get('g')?.get('g')?.policy);
+      // eslint-disable-next-line
+      const subjectHierarchyMap = this.getSubjectHierarchyMap(this.model.get('g')!.get('g')!.policy);
 
       assertion.policy.sort((policyA, policyB) => {
         const domainA = domainIndex === -1 ? defaultDomain : policyA[domainIndex];
         const domainB = domainIndex === -1 ? defaultDomain : policyB[domainIndex];
-        const priorityA = subjectHierarchyMap.get(this.getNameWithDomain(domainA, policyA[subIndex]));
-        const priorityB = subjectHierarchyMap.get(this.getNameWithDomain(domainB, policyB[subIndex]));
-
-        if (priorityB && priorityA) {
-          return priorityB - priorityA;
-        }
-        return 0;
+        // eslint-disable-next-line
+        const priorityA = subjectHierarchyMap.get(this.getNameWithDomain(domainA, policyA[subIndex]))!;
+        // eslint-disable-next-line
+        const priorityB = subjectHierarchyMap.get(this.getNameWithDomain(domainB, policyB[subIndex]))!;
+        return priorityB - priorityA;
       });
     });
   }
@@ -514,7 +513,7 @@ export class Model {
   /**
    * Calculate the priority of each policy store in Map<string, number>
    */
-  getSubjectHierarchyMap(groupPolicies: string[][] | undefined): Map<string, number> {
+  getSubjectHierarchyMap(groupPolicies: string[][]): Map<string, number> {
     const subjectHierarchyMap = new Map<string, number>();
     if (!groupPolicies) {
       return subjectHierarchyMap;
@@ -551,13 +550,14 @@ export class Model {
 
   findHierarchy(policyMap: Map<string, string>, subjectHierarchyMap: Map<string, number>, set: Set<string>, child: string): void {
     set.delete(child);
-    const parent = policyMap.get(child);
-    if (!parent) return;
+    // eslint-disable-next-line
+    const parent = policyMap.get(child)!;
 
     if (set.has(parent)) {
       this.findHierarchy(policyMap, subjectHierarchyMap, set, parent);
     }
-    subjectHierarchyMap.set(child, subjectHierarchyMap.get(parent) + 10);
+    // eslint-disable-next-line
+    subjectHierarchyMap.set(child, subjectHierarchyMap.get(parent)! + 10);
   }
 
   /**
