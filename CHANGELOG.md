@@ -1,3 +1,10 @@
+# [5.22.0](https://github.com/casbin/node-casbin/compare/v5.21.0...v5.22.0) (2023-01-31)
+
+
+### Features
+
+* support subjectPriority ([#417](https://github.com/casbin/node-casbin/issues/417)) ([e83d505](https://github.com/casbin/node-casbin/commit/e83d5058872e65be7dc9b374ca8c6640a1f2ca9d))
+
 # [5.21.0](https://github.com/casbin/node-casbin/compare/v5.20.4...v5.21.0) (2023-01-21)
 
 
