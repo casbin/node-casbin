@@ -24,8 +24,12 @@ function testEnforceSync(e: Enforcer, sub: any, obj: string, act: string, res: b
   expect(e.enforceSync(sub, obj, act)).toBe(res);
 }
 
-async function testEnforceEx(e: Enforcer, sub: any, obj: string, act: string, res: [boolean, string[]]): Promise<void> {
-  await expect(e.enforceEx(sub, obj, act)).resolves.toEqual(res);
+async function testEnforceEx(e: Enforcer, sub: any, obj: string, act: string, res: [boolean, string[]], domain?: string): Promise<void> {
+  if (domain) {
+    await expect(e.enforceEx(sub, obj, domain, act)).resolves.toEqual(res);
+  } else {
+    await expect(e.enforceEx(sub, obj, domain, act)).resolves.toEqual(res);
+  }
 }
 
 function testEnforceExSync(e: Enforcer, sub: any, obj: string, act: string, res: [boolean, string[]]): void {
@@ -696,4 +700,16 @@ test('TestEnforceExWithPriorityModel', async () => {
   testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
   testEnforceEx(e, 'bob', 'data2', 'read', [true, ['data2_allow_group', 'data2', 'read', 'allow']]);
   testEnforceEx(e, 'alice', 'data2', 'read', [false, []]);
+});
+
+test('TestSubjectPriority', async () => {
+  const e = await newEnforcer('examples/subject_priority_model.conf', 'examples/subject_priority_policy.csv');
+  testEnforceEx(e, 'jane', 'data1', 'read', [true, ['jane', 'data1', 'read', 'allow']]);
+  testEnforceEx(e, 'alice', 'data1', 'read', [true, ['data2_allow_group', 'data2', 'read', 'allow']]);
+});
+
+test('TestSubjectPriorityWithDomain', async () => {
+  const e = await newEnforcer('examples/subject_priority_model_with_domain.conf', 'examples/subject_priority_policy_with_domain.csv');
+  testEnforceEx(e, 'alice', 'data1', 'write', [true, ['alice', 'domain1', 'data1', 'write', 'allow']], 'domain1');
+  testEnforceEx(e, 'bob', 'data2', 'write', [true, ['bob', 'domain2', 'data2', 'write', 'allow']], 'domain2');
 });

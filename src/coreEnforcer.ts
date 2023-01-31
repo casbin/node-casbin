@@ -218,6 +218,7 @@ export class CoreEnforcer {
     await this.adapter.loadPolicy(this.model);
 
     this.sortPolicies();
+    this.model.sortPoliciesBySubjectHierarchy();
 
     if (this.autoBuildRoleLinks) {
       await this.buildRoleLinksInternal();
@@ -232,6 +233,9 @@ export class CoreEnforcer {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   public async loadFilteredPolicy(filter: any): Promise<boolean> {
     this.model.clearPolicy();
+
+    this.sortPolicies();
+    this.model.sortPoliciesBySubjectHierarchy();
 
     return this.loadIncrementalFilteredPolicy(filter);
   }

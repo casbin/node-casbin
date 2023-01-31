@@ -18,6 +18,10 @@ import { Config, ConfigInterface } from '../config';
 import { Assertion } from './assertion';
 import { getLogger, logPrint } from '../log';
 import { DefaultRoleManager } from '../rbac';
+import { EffectExpress, FieldIndex } from '../constants';
+
+const defaultDomain = '';
+const defaultSeparator = '::';
 
 export const sectionNameMap: { [index: string]: string } = {
   r: 'request_definition',
@@ -478,6 +482,89 @@ export class Model {
     }
     assertion.fieldIndexMap.set(field, index);
     return index;
+  }
+
+  /**
+   * sort policies by subject hieraichy
+   */
+  public sortPoliciesBySubjectHierarchy(): void {
+    if (this.model.get('e')?.get('e')?.value !== EffectExpress.SUBJECT_PRIORITY) {
+      return;
+    }
+
+    this.model.get('p')?.forEach((assertion, ptype) => {
+      const domainIndex = this.getFieldIndex(ptype, FieldIndex.Domain);
+      const subIndex = this.getFieldIndex(ptype, FieldIndex.Subject);
+      const subjectHierarchyMap = this.getSubjectHierarchyMap(this.model.get('g')?.get('g')?.policy);
+
+      assertion.policy.sort((policyA, policyB) => {
+        const domainA = domainIndex === -1 ? defaultDomain : policyA[domainIndex];
+        const domainB = domainIndex === -1 ? defaultDomain : policyB[domainIndex];
+        const priorityA = subjectHierarchyMap.get(this.getNameWithDomain(domainA, policyA[subIndex]));
+        const priorityB = subjectHierarchyMap.get(this.getNameWithDomain(domainB, policyB[subIndex]));
+
+        if (priorityB && priorityA) {
+          return priorityB - priorityA;
+        }
+        return 0;
+      });
+    });
+  }
+
+  /**
+   * Calculate the priority of each policy store in Map<string, number>
+   */
+  getSubjectHierarchyMap(groupPolicies: string[][] | undefined): Map<string, number> {
+    const subjectHierarchyMap = new Map<string, number>();
+    if (!groupPolicies) {
+      return subjectHierarchyMap;
+    }
+
+    const policyMap = new Map<string, string>();
+    let domain = defaultDomain;
+
+    groupPolicies.forEach((policy) => {
+      if (policy.length !== 2) domain = policy[this.getFieldIndex('p', FieldIndex.Domain)];
+      const child = this.getNameWithDomain(domain, policy[this.getFieldIndex('p', FieldIndex.Subject)]);
+      const parent = this.getNameWithDomain(domain, policy[this.getFieldIndex('p', FieldIndex.Object)]);
+      policyMap.set(child, parent);
+      if (!subjectHierarchyMap.has(child)) {
+        subjectHierarchyMap.set(child, 0);
+      }
+      if (!subjectHierarchyMap.has(parent)) {
+        subjectHierarchyMap.set(parent, 0);
+      }
+      subjectHierarchyMap.set(child, 1);
+    });
+
+    const set = new Set<string>();
+    subjectHierarchyMap.forEach((_, key) => {
+      if (subjectHierarchyMap.get(key) !== 0) set.add(key);
+    });
+    while (set.size !== 0) {
+      for (const child of set.values()) {
+        this.findHierarchy(policyMap, subjectHierarchyMap, set, child);
+      }
+    }
+    return subjectHierarchyMap;
+  }
+
+  findHierarchy(policyMap: Map<string, string>, subjectHierarchyMap: Map<string, number>, set: Set<string>, child: string): void {
+    set.delete(child);
+    const parent = policyMap.get(child);
+    if (!parent) return;
+
+    if (set.has(parent)) {
+      this.findHierarchy(policyMap, subjectHierarchyMap, set, parent);
+    }
+    subjectHierarchyMap.set(child, subjectHierarchyMap.get(parent) + 10);
+  }
+
+  /**
+   * get full name with domain
+   */
+  getNameWithDomain(domain: string, name: string): string {
+    return domain + defaultSeparator + name;
   }
 }
 
