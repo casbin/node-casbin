@@ -63,6 +63,7 @@ export class DefaultEffectorStream implements EffectorStream {
         }
         break;
       case EffectExpress.PRIORITY:
+      case EffectExpress.SUBJECT_PRIORITY:
         if (eft !== Effect.Indeterminate) {
           this.res = eft === Effect.Allow;
           this.done = true;
