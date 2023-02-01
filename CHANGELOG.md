@@ -1,3 +1,10 @@
+# [5.23.0](https://github.com/casbin/node-casbin/compare/v5.22.0...v5.23.0) (2023-02-01)
+
+
+### Features
+
+* support `updateGroupingPolicy()`, `updateNamedGroupingPolicy()`, `getImplicitResourcesForUser()` ([#419](https://github.com/casbin/node-casbin/issues/419)) ([46c0f3a](https://github.com/casbin/node-casbin/commit/46c0f3ad09c4e8cf673d9d9b9b8fcf00251caaaf))
+
 # [5.22.0](https://github.com/casbin/node-casbin/compare/v5.21.0...v5.22.0) (2023-01-31)
 
 
