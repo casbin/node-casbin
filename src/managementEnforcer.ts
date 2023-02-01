@@ -509,6 +509,29 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
+   * UpdateGroupingPolicy updates an rule to the current named policy.
+   *
+   * @param oldRule the old rule.
+   * @param newRule the new rule.
+   * @return succeeds or not.
+   */
+  public async updateGroupingPolicy(oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.updateNamedGroupingPolicy('g', oldRule, newRule);
+  }
+
+  /**
+   * updateNamedGroupingPolicy updates an rule to the current named policy.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param oldRule the old rule.
+   * @param newRule the new rule.
+   * @return succeeds or not.
+   */
+  public async updateNamedGroupingPolicy(ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.updatePolicyInternal('g', ptype, oldRule, newRule, true);
+  }
+
+  /**
    * addFunction adds a customized function.
    * @param name custom function name
    * @param func function

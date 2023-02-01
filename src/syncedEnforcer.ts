@@ -480,6 +480,29 @@ export class SyncedEnforcer extends Enforcer {
   }
 
   /**
+   * UpdateGroupingPolicy updates an rule to the current named policy.
+   *
+   * @param oldRule the old rule.
+   * @param newRule the new rule.
+   * @return succeeds or not.
+   */
+  public async updateGroupingPolicy(oldRule: string[], newRule: string[]): Promise<boolean> {
+    return super.updateGroupingPolicy(oldRule, newRule);
+  }
+
+  /**
+   * updateNamedGroupingPolicy updates an rule to the current named policy.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param oldRule the old rule.
+   * @param newRule the new rule.
+   * @return succeeds or not.
+   */
+  public async updateNamedGroupingPolicy(ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+    return super.updateNamedGroupingPolicy(ptype, oldRule, newRule);
+  }
+
+  /**
    * add matching function to RoleManager by ptype
    * @param ptype g
    * @param fn the function will be added

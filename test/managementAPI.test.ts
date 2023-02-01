@@ -353,3 +353,27 @@ test('removeNamedGroupingPolicies', async () => {
   const removed = await e.removeNamedGroupingPolicies('g', groupingRules);
   expect(removed).toBe(true);
 });
+
+test('updateGroupingPolicy', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+
+  let groupingPolicy = await e.getGroupingPolicy();
+  testArray2DEquals(groupingPolicy, [['alice', 'data2_admin']]);
+
+  const updated = e.updateGroupingPolicy(['alice', 'data2_admin'], ['alice', 'update_test']);
+  groupingPolicy = await e.getGroupingPolicy();
+  testArray2DEquals(groupingPolicy, [['alice', 'update_test']]);
+});
+
+test('updateNamedGroupingPolicy', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+
+  let groupingPolicy = await e.getGroupingPolicy();
+  testArray2DEquals(groupingPolicy, [['alice', 'data2_admin']]);
+
+  const updated = e.updateNamedGroupingPolicy('g', ['alice', 'data2_admin'], ['alice', 'update_test']);
+  groupingPolicy = await e.getGroupingPolicy();
+  testArray2DEquals(groupingPolicy, [['alice', 'update_test']]);
+});

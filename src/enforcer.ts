@@ -349,6 +349,44 @@ export class Enforcer extends ManagementEnforcer {
   }
 
   /**
+   * getImplicitResourcesForUser returns all policies that user obtaining in domain.
+   */
+  public async getImplicitResourcesForUser(user: string, ...domain: string[]): Promise<string[][]> {
+    const permissions = await this.getImplicitPermissionsForUser(user, ...domain);
+    const res: string[][] = [];
+    for (const permission of permissions) {
+      if (permission[0] === user) {
+        res.push(permission);
+        continue;
+      }
+      let resLocal: string[][] = [[user]];
+      const tokensLength: number = permission.length;
+      const t: string[][] = [];
+      for (const token of permission) {
+        if (token === permission[0]) {
+          continue;
+        }
+        const tokens: string[] = await this.getImplicitUsersForRole(token, ...domain);
+        tokens.push(token);
+        t.push(tokens);
+      }
+      for (let i = 0; i < tokensLength - 1; i++) {
+        const n: string[][] = [];
+        for (const tokens of t[i]) {
+          for (const policy of resLocal) {
+            const t: string[] = [...policy];
+            t.push(tokens);
+            n.push(t);
+          }
+        }
+        resLocal = n;
+      }
+      res.push(...resLocal);
+    }
+    return res;
+  }
+
+  /**
    * getImplicitUsersForRole gets implicit users that a role has.
    * Compared to getUsersForRole(), this function retrieves indirect users besides direct users.
    * For example:
