@@ -75,6 +75,28 @@ test('test getImplicitPermissionsForUser', async () => {
   ]);
 });
 
+test('test getImplicitResourcesForUser', async () => {
+  const e = await newEnforcer('examples/rbac_with_pattern_model.conf', 'examples/rbac_with_pattern_policy.csv');
+  expect(await e.getImplicitResourcesForUser('alice')).toEqual([
+    ['alice', '/pen/1', 'GET'],
+    ['alice', '/pen2/1', 'GET'],
+    ['alice', '/book/*', 'GET'],
+    ['alice', '/book/:id', 'GET'],
+    ['alice', '/book2/{id}', 'GET'],
+    ['alice', 'book_group', 'GET'],
+  ]);
+  expect(await e.getImplicitResourcesForUser('bob')).toEqual([
+    ['bob', '/pen/:id', 'GET'],
+    ['bob', '/pen2/{id}', 'GET'],
+    ['bob', 'pen_group', 'GET'],
+  ]);
+  expect(await e.getImplicitResourcesForUser('cathy')).toEqual([
+    ['cathy', '/pen/:id', 'GET'],
+    ['cathy', '/pen2/{id}', 'GET'],
+    ['cathy', 'pen_group', 'GET'],
+  ]);
+});
+
 test('test deleteRolesForUser', async () => {
   const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
   expect(await e.hasPermissionForUser('bob', 'data2', 'write')).toEqual(true);
