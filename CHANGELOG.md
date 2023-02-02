@@ -1,3 +1,10 @@
+## [5.23.1](https://github.com/casbin/node-casbin/compare/v5.23.0...v5.23.1) (2023-02-02)
+
+
+### Bug Fixes
+
+* avoid the impact of line breaks CRLF in frontend.test.ts ([#420](https://github.com/casbin/node-casbin/issues/420)) ([7c32e23](https://github.com/casbin/node-casbin/commit/7c32e237a0881d74d8792e4ea7695999960e2e21))
+
 # [5.23.0](https://github.com/casbin/node-casbin/compare/v5.22.0...v5.23.0) (2023-02-01)
 
 
