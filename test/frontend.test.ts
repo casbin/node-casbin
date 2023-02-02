@@ -24,8 +24,11 @@ test('TestCasbinJsGetPermissionForUser', async () => {
     throw new Error('Unexpected side affect.');
   }
   const received = JSON.parse(await casbinJsGetPermissionForUser(e, 'alice'));
-  const expectedModelStr = readFileSync('examples/rbac_model.conf').toString();
-  // If you enable CR_LF auto transfer on Windows platform, this can lead to some unexpected behavior.
+  let expectedModelStr = readFileSync('examples/rbac_model.conf').toString();
+
+  // avoid the impact of line breaks changing to CRLF, when automatic conversion is enabled
+  expectedModelStr = expectedModelStr.replace(/\r/g, '\n')
+
   expect(received['m']).toBe(expectedModelStr.replace(/\n\n/g, '\n'));
   const expectedPoliciesStr = readFileSync('examples/rbac_with_hierarchy_policy.csv').toString();
 
