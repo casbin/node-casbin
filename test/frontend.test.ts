@@ -27,7 +27,7 @@ test('TestCasbinJsGetPermissionForUser', async () => {
   let expectedModelStr = readFileSync('examples/rbac_model.conf').toString();
 
   // avoid the impact of line breaks changing to CRLF, when automatic conversion is enabled
-  expectedModelStr = expectedModelStr.replace(/\r/g, '\n')
+  expectedModelStr = expectedModelStr.replace(/\r/g, '\n');
 
   expect(received['m']).toBe(expectedModelStr.replace(/\n\n/g, '\n'));
   const expectedPoliciesStr = readFileSync('examples/rbac_with_hierarchy_policy.csv').toString();
