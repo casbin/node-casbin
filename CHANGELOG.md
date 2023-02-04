@@ -1,3 +1,10 @@
+## [5.23.2](https://github.com/casbin/node-casbin/compare/v5.23.1...v5.23.2) (2023-02-04)
+
+
+### Bug Fixes
+
+* fix typo in subject_priority_policy.csv ([#425](https://github.com/casbin/node-casbin/issues/425)) ([ada2543](https://github.com/casbin/node-casbin/commit/ada25436fe7baa37959e1d4f67a644e833e88656))
+
 ## [5.23.1](https://github.com/casbin/node-casbin/compare/v5.23.0...v5.23.1) (2023-02-02)
 
 
