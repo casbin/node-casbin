@@ -8,4 +8,9 @@ p, jane, data1, read, allow
 p, alice, data1, read, allow
 
 g, jane, editor, admin, root
-g, alice, subscriber, admin, root
+
+g, editor, admin
+g, subscriber, admin
+
+g, jane, editor
+g, alice, subscriber
