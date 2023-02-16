@@ -19,6 +19,7 @@ import { Assertion } from './assertion';
 import { getLogger, logPrint } from '../log';
 import { DefaultRoleManager } from '../rbac';
 import { EffectExpress, FieldIndex } from '../constants';
+import { FileSystem } from '../persist/fileSystem';
 
 const defaultDomain = '';
 const defaultSeparator = '::';
@@ -125,9 +126,23 @@ export class Model {
     return true;
   }
 
-  // loadModel loads the model from model CONF file.
-  public loadModel(path: string): void {
-    const cfg = Config.newConfig(path);
+  /**
+   * loadModel loads the model from model CONF file.
+   * @param path the model file path
+   * @param fs {@link FileSystem}
+   * @deprecated {@link loadModelFromFile}
+   */
+  public loadModel(path: string, fs?: FileSystem): void {
+    this.loadModelFromFile(path, fs);
+  }
+
+  /**
+   * loadModelFromFile loads the model from model CONF file.
+   * @param path the model file path
+   * @param fs {@link FileSystem}
+   */
+  public loadModelFromFile(path: string, fs?: FileSystem): void {
+    const cfg = Config.newConfigFromFile(path, fs);
 
     this.loadModelFromConfig(cfg);
   }
@@ -576,7 +591,7 @@ export function newModel(...text: string[]): Model {
 
   if (text.length === 2) {
     if (text[0] !== '') {
-      m.loadModel(text[0]);
+      m.loadModelFromFile(text[0]);
     }
   } else if (text.length === 1) {
     m.loadModelFromText(text[0]);
@@ -590,9 +605,11 @@ export function newModel(...text: string[]): Model {
 /**
  * newModelFromFile creates a model from a .CONF file.
  */
-export function newModelFromFile(path: string): Model {
+export function newModelFromFile(path: string, fs?: FileSystem): Model {
   const m = new Model();
-  m.loadModel(path);
+  if (path) {
+    m.loadModelFromFile(path, fs);
+  }
   return m;
 }
 

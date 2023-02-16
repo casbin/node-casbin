@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ManagementEnforcer } from './managementEnforcer';
-import { Model, newModel } from './model';
+import { Model, newModelFromFile } from './model';
 import { Adapter, FileAdapter, StringAdapter } from './persist';
 import { getLogger } from './log';
 import { arrayRemoveDuplicates } from './util';
@@ -30,7 +30,7 @@ export class Enforcer extends ManagementEnforcer {
    * @param lazyLoad lazyLoad whether to load policy at initial time
    */
   public async initWithFile(modelPath: string, policyPath: string, lazyLoad = false): Promise<void> {
-    const a = new FileAdapter(policyPath);
+    const a = new FileAdapter(policyPath, this.fs);
     await this.initWithAdapter(modelPath, a, lazyLoad);
   }
 
@@ -52,7 +52,7 @@ export class Enforcer extends ManagementEnforcer {
    * @param lazyLoad whether to load policy at initial time
    */
   public async initWithAdapter(modelPath: string, adapter: Adapter, lazyLoad = false): Promise<void> {
-    const m = newModel(modelPath, '');
+    const m = newModelFromFile(modelPath, this.fs);
     await this.initWithModelAndAdapter(m, adapter, lazyLoad);
 
     this.modelPath = modelPath;

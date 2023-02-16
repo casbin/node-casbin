@@ -1,7 +1,8 @@
 import { Adapter } from './adapter';
 import { Model } from '../model';
 import { Helper } from './helper';
-import { arrayToString, readFile, writeFile } from '../util';
+import { arrayToString } from '../util';
+import { FileSystem, mustGetDefaultFileSystem } from './fileSystem';
 
 /**
  * FileAdapter is the file adapter for Casbin.
@@ -9,13 +10,17 @@ import { arrayToString, readFile, writeFile } from '../util';
  */
 export class FileAdapter implements Adapter {
   public readonly filePath: string;
+  protected readonly fs?: FileSystem;
 
   /**
    * FileAdapter is the constructor for FileAdapter.
-   * @param {string} filePath filePath the path of the policy file.
+   *
+   * @param filePath filePath the path of the policy file.
+   * @param fs {@link FileSystem}
    */
-  constructor(filePath: string) {
+  constructor(filePath: string, fs?: FileSystem) {
     this.filePath = filePath;
+    this.fs = fs;
   }
 
   public async loadPolicy(model: Model): Promise<void> {
@@ -27,7 +32,7 @@ export class FileAdapter implements Adapter {
   }
 
   private async loadPolicyFile(model: Model, handler: (line: string, model: Model) => void): Promise<void> {
-    const bodyBuf = await readFile(this.filePath);
+    const bodyBuf = await (this.fs ? this.fs : mustGetDefaultFileSystem()).readFileSync(this.filePath);
     const lines = bodyBuf.toString().split('\n');
     lines.forEach((n: string, index: number) => {
       if (!n) {
@@ -76,7 +81,7 @@ export class FileAdapter implements Adapter {
   }
 
   private async savePolicyFile(text: string): Promise<void> {
-    await writeFile(this.filePath, text);
+    (this.fs ? this.fs : mustGetDefaultFileSystem()).writeFileSync(this.filePath, text);
   }
 
   /**

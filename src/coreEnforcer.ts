@@ -15,7 +15,7 @@
 import { compile, compileAsync, addBinaryOp } from 'expression-eval';
 
 import { DefaultEffector, Effect, Effector } from './effect';
-import { FunctionMap, Model, newModel, PolicyOp } from './model';
+import { FunctionMap, Model, newModelFromFile, PolicyOp } from './model';
 import { Adapter, FilteredAdapter, Watcher, BatchAdapter, UpdatableAdapter, WatcherEx } from './persist';
 import { DefaultRoleManager, RoleManager } from './rbac';
 import {
@@ -32,6 +32,7 @@ import {
 } from './util';
 import { getLogger, logPrint } from './log';
 import { MatchingFunc } from './rbac';
+import { FileSystem, getDefaultFileSystem } from './persist';
 
 type Matcher = ((context: any) => Promise<any>) | ((context: any) => any);
 
@@ -56,6 +57,22 @@ export class CoreEnforcer {
   protected autoSave = true;
   protected autoBuildRoleLinks = true;
   protected autoNotifyWatcher = true;
+  protected fs?: FileSystem;
+
+  /**
+   * setFileSystem sets a file system to read the model file or the policy file.
+   * @param fs {@link FileSystem}
+   */
+  public setFileSystem(fs: FileSystem): void {
+    this.fs = fs;
+  }
+
+  /**
+   * getFileSystem gets the file system,
+   */
+  public getFileSystem(): FileSystem | undefined {
+    return this.fs;
+  }
 
   private getExpression(asyncCompile: boolean, exp: string): Matcher {
     const matcherKey = `${asyncCompile ? 'ASYNC[' : 'SYNC['}${exp}]`;
@@ -77,8 +94,7 @@ export class CoreEnforcer {
    * so the policy is invalidated and needs to be reloaded by calling LoadPolicy().
    */
   public loadModel(): void {
-    this.model = newModel();
-    this.model.loadModel(this.modelPath);
+    this.model = newModelFromFile(this.modelPath, this.fs);
     this.model.printModel();
   }
 

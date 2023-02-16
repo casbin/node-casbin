@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { readFileSync } from 'fs';
+import fs, { readFileSync } from 'fs';
 
 import { newModel, newEnforcer, Enforcer, FileAdapter, StringAdapter, Util } from '../src';
 
@@ -712,4 +712,23 @@ test('TestSubjectPriorityWithDomain', async () => {
   const e = await newEnforcer('examples/subject_priority_model_with_domain.conf', 'examples/subject_priority_policy_with_domain.csv');
   testEnforceEx(e, 'alice', 'data1', 'write', [true, ['alice', 'data1', 'domain1', 'write', 'allow']], 'domain1');
   testEnforceEx(e, 'bob', 'data2', 'write', [true, ['bob', 'data2', 'domain2', 'write', 'allow']], 'domain2');
+});
+
+test('TestEnforcerWithScopeFileSystem', async () => {
+  const e = await newEnforcer();
+  const defaultFileSystem = {
+    readFileSync(path: string, encoding?: string) {
+      return fs.readFileSync(path, { encoding });
+    },
+    writeFileSync(path: string, text: string, encoding?: string) {
+      return fs.writeFileSync(path, text, encoding);
+    },
+  };
+  e.setFileSystem(defaultFileSystem);
+  expect(e.getFileSystem()).toEqual(defaultFileSystem);
+  await e.initWithFile('examples/basic_model.conf', 'examples/basic_policy.csv', false);
+  await testEnforce(e, 'alice', 'data1', 'read', true);
+  await testEnforce(e, 'alice', 'data1', 'write', false);
+  await testEnforce(e, 'bob', 'data2', 'write', true);
+  await testEnforce(e, 'bob', 'data2', 'read', false);
 });
