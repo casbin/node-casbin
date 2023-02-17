@@ -1,3 +1,10 @@
+## [5.24.1](https://github.com/casbin/node-casbin/compare/v5.24.0...v5.24.1) (2023-02-17)
+
+
+### Bug Fixes
+
+* remove lodash usage and types ([#432](https://github.com/casbin/node-casbin/issues/432)) ([9c227d5](https://github.com/casbin/node-casbin/commit/9c227d51ef3feb6f6a3d30705d2784921d85dece))
+
 # [5.24.0](https://github.com/casbin/node-casbin/compare/v5.23.2...v5.24.0) (2023-02-17)
 
 
