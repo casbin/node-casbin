@@ -11,7 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { readFileSync } from 'fs';
+
+import { FileSystem, mustGetDefaultFileSystem } from './persist';
 
 // ConfigInterface defines the behavior of a Config implementation
 export interface ConfigInterface {
@@ -36,8 +37,13 @@ export class Config implements ConfigInterface {
 
   private data: Map<string, Map<string, string>>;
 
-  private constructor() {
+  private readonly fs?: FileSystem;
+
+  private constructor(fs?: FileSystem) {
     this.data = new Map<string, Map<string, string>>();
+    if (fs) {
+      this.fs = fs;
+    }
   }
 
   /**
@@ -45,10 +51,20 @@ export class Config implements ConfigInterface {
    *
    * @param confName the path of the model file.
    * @return the constructor of Config.
+   * @deprecated use {@link newConfigFromFile} instead.
    */
   public static newConfig(confName: string): Config {
-    const config = new Config();
-    config.parse(confName);
+    return this.newConfigFromFile(confName);
+  }
+
+  /**
+   * newConfigFromFile create an empty configuration representation from file.
+   * @param path the path of the model file.
+   * @param fs {@link FileSystem}
+   */
+  public static newConfigFromFile(path: string, fs?: FileSystem): Config {
+    const config = new Config(fs);
+    config.parse(path);
     return config;
   }
 
@@ -86,8 +102,8 @@ export class Config implements ConfigInterface {
   }
 
   private parse(path: string): void {
-    const buf = readFileSync(path);
-    this.parseBuffer(buf);
+    const body = (this.fs ? this.fs : mustGetDefaultFileSystem()).readFileSync(path);
+    this.parseBuffer(Buffer.isBuffer(body) ? body : Buffer.from(body));
   }
 
   private parseBuffer(buf: Buffer): void {

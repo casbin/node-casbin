@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as fs from 'fs';
-
 // escapeAssertion escapes the dots in the assertion,
 // because the expression evaluation doesn't support such variable names.
+import { mustGetDefaultFileSystem } from '../persist';
+
 function escapeAssertion(s: string): string {
   s = s.replace(/r\./g, 'r_');
   s = s.replace(/p\./g, 'p_');
@@ -82,25 +82,27 @@ function setEquals(a: string[], b: string[]): boolean {
 
 // readFile return a promise for readFile.
 function readFile(path: string, encoding?: string): any {
+  const fs = mustGetDefaultFileSystem();
   return new Promise((resolve, reject) => {
-    fs.readFile(path, encoding || 'utf8', (error, data) => {
-      if (error) {
-        reject(error);
-      }
-      resolve(data);
-    });
+    try {
+      fs.readFileSync(path, encoding || 'utf8');
+      resolve();
+    } catch (e) {
+      reject(e);
+    }
   });
 }
 
 // writeFile return a promise for writeFile.
 function writeFile(path: string, file: string, encoding?: string): any {
+  const fs = mustGetDefaultFileSystem();
   return new Promise((resolve, reject) => {
-    fs.writeFile(path, file, encoding || 'utf8', (error) => {
-      if (error) {
-        reject(error);
-      }
-      resolve(true);
-    });
+    try {
+      fs.writeFileSync(path, file, encoding || 'utf-8');
+      resolve();
+    } catch (e) {
+      reject(e);
+    }
   });
 }
 
