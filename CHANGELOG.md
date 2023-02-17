@@ -1,3 +1,10 @@
+# [5.24.0](https://github.com/casbin/node-casbin/compare/v5.23.2...v5.24.0) (2023-02-17)
+
+
+### Features
+
+* add built-in FileSystem ([#430](https://github.com/casbin/node-casbin/issues/430)) ([999c34c](https://github.com/casbin/node-casbin/commit/999c34c620c7b8d608c7405550737bc0dfa974f5))
+
 ## [5.23.2](https://github.com/casbin/node-casbin/compare/v5.23.1...v5.23.2) (2023-02-04)
 
 
