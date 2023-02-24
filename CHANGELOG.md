@@ -1,3 +1,10 @@
+## [5.24.2](https://github.com/casbin/node-casbin/compare/v5.24.1...v5.24.2) (2023-02-24)
+
+
+### Bug Fixes
+
+* using import() to load the fs ([#435](https://github.com/casbin/node-casbin/issues/435)) ([e90a8bf](https://github.com/casbin/node-casbin/commit/e90a8bf064963dd448cfa67da5af0f9aad957999))
+
 ## [5.24.1](https://github.com/casbin/node-casbin/compare/v5.24.0...v5.24.1) (2023-02-17)
 
 
