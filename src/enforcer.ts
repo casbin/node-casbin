@@ -14,7 +14,7 @@
 
 import { ManagementEnforcer } from './managementEnforcer';
 import { Model, newModelFromFile } from './model';
-import { Adapter, FileAdapter, StringAdapter } from './persist';
+import { Adapter, FileAdapter, getDefaultFileSystem, setDefaultFileSystem, StringAdapter } from './persist';
 import { getLogger } from './log';
 import { arrayRemoveDuplicates } from './util';
 import { FieldIndex } from './constants';
@@ -467,6 +467,24 @@ export class Enforcer extends ManagementEnforcer {
 }
 
 export async function newEnforcerWithClass<T extends Enforcer>(enforcer: new () => T, ...params: any[]): Promise<T> {
+  // inject the FS
+  if (!getDefaultFileSystem()) {
+    try {
+      if (typeof process !== 'undefined' && process?.versions?.node) {
+        const fs = await import('fs');
+        const defaultFileSystem = {
+          readFileSync(path: string, encoding?: string) {
+            return fs.readFileSync(path, { encoding });
+          },
+          writeFileSync(path: string, text: string, encoding?: string) {
+            return fs.writeFileSync(path, text, encoding);
+          },
+        };
+        setDefaultFileSystem(defaultFileSystem);
+      }
+    } catch (ignored) {}
+  }
+
   const e = new enforcer();
 
   let parsedParamLen = 0;

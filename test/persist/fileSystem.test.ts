@@ -16,7 +16,7 @@ import { FileSystem, getDefaultFileSystem, setDefaultFileSystem } from '../../sr
 
 test('get an set the default system', async () => {
   let fs = getDefaultFileSystem();
-  expect(fs).toBeDefined();
+  expect(fs).toBeUndefined();
   const defaultFileSystem: FileSystem = {
     readFileSync(path: string, encoding?: string): Buffer {
       // noop
