@@ -43,12 +43,6 @@ test('TestNewModel', () => {
   expect(m !== null).toBe(true);
 });
 
-test('TestNewModelFromFile', () => {
-  const m = newModelFromFile(basicExample);
-
-  expect(m !== null).toBe(true);
-});
-
 test('TestNewModelFromString', () => {
   const m = newModelFromString(readFileSync(basicExample).toString());
 

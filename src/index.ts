@@ -26,17 +26,3 @@ export * from './rbac';
 export * from './log';
 export * from './frontend';
 export { Util };
-
-if (typeof process !== 'undefined' && process?.versions?.node) {
-  const requireFunc = typeof __non_webpack_require__ === 'function' ? __non_webpack_require__ : require;
-  const fs = requireFunc('fs');
-  const defaultFileSystem = {
-    readFileSync(path: string, encoding?: string) {
-      return fs.readFileSync(path, { encoding });
-    },
-    writeFileSync(path: string, text: string, encoding?: string) {
-      return fs.writeFileSync(path, text, encoding);
-    },
-  };
-  setDefaultFileSystem(defaultFileSystem);
-}
