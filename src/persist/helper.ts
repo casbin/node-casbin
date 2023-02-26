@@ -1,5 +1,5 @@
 import { Model } from '../model';
-import parse from 'csv-parse/lib/sync';
+import { parse } from 'csv-parse/sync';
 
 export class Helper {
   public static loadPolicyLine(line: string, model: Model): void {
