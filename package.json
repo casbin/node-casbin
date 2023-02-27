@@ -50,7 +50,8 @@
   },
   "dependencies": {
     "await-lock": "^2.0.1",
-    "csv-parse": "^4.15.3",
+    "buffer": "^6.0.3",
+    "csv-parse": "^5.3.5",
     "expression-eval": "^5.0.0",
     "picomatch": "^2.2.3"
   },
