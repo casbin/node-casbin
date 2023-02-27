@@ -1,3 +1,10 @@
+## [5.24.3](https://github.com/casbin/node-casbin/compare/v5.24.2...v5.24.3) (2023-02-27)
+
+
+### Bug Fixes
+
+* built-in buffer and upgrade csv-parse ([#436](https://github.com/casbin/node-casbin/issues/436)) ([0f40bee](https://github.com/casbin/node-casbin/commit/0f40beed52d5cae9e47ce2da9ebfcab5c52a4038))
+
 ## [5.24.2](https://github.com/casbin/node-casbin/compare/v5.24.1...v5.24.2) (2023-02-24)
 
 
