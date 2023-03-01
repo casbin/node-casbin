@@ -22,7 +22,7 @@
 
 ![casbin Logo](casbin-logo.png)
 
-`node-casbin` is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https:/.wikipedia.org/wiki/Computer_security_model).
+`node-casbin` is a powerful and efficient open-source access control library for Node.JS projects. It provides support for enforcing authorization based on various [access control models](https://wikipedia.org/wiki/Computer_security_model).
 
 ## All the languages supported by Casbin:
 
