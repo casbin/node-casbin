@@ -17,8 +17,8 @@
 import { mustGetDefaultFileSystem } from '../persist';
 
 function escapeAssertion(s: string): string {
-  s = s.replace(/r\./g, 'r_');
-  s = s.replace(/p\./g, 'p_');
+  s = s.replace(/(?<!\w)r\./g, 'r_');
+  s = s.replace(/(?<!\w)p\./g, 'p_');
   return s;
 }
 
