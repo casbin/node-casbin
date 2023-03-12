@@ -1,3 +1,10 @@
+## [5.24.4](https://github.com/casbin/node-casbin/compare/v5.24.3...v5.24.4) (2023-03-12)
+
+
+### Bug Fixes
+
+* **./src/util/util.ts:** fixed unwanted replacement of .r in evals according to issue [#438](https://github.com/casbin/node-casbin/issues/438) ([#439](https://github.com/casbin/node-casbin/issues/439)) ([39878be](https://github.com/casbin/node-casbin/commit/39878be7e22ff9f18c0898c5828328bc1cc95aba))
+
 ## [5.24.3](https://github.com/casbin/node-casbin/compare/v5.24.2...v5.24.3) (2023-02-27)
 
 
