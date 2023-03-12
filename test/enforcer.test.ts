@@ -602,6 +602,27 @@ test('test ABAC multiple eval()', async () => {
   await testEnforce(e, 78, (34 as unknown) as string, 'read', false);
 });
 
+// https://github.com/casbin/node-casbin/issues/438
+test('test ABAC single eval() with r. in unexpected places', async () => {
+  const m = newModel();
+  m.addDef('r', 'r', 'sub, obj, act');
+  m.addDef('p', 'p', 'sub_rule, act');
+  m.addDef('e', 'e', 'some(where (p.eft == allow))');
+  m.addDef('m', 'm', 'eval(p.sub_rule) && r.act == p.act');
+
+  const policy = new StringAdapter(
+    `
+    p, !!r.sub.id && r.sub.id == r.obj.owner.id, read
+    `
+  );
+
+  const e = await newEnforcer(m, policy);
+  await testEnforce(e, { id: 3 }, ({ owner: { id: 3 } } as unknown) as string, 'read', true);
+  await testEnforce(e, {}, ({ owner: {} } as unknown) as string, 'read', false);
+  await testEnforce(e, { id: 3 }, ({ owner: {} } as unknown) as string, 'read', false);
+  await testEnforce(e, { id: 3 }, ({ owner: { id: 2 } } as unknown) as string, 'read', false);
+});
+
 test('TestEnforceSync', async () => {
   const m = newModel();
   m.addDef('r', 'r', 'sub, obj, act');
