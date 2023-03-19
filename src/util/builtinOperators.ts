@@ -14,7 +14,7 @@
 
 import * as rbac from '../rbac';
 import { ip } from './ip';
-import { isMatch } from 'picomatch';
+import { minimatch } from 'minimatch';
 
 // regexMatch determines whether key1 matches the pattern of key2 in regular expression.
 function regexMatch(key1: string, key2: string): boolean {
@@ -305,7 +305,12 @@ function ipMatchFunc(...args: any[]): boolean {
  * ```
  */
 function globMatch(string: string, pattern: string): boolean {
-  return isMatch(string, pattern);
+  // The minimatch doesn't support the pattern starts with *
+  // See https://github.com/isaacs/minimatch/issues/195
+  if (pattern[0] === '*' && pattern[1] === '/') {
+    pattern = pattern.substring(1);
+  }
+  return minimatch(string, pattern);
 }
 
 // generateGFunction is the factory method of the g(_, _) function.
