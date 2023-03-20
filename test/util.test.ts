@@ -156,6 +156,8 @@ test('test globMatch', () => {
   expect(util.globMatch('/prefix/subprefix/foobar', '*/foo')).toEqual(false);
   expect(util.globMatch('/prefix/subprefix/foobar', '*/foo*')).toEqual(false);
   expect(util.globMatch('/prefix/subprefix/foobar', '*/foo/*')).toEqual(false);
+
+  expect(util.globMatch('a.conf', '*.conf')).toEqual(true);
 });
 
 test('test hasEval', () => {
