@@ -1,3 +1,10 @@
+# [5.25.0](https://github.com/casbin/node-casbin/compare/v5.24.4...v5.25.0) (2023-03-20)
+
+
+### Features
+
+* replace picomatch with minimatch ([#440](https://github.com/casbin/node-casbin/issues/440)) ([4e977b3](https://github.com/casbin/node-casbin/commit/4e977b33fdece9b8934693d05a1da9a7f10cfa05))
+
 ## [5.24.4](https://github.com/casbin/node-casbin/compare/v5.24.3...v5.24.4) (2023-03-12)
 
 
