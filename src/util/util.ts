@@ -14,11 +14,16 @@
 
 // escapeAssertion escapes the dots in the assertion,
 // because the expression evaluation doesn't support such variable names.
+
 import { mustGetDefaultFileSystem } from '../persist';
 
 function escapeAssertion(s: string): string {
-  s = s.replace(/(?<!\w)r\./g, 'r_');
-  s = s.replace(/(?<!\w)p\./g, 'p_');
+  s = s.replace(/(?<!\w)r[0-9]*\./g, (match) => {
+    return match.replace('.', '_');
+  });
+  s = s.replace(/(?<!\w)p[0-9]*\./g, (match) => {
+    return match.replace('.', '_');
+  });
   return s;
 }
 
