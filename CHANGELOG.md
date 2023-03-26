@@ -1,3 +1,10 @@
+# [5.26.0](https://github.com/casbin/node-casbin/compare/v5.25.0...v5.26.0) (2023-03-26)
+
+
+### Features
+
+* Multiple sections type ([#442](https://github.com/casbin/node-casbin/issues/442)) ([48b0d8f](https://github.com/casbin/node-casbin/commit/48b0d8fbbf302f61aed20bb6d0f2354354df9941))
+
 # [5.25.0](https://github.com/casbin/node-casbin/compare/v5.24.4...v5.25.0) (2023-03-20)
 
 
