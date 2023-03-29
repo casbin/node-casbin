@@ -1,3 +1,10 @@
+## [5.26.1](https://github.com/casbin/node-casbin/compare/v5.26.0...v5.26.1) (2023-03-29)
+
+
+### Bug Fixes
+
+* escapeAssertion is compatible with safari ([#444](https://github.com/casbin/node-casbin/issues/444)) ([d13a3b9](https://github.com/casbin/node-casbin/commit/d13a3b9030da1603f746dd20bc93354df81b182a))
+
 # [5.26.0](https://github.com/casbin/node-casbin/compare/v5.25.0...v5.26.0) (2023-03-26)
 
 
