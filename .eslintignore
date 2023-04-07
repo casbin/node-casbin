@@ -1,5 +1,3 @@
 lib
 examples
-test/reactjs
-test/angular
-test/reactnative
+test/platform

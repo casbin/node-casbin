@@ -1,0 +1,35 @@
+name: Platform Test
+on: [push, pull_request]
+jobs:
+  react:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [^14, ^16, ^18]
+    steps:
+      - uses: actions/checkout@v2
+      - run: yarn install && yarn build && yarn link
+      - run: cd test/platform/react && yarn install && yarn link casbin && yarn test && yarn build
+
+  react-native:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [^14, ^16, ^18]
+    steps:
+      - uses: actions/checkout@v2
+      - run: yarn install && yarn build && yarn link
+      - run: cd test/platform/react-native && yarn install && yarn link casbin && yarn test && yarn build
+
+  angular:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [^14, ^16, ^18]
+    steps:
+      - uses: actions/checkout@v2
+      - run: yarn install && yarn build && yarn link
+      - run: cd test/platform/angular && yarn install && yarn link casbin && yarn test --watch=false --browsers=ChromeHeadless && yarn build
