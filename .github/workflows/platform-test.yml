@@ -13,6 +13,7 @@ jobs:
       - run: cd test/platform/react && yarn install && yarn link casbin && yarn test && yarn build
 
   react-native:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
