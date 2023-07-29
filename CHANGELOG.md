@@ -1,3 +1,10 @@
+## [5.26.2](https://github.com/casbin/node-casbin/compare/v5.26.1...v5.26.2) (2023-07-29)
+
+
+### Bug Fixes
+
+* add escapeCsv() for CSV file saving ([17c542a](https://github.com/casbin/node-casbin/commit/17c542ad894cc19b592e3c54495fb05eff02f215))
+
 ## [5.26.1](https://github.com/casbin/node-casbin/compare/v5.26.0...v5.26.1) (2023-03-29)
 
 
