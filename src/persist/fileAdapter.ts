@@ -71,13 +71,21 @@ export class FileAdapter implements Adapter {
     gList.forEach((n) => {
       n.policy.forEach((m) => {
         result += n.key + ', ';
-        result += arrayToString(m);
+        result += arrayToString(m.map((element) => this.escapeCsv(element)));
         result += '\n';
       });
     });
 
     await this.savePolicyFile(result.trim());
     return true;
+  }
+
+  private escapeCsv(value: string): string {
+    // If the value contains a comma, wrap it in double quotes and escape any existing double quotes
+    if (value.includes(',')) {
+      return `"${value.replace(/"/g, '""')}"`;
+    }
+    return value;
   }
 
   private async savePolicyFile(text: string): Promise<void> {
