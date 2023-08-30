@@ -1,3 +1,10 @@
+# [5.27.0](https://github.com/casbin/node-casbin/compare/v5.26.2...v5.27.0) (2023-08-30)
+
+
+### Features
+
+* add `enforceWithMatcher` & `enforceExWithMatcher` ([#453](https://github.com/casbin/node-casbin/issues/453)) ([a85192f](https://github.com/casbin/node-casbin/commit/a85192f382fc164107d3117b4490cf8dd072c0e5))
+
 ## [5.26.2](https://github.com/casbin/node-casbin/compare/v5.26.1...v5.26.2) (2023-07-29)
 
 
