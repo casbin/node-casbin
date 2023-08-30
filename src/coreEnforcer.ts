@@ -31,6 +31,7 @@ import {
   generatorRunAsync,
   customIn,
   bracketCompatible,
+  removeComments,
 } from './util';
 import { getLogger, logPrint } from './log';
 import { MatchingFunc } from './rbac';
@@ -417,6 +418,7 @@ export class CoreEnforcer {
   private *privateEnforce(
     asyncCompile = true,
     explain = false,
+    matcher: string,
     enforceContext: EnforceContext = new EnforceContext('r', 'p', 'e', 'm'),
     ...rvals: any[]
   ): EnforceResult {
@@ -438,7 +440,14 @@ export class CoreEnforcer {
       functions[key] = asyncCompile ? generateGFunction(rm) : generateSyncedGFunction(rm);
     });
 
-    const expString = this.model.model.get('m')?.get(enforceContext.mType)?.value;
+    let expString;
+
+    if (!matcher) {
+      expString = this.model.model.get('m')?.get(enforceContext.mType)?.value;
+    } else {
+      expString = removeComments(escapeAssertion(matcher));
+    }
+
     if (!expString) {
       throw new Error('Unable to find matchers in model');
     }
@@ -604,9 +613,9 @@ export class CoreEnforcer {
   public enforceSync(...rvals: any[]): boolean {
     if (rvals[0] instanceof EnforceContext) {
       const enforceContext: EnforceContext = rvals.shift();
-      return generatorRunSync(this.privateEnforce(false, false, enforceContext, ...rvals));
+      return generatorRunSync(this.privateEnforce(false, false, '', enforceContext, ...rvals));
     }
-    return generatorRunSync(this.privateEnforce(false, false, this.defaultEnforceContext, ...rvals));
+    return generatorRunSync(this.privateEnforce(false, false, '', this.defaultEnforceContext, ...rvals));
   }
 
   /**
@@ -622,9 +631,9 @@ export class CoreEnforcer {
   public enforceExSync(...rvals: any[]): [boolean, string[]] {
     if (rvals[0] instanceof EnforceContext) {
       const enforceContext: EnforceContext = rvals.shift();
-      return generatorRunSync(this.privateEnforce(false, true, enforceContext, ...rvals));
+      return generatorRunSync(this.privateEnforce(false, true, '', enforceContext, ...rvals));
     }
-    return generatorRunSync(this.privateEnforce(false, true, this.defaultEnforceContext, ...rvals));
+    return generatorRunSync(this.privateEnforce(false, true, '', this.defaultEnforceContext, ...rvals));
   }
 
   /**
@@ -645,9 +654,27 @@ export class CoreEnforcer {
   public async enforce(...rvals: any[]): Promise<boolean> {
     if (rvals[0] instanceof EnforceContext) {
       const enforceContext: EnforceContext = rvals.shift();
-      return generatorRunAsync(this.privateEnforce(true, false, enforceContext, ...rvals));
+      return generatorRunAsync(this.privateEnforce(true, false, '', enforceContext, ...rvals));
     }
-    return generatorRunAsync(this.privateEnforce(true, false, this.defaultEnforceContext, ...rvals));
+    return generatorRunAsync(this.privateEnforce(true, false, '', this.defaultEnforceContext, ...rvals));
+  }
+
+  /**
+   * enforceWithMatcher decides whether a "subject" can access a "object" with
+   * the operation "action" but with the matcher passed,
+   * input parameters are usually: (matcher, sub, obj, act).
+   *
+   * @param matcher matcher string.
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request.
+   */
+  public async enforceWithMatcher(matcher: string, ...rvals: any[]): Promise<boolean> {
+    if (rvals[0] instanceof EnforceContext) {
+      const enforceContext: EnforceContext = rvals.shift();
+      return generatorRunAsync(this.privateEnforce(true, false, matcher, enforceContext, ...rvals));
+    }
+    return generatorRunAsync(this.privateEnforce(true, false, matcher, this.defaultEnforceContext, ...rvals));
   }
 
   /**
@@ -661,9 +688,27 @@ export class CoreEnforcer {
   public async enforceEx(...rvals: any[]): Promise<[boolean, string[]]> {
     if (rvals[0] instanceof EnforceContext) {
       const enforceContext: EnforceContext = rvals.shift();
-      return generatorRunAsync(this.privateEnforce(true, true, enforceContext, ...rvals));
+      return generatorRunAsync(this.privateEnforce(true, true, '', enforceContext, ...rvals));
     }
-    return generatorRunAsync(this.privateEnforce(true, true, this.defaultEnforceContext, ...rvals));
+    return generatorRunAsync(this.privateEnforce(true, true, '', this.defaultEnforceContext, ...rvals));
+  }
+
+  /**
+   * enforceExWithMatcher decides whether a "subject" can access a "object" with
+   * the operation "action" but with the matcher passed,
+   *  input parameters are usually: (matcher, sub, obj, act).
+   *
+   * @param matcher matcher string.
+   * @param rvals the request needs to be mediated, usually an array
+   *              of strings, can be class instances if ABAC is used.
+   * @return whether to allow the request and the reason rule.
+   */
+  public async enforceExWithMatcher(matcher: string, ...rvals: any[]): Promise<[boolean, string[]]> {
+    if (rvals[0] instanceof EnforceContext) {
+      const enforceContext: EnforceContext = rvals.shift();
+      return generatorRunAsync(this.privateEnforce(true, true, matcher, enforceContext, ...rvals));
+    }
+    return generatorRunAsync(this.privateEnforce(true, true, matcher, this.defaultEnforceContext, ...rvals));
   }
 
   /**
