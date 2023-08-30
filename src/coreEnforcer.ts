@@ -704,9 +704,9 @@ export class CoreEnforcer {
    * @return whether to allow the request and the reason rule.
    */
   public async enforceExWithMatcher(matcher: string, ...rvals: any[]): Promise<[boolean, string[]]> {
-      if (rvals[0] instanceof EnforceContext) {
-        const enforceContext: EnforceContext = rvals.shift();
-        return generatorRunAsync(this.privateEnforce(true, true, matcher, enforceContext, ...rvals));
+    if (rvals[0] instanceof EnforceContext) {
+      const enforceContext: EnforceContext = rvals.shift();
+      return generatorRunAsync(this.privateEnforce(true, true, matcher, enforceContext, ...rvals));
     }
     return generatorRunAsync(this.privateEnforce(true, true, matcher, this.defaultEnforceContext, ...rvals));
   }
