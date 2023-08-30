@@ -439,7 +439,7 @@ export class CoreEnforcer {
       const rm = value.rm;
       functions[key] = asyncCompile ? generateGFunction(rm) : generateSyncedGFunction(rm);
     });
-    
+
     let expString;
 
     if (!matcher) {
@@ -447,7 +447,7 @@ export class CoreEnforcer {
     } else {
       expString = removeComments(escapeAssertion(matcher));
     }
-    
+
     if (!expString) {
       throw new Error('Unable to find matchers in model');
     }
@@ -676,7 +676,6 @@ export class CoreEnforcer {
     }
     return generatorRunAsync(this.privateEnforce(true, false, matcher, this.defaultEnforceContext, ...rvals));
   }
-    
 
   /**
    * enforce decides whether a "subject" can access a "object" with
@@ -706,8 +705,8 @@ export class CoreEnforcer {
    */
   public async enforceExWithMatcher(matcher: string, ...rvals: any[]): Promise<[boolean, string[]]> {
       if (rvals[0] instanceof EnforceContext) {
-      const enforceContext: EnforceContext = rvals.shift();
-      return generatorRunAsync(this.privateEnforce(true, true, matcher, enforceContext, ...rvals));
+        const enforceContext: EnforceContext = rvals.shift();
+        return generatorRunAsync(this.privateEnforce(true, true, matcher, enforceContext, ...rvals));
     }
     return generatorRunAsync(this.privateEnforce(true, true, matcher, this.defaultEnforceContext, ...rvals));
   }
