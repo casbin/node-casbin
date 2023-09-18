@@ -237,11 +237,21 @@ function keyMatch4Func(...args: any[]): boolean {
 // For example, "/foo/bar?status=1&type=2" matches "/foo/bar"
 function KeyMatch5(key1: string, key2: string): boolean {
   const i: number = key1.indexOf('?');
-  if (i === -1) {
-    return key1 === key2;
+  if (i !== -1) {
+    key1 = key1.slice(0, i);
   }
 
-  return key1.slice(0, i) === key2;
+  key2 = key2.replace(/\/\*/g, '/.*');
+
+  const regexp = new RegExp(/(.*){[^/]+}(.*)/g);
+  for (;;) {
+    if (!key2.includes('/{')) {
+      break;
+    }
+    key2 = key2.replace(regexp, '$1[^/]+$2');
+  }
+
+  return regexMatch(key1, '^' + key2 + '$');
 }
 
 // keyMatch5Func is the wrapper for KeyMatch5.
