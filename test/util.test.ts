@@ -99,6 +99,39 @@ test('test keyMatch5Func', () => {
   expect(util.keyMatch5Func('/parent/child/?status=1&type=2', '/parent/child/')).toEqual(true);
   expect(util.keyMatch5Func('/parent/child/?status=1&type=2', '/parent/child')).toEqual(false);
   expect(util.keyMatch5Func('/parent/child?status=1&type=2', '/parent/child/')).toEqual(false);
+
+  expect(util.keyMatch5Func('keyMatch5: expected 2 arguments, but got 1', '/foo')).toEqual(false);
+  expect(util.keyMatch5Func('keyMatch5: expected 2 arguments, but got 3', '/foo/create/123', '/foo/*', '/foo/update/123')).toEqual(false);
+  expect(util.keyMatch5Func('keyMatch5: argument must be a string', '/parent/123', true)).toEqual(false);
+
+  expect(util.keyMatch5Func('/foo', '/foo')).toEqual(true);
+  expect(util.keyMatch5Func('/foo', '/foo*')).toEqual(true);
+  expect(util.keyMatch5Func('/foo', '/foo/*')).toEqual(false);
+  expect(util.keyMatch5Func('/foo/bar', '/foo')).toEqual(false);
+  expect(util.keyMatch5Func('/foo/bar', '/foo*')).toEqual(false);
+  expect(util.keyMatch5Func('/foo/bar', '/foo/*')).toEqual(true);
+  expect(util.keyMatch5Func('/foobar', '/foo')).toEqual(false);
+  expect(util.keyMatch5Func('/foobar', '/foo*')).toEqual(false);
+  expect(util.keyMatch5Func('/foobar', '/foo/*')).toEqual(false);
+
+  expect(util.keyMatch5Func('/', '/{resource}')).toEqual(false);
+  expect(util.keyMatch5Func('/resource1', '/{resource}')).toEqual(true);
+  expect(util.keyMatch5Func('/myid', '/{id}/using/{resId}')).toEqual(false);
+  expect(util.keyMatch5Func('/myid/using/myresid', '/{id}/using/{resId}')).toEqual(true);
+
+  expect(util.keyMatch5Func('/proxy/myid', '/proxy/{id}/*')).toEqual(false);
+  expect(util.keyMatch5Func('/proxy/myid/', '/proxy/{id}/*')).toEqual(true);
+  expect(util.keyMatch5Func('/proxy/myid/res', '/proxy/{id}/*')).toEqual(true);
+  expect(util.keyMatch5Func('/proxy/myid/res/res2', '/proxy/{id}/*')).toEqual(true);
+  expect(util.keyMatch5Func('/proxy/myid/res/res2/res3', '/proxy/{id}/*')).toEqual(true);
+  expect(util.keyMatch5Func('/proxy/', '/proxy/{id}/*')).toEqual(false);
+
+  expect(util.keyMatch5Func('/proxy/myid?status=1&type=2', '/proxy/{id}/*')).toEqual(false);
+  expect(util.keyMatch5Func('/proxy/myid/', '/proxy/{id}/*')).toEqual(true);
+  expect(util.keyMatch5Func('/proxy/myid/res?status=1&type=2', '/proxy/{id}/*')).toEqual(true);
+  expect(util.keyMatch5Func('/proxy/myid/res/res2?status=1&type=2', '/proxy/{id}/*')).toEqual(true);
+  expect(util.keyMatch5Func('/proxy/myid/res/res2/res3?status=1&type=2', '/proxy/{id}/*')).toEqual(true);
+  expect(util.keyMatch5Func('/proxy/', '/proxy/{id}/*')).toEqual(false);
 });
 
 test('test ipMatchFunc', () => {
