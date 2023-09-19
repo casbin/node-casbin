@@ -1,3 +1,10 @@
+## [5.27.1](https://github.com/casbin/node-casbin/compare/v5.27.0...v5.27.1) (2023-09-19)
+
+
+### Bug Fixes
+
+* KeyMatch5 does not match the expected result ([#458](https://github.com/casbin/node-casbin/issues/458)) ([0df458d](https://github.com/casbin/node-casbin/commit/0df458dde1f7a061167b978e16e712d208944f39))
+
 # [5.27.0](https://github.com/casbin/node-casbin/compare/v5.26.2...v5.27.0) (2023-08-30)
 
 
