@@ -23,6 +23,7 @@ import { FieldIndex } from './constants';
  * Enforcer = ManagementEnforcer + RBAC API.
  */
 export class Enforcer extends ManagementEnforcer {
+  private acceptJsonRequest = false;
   /**
    * initWithFile initializes an enforcer with a model file and a policy file.
    * @param modelPath model file path
@@ -438,6 +439,15 @@ export class Enforcer extends ManagementEnforcer {
   public async getUsersForRoleInDomain(name: string, domain: string): Promise<string[]> {
     return this.getUsersForRole(name, domain);
   }
+
+  /**
+   * Enable or disable accepting JSON requests for ABAC.
+   * @param enable Whether to enable or disable accepting JSON requests.
+   */
+  public enableAcceptJsonRequest(enable: boolean): void {
+    this.acceptJsonRequest = enable;
+  }
+
 
   /**
    * getImplicitUsersForPermission gets implicit users for a permission.

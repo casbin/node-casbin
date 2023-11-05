@@ -393,6 +393,38 @@ test('TestInitWithAdapter', async () => {
   await testEnforce(e, 'bob', 'data2', 'write', true);
 });
 
+test('TestEnableAcceptJsonRequest', async () => {
+  const m = newModel();
+  const a = new FileAdapter('examples/keymatch_policy.csv');
+  const e = await newEnforcer(m, a);
+
+  // Enable JSON request parsing
+  e.enableAcceptJsonRequest(true);
+
+  // Testing with JSON request
+  const requestJson = '{"sub": "alice", "obj": "/alice_data/resource1", "act": "GET"}';
+  await testEnforce(e, JSON.parse(requestJson), '/alice_data/resource1', 'GET', true);
+  await testEnforce(e, JSON.parse(requestJson), '/alice_data/resource1', 'POST', true);
+  await testEnforce(e, JSON.parse(requestJson), '/alice_data/resource2', 'GET', true);
+  await testEnforce(e, JSON.parse(requestJson), '/alice_data/resource2', 'POST', false);
+  await testEnforce(e, JSON.parse(requestJson), '/bob_data/resource1', 'GET', false);
+  await testEnforce(e, JSON.parse(requestJson), '/bob_data/resource1', 'POST', false);
+  await testEnforce(e, JSON.parse(requestJson), '/bob_data/resource2', 'GET', false);
+  await testEnforce(e, JSON.parse(requestJson), '/bob_data/resource2', 'POST', false);
+
+  // Disabling JSON request parsing
+  e.enableAcceptJsonRequest(false);
+
+  await testEnforce(e, 'alice', '/alice_data/resource1', 'GET', true);
+  await testEnforce(e, 'alice', '/alice_data/resource1', 'POST', true);
+  await testEnforce(e, 'alice', '/alice_data/resource2', 'GET', true);
+  await testEnforce(e, 'alice', '/alice_data/resource2', 'POST', false);
+  await testEnforce(e, 'alice', '/bob_data/resource1', 'GET', false);
+  await testEnforce(e, 'alice', '/bob_data/resource1', 'POST', false);
+  await testEnforce(e, 'alice', '/bob_data/resource2', 'GET', false);
+  await testEnforce(e, 'alice', '/bob_data/resource2', 'POST', false);
+});
+
 test('TestInitWithStringAdapter', async () => {
   const policy = readFileSync('examples/basic_policy.csv').toString();
   const adapter = new StringAdapter(policy);
