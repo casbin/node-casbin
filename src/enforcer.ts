@@ -448,7 +448,6 @@ export class Enforcer extends ManagementEnforcer {
     this.acceptJsonRequest = enable;
   }
 
-
   /**
    * getImplicitUsersForPermission gets implicit users for a permission.
    * For example:
