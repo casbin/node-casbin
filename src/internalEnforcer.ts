@@ -128,10 +128,12 @@ export class InternalEnforcer extends CoreEnforcer {
     }
 
     if (useWatcher) {
-      if (this.watcher && this.autoNotifyWatcher) {
+      if (this.autoNotifyWatcher) {
         // In fact I think it should wait for the respond, but they implement add_policy() like this
         // error intentionally ignored
-        this.watcher.update();
+        if (this.watcher) {
+          this.watcher.update();
+        }
       }
     }
 
@@ -163,7 +165,7 @@ export class InternalEnforcer extends CoreEnforcer {
     }
 
     if (useWatcher) {
-      if (this.watcher && this.autoNotifyWatcher) {
+      if (this.autoNotifyWatcher) {
         // error intentionally ignored
         if (this.watcherEx) {
           this.watcherEx.updateForRemovePolicy(sec, ptype, ...rule);
@@ -203,7 +205,7 @@ export class InternalEnforcer extends CoreEnforcer {
     }
 
     if (useWatcher) {
-      if (this.watcher && this.autoNotifyWatcher) {
+      if (this.autoNotifyWatcher) {
         // error intentionally ignored
         if (this.watcherEx) {
           this.watcherEx.updateForRemovePolicies(sec, ptype, ...rules);
@@ -241,7 +243,7 @@ export class InternalEnforcer extends CoreEnforcer {
     }
 
     if (useWatcher) {
-      if (this.watcher && this.autoNotifyWatcher) {
+      if (this.autoNotifyWatcher) {
         // error intentionally ignored
         if (this.watcherEx) {
           this.watcherEx.updateForRemoveFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
