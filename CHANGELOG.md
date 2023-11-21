@@ -1,3 +1,10 @@
+# [5.28.0](https://github.com/casbin/node-casbin/compare/v5.27.1...v5.28.0) (2023-11-21)
+
+
+### Features
+
+* fix WatcherEx not triggered issue ([61c1595](https://github.com/casbin/node-casbin/commit/61c159533904f38d82eb0418a1de949666cc381a))
+
 ## [5.27.1](https://github.com/casbin/node-casbin/compare/v5.27.0...v5.27.1) (2023-09-19)
 
 
