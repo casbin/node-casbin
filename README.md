@@ -14,6 +14,20 @@
 [download-image]: https://img.shields.io/npm/dm/casbin.svg?style=flat-square
 [download-url]: https://npmjs.org/package/casbin
 
+<p align="center">
+  <sup>Sponsored by</sup>
+  <br>
+  <a href="https://stytch.com/docs?utm_source=oss-sponsorship&utm_medium=paid_sponsorship&utm_campaign=casbin">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://cdn.casbin.org/img/stytch-white.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://cdn.casbin.org/img/stytch-charcoal.png">
+      <img src="https://cdn.casbin.org/img/stytch-charcoal.png" width="275">
+    </picture>
+  </a><br/>
+  <a href="https://stytch.com/docs?utm_source=oss-sponsorship&utm_medium=paid_sponsorship&utm_campaign=casbin"><b>Build auth with fraud prevention, faster.</b><br/> Try Stytch for API-first authentication, user & org management, multi-tenant SSO, MFA, device fingerprinting, and more.</a>
+  <br>
+</p>
+
 💖 [**Looking for an open-source identity and access management solution like Okta, Auth0, Keycloak ? Learn more about: Casdoor**](https://casdoor.org/)
 
 <a href="https://casdoor.org/"><img src="https://user-images.githubusercontent.com/3787410/147868267-6ac74908-5654-4f9c-ac79-8852af9ff925.png" alt="casdoor" style="width: 50%; height: 50%"/></a>
