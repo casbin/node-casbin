@@ -1,3 +1,10 @@
+# [5.29.0](https://github.com/casbin/node-casbin/compare/v5.28.0...v5.29.0) (2024-04-10)
+
+
+### Features
+
+* update CI Node.js version to 18 and 20 ([4aa74ab](https://github.com/casbin/node-casbin/commit/4aa74ab710aa300c172c71b802453dd64b3ec1a7))
+
 # [5.28.0](https://github.com/casbin/node-casbin/compare/v5.27.1...v5.28.0) (2023-11-21)
 
 
