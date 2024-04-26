@@ -251,7 +251,7 @@ export class Model {
       const policy = ast.policy;
       const tokens = ast.tokens;
 
-      const priorityIndex = tokens.indexOf('p_priority');
+      const priorityIndex = tokens.indexOf(`${key}_priority`);
 
       if (priorityIndex !== -1) {
         const priorityRule = rule[priorityIndex];
@@ -284,7 +284,7 @@ export class Model {
       }
     }
 
-    const priorityFlag = ast.tokens.indexOf('p_priority') !== -1;
+    const priorityFlag = ast.tokens.indexOf(`${ptype}_priority`) !== -1;
 
     if (priorityFlag) {
       rules.forEach((rule) => {
@@ -309,7 +309,7 @@ export class Model {
       return false;
     }
 
-    const priorityIndex = ast.tokens.indexOf('p_priority');
+    const priorityIndex = ast.tokens.indexOf(`${ptype}_priority`);
 
     if (priorityIndex !== -1) {
       if (oldRule[priorityIndex] === newRule[priorityIndex]) {

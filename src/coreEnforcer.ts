@@ -217,17 +217,18 @@ export class CoreEnforcer {
   }
 
   public sortPolicies(): void {
-    const policy = this.model.model.get('p')?.get('p')?.policy;
-    const tokens = this.model.model.get('p')?.get('p')?.tokens;
-
-    if (policy && tokens) {
-      const priorityIndex = tokens.indexOf('p_priority');
-      if (priorityIndex !== -1) {
-        policy.sort((a, b) => {
-          return parseInt(a[priorityIndex], 10) - parseInt(b[priorityIndex], 10);
-        });
+    this.model.model.get('p')?.forEach((value, key) => {
+      const policy = value.policy;
+      const tokens = value.tokens;
+      if (policy && tokens) {
+        const priorityIndex = tokens.indexOf(`${key}_priority`);
+        if (priorityIndex !== -1) {
+          policy.sort((a, b) => {
+            return parseInt(a[priorityIndex], 10) - parseInt(b[priorityIndex], 10);
+          });
+        }
       }
-    }
+    });
   }
 
   /**
@@ -528,7 +529,7 @@ export class CoreEnforcer {
             throw new Error('matcher result should only be of type boolean, number, or string');
         }
 
-        const eft = parameters['p_eft'];
+        const eft = parameters[`${enforceContext.pType}_eft`];
         if (eft && eftRes === Effect.Allow) {
           if (eft === 'allow') {
             eftRes = Effect.Allow;
