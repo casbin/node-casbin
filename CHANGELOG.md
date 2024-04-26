@@ -1,3 +1,10 @@
+# [5.30.0](https://github.com/casbin/node-casbin/compare/v5.29.0...v5.30.0) (2024-04-26)
+
+
+### Features
+
+* ensure eft and priority are respected in p2, r2, etc ([#475](https://github.com/casbin/node-casbin/issues/475)) ([8ef3deb](https://github.com/casbin/node-casbin/commit/8ef3debae7d8f081629b038d78e3d869c32be7f2)), closes [#474](https://github.com/casbin/node-casbin/issues/474)
+
 # [5.29.0](https://github.com/casbin/node-casbin/compare/v5.28.0...v5.29.0) (2024-04-10)
 
 
