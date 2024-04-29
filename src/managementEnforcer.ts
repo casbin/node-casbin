@@ -115,7 +115,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    *         Duplicates are removed.
    */
   public async getAllNamedRoles(ptype: string): Promise<string[]> {
-    return this.model.getValuesForFieldInPolicy('g', ptype, 1);
+    return this.model.getValuesForFieldInPolicy('g', ptype, 0);
   }
 
   /**
