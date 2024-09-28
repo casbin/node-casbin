@@ -114,6 +114,7 @@ export class Config implements ConfigInterface {
     const linesCount = lines.length;
     let section = '';
     let currentLine = '';
+    const seenSections = new Set<string>();
 
     lines.forEach((n, index) => {
       let commentPos = n.indexOf(Config.DEFAULT_COMMENT);
@@ -138,6 +139,10 @@ export class Config implements ConfigInterface {
           currentLine = '';
         }
         section = line.substring(1, line.length - 1);
+        if (seenSections.has(section)) {
+          throw new Error(`Duplicated section: ${section} at line ${lineNumber}`);
+        }
+        seenSections.add(section);
       } else {
         let shouldWrite = false;
         if (line.endsWith(Config.DEFAULT_MULTI_LINE_SEPARATOR)) {
