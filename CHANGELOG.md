@@ -1,3 +1,10 @@
+# [5.31.0](https://github.com/casbin/node-casbin/compare/v5.30.0...v5.31.0) (2024-09-28)
+
+
+### Features
+
+* prevent duplicated sections and invalid operators in config and model ([#484](https://github.com/casbin/node-casbin/issues/484)) ([79e0f1c](https://github.com/casbin/node-casbin/commit/79e0f1c8fa551ce456b97729d52a49c762d91169))
+
 # [5.30.0](https://github.com/casbin/node-casbin/compare/v5.29.0...v5.30.0) (2024-04-26)
 
 
