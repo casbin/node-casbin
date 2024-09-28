@@ -108,6 +108,11 @@ export class Model {
         value = value.replace(`$<${index}>`, n);
       });
 
+      const invalidOperators = /(?<![&|])&(?!&)|(?<![&|])\|(?!\|)|&{3,}|\|{3,}/g;
+      if (invalidOperators.test(value)) {
+        throw new Error(`Invalid operator in matcher`);
+      }
+
       ast.value = value;
     } else {
       ast.value = util.escapeAssertion(value);
