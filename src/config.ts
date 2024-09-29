@@ -177,7 +177,7 @@ export class Config implements ConfigInterface {
   private validateMatcher(matcherStr: string, lineNumber: number): void {
     const errors: string[] = [];
 
-    const validProps = ['r.sub', 'r.obj', 'r.act', 'p.sub', 'p.obj', 'p.act', 'p.eft'];
+    const validProps = ['r.sub', 'r.obj', 'r.act', 'r.dom', 'p.sub', 'p.obj', 'p.act', 'p.dom', 'p.eft', 'p.sub_rule'];
     const usedProps = matcherStr.match(/[rp]\.\w+/g) || [];
     const invalidProps = usedProps.filter((prop) => !validProps.includes(prop));
     if (invalidProps.length > 0) {
