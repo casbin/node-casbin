@@ -164,9 +164,43 @@ export class Config implements ConfigInterface {
     if (equalIndex === -1) {
       throw new Error(`parse the content error : line ${lineNum}`);
     }
-    const key = line.substring(0, equalIndex);
-    const value = line.substring(equalIndex + 1);
-    this.addConfig(section, key.trim(), value.trim());
+    const key = line.substring(0, equalIndex).trim();
+    const value = line.substring(equalIndex + 1).trim();
+
+    if (section === 'matchers') {
+      this.validateMatcher(value, lineNum);
+    }
+
+    this.addConfig(section, key, value);
+  }
+
+  private validateMatcher(matcherStr: string, lineNumber: number): void {
+    const errors: string[] = [];
+
+    const validProps = ['r.sub', 'r.obj', 'r.act', 'p.sub', 'p.obj', 'p.act', 'p.eft'];
+    const usedProps = matcherStr.match(/[rp]\.\w+/g) || [];
+    const invalidProps = usedProps.filter((prop) => !validProps.includes(prop));
+    if (invalidProps.length > 0) {
+      errors.push(`Invalid properties: ${invalidProps.join(', ')}`);
+    }
+
+    if (matcherStr.includes('..')) {
+      errors.push('Found extra dots');
+    }
+
+    if (matcherStr.trim().endsWith(',')) {
+      errors.push('Unnecessary comma');
+    }
+
+    const openBrackets = (matcherStr.match(/\(/g) || []).length;
+    const closeBrackets = (matcherStr.match(/\)/g) || []).length;
+    if (openBrackets !== closeBrackets) {
+      errors.push('Mismatched parentheses');
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`${errors.join(', ')}`);
+    }
   }
 
   public getBool(key: string): boolean {
