@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer';
+import { Buffer } from 'buffer/';
 export interface FileSystem {
   readFileSync(path: string, encoding?: string): Buffer | string;
   writeFileSync(path: string, text: string, encoding?: string): void;
