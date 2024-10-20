@@ -1,3 +1,10 @@
+# [5.32.0](https://github.com/casbin/node-casbin/compare/v5.31.0...v5.32.0) (2024-10-20)
+
+
+### Features
+
+* use `import { Buffer } from 'buffer/'` to be compatible with Bun ([#486](https://github.com/casbin/node-casbin/issues/486)) ([738b2b6](https://github.com/casbin/node-casbin/commit/738b2b67c6369381a34a2fe01a978249205c5802))
+
 # [5.31.0](https://github.com/casbin/node-casbin/compare/v5.30.0...v5.31.0) (2024-09-28)
 
 
