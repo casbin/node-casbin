@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { compile, compileAsync, addBinaryOp } from 'expression-eval';
+import { compile, compileAsync, addBinaryOp } from '@casbin/expression-eval';
 
 import { DefaultEffector, Effect, Effector } from './effect';
 import { FunctionMap, Model, newModelFromFile, PolicyOp } from './model';
