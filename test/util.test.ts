@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { getLogger, logPrint, Util as util } from '../src';
-import { compile } from '@casbin/expression-eval';
+import { compile } from 'expression-eval';
 
 test('test enableLog success', () => {
   getLogger().enableLog(true);

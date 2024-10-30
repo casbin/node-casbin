@@ -597,9 +597,9 @@ test('test ABAC multiple eval()', async () => {
   );
 
   const e = await newEnforcer(m, policy);
-  await testEnforce(e, 56, 98 as unknown as string, 'read', true);
-  await testEnforce(e, 23, 67 as unknown as string, 'read', false);
-  await testEnforce(e, 78, 34 as unknown as string, 'read', false);
+  await testEnforce(e, 56, (98 as unknown) as string, 'read', true);
+  await testEnforce(e, 23, (67 as unknown) as string, 'read', false);
+  await testEnforce(e, 78, (34 as unknown) as string, 'read', false);
 });
 
 // https://github.com/casbin/node-casbin/issues/438
@@ -617,10 +617,10 @@ test('test ABAC single eval() with r. in unexpected places', async () => {
   );
 
   const e = await newEnforcer(m, policy);
-  await testEnforce(e, { id: 3 }, { owner: { id: 3 } } as unknown as string, 'read', true);
-  await testEnforce(e, {}, { owner: {} } as unknown as string, 'read', false);
-  await testEnforce(e, { id: 3 }, { owner: {} } as unknown as string, 'read', false);
-  await testEnforce(e, { id: 3 }, { owner: { id: 2 } } as unknown as string, 'read', false);
+  await testEnforce(e, { id: 3 }, ({ owner: { id: 3 } } as unknown) as string, 'read', true);
+  await testEnforce(e, {}, ({ owner: {} } as unknown) as string, 'read', false);
+  await testEnforce(e, { id: 3 }, ({ owner: {} } as unknown) as string, 'read', false);
+  await testEnforce(e, { id: 3 }, ({ owner: { id: 2 } } as unknown) as string, 'read', false);
 });
 
 test('TestEnforceSync', async () => {
