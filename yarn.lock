@@ -301,6 +301,13 @@
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@casbin/expression-eval@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@casbin/expression-eval/-/expression-eval-5.2.0.tgz#a388405077acfca0d9e223a969eb78d0a6c83aaa"
+  integrity sha512-QNyxosVLIyMRPemwLs5IkuEp81YXMxb6uX/Y1dVR9Z8mCRfZjy/FWV1TuKz5q84oKbXwwo7Wg1IBMQ8Jgcw43g==
+  dependencies:
+    jsep "^0.3.0"
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
   resolved "https://registry.npmjs.org/@cnakazawa/watch/-/watch-1.0.4.tgz#f864ae85004d0fcab6f50be9141c4da368d1656a"
@@ -2899,13 +2906,6 @@ expect@^26.6.2:
     jest-matcher-utils "^26.6.2"
     jest-message-util "^26.6.2"
     jest-regex-util "^26.0.0"
-
-expression-eval@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/expression-eval/-/expression-eval-5.0.0.tgz#0add5fa9e12c9bbaa8e81f16fc9e560599523afd"
-  integrity sha512-2H7OBTa/UKBgTVRRb3/lXd+D89cLjClNtldnzOpZYWZK1zBLIlrz8BLWp5f81AAYOc37GbhkCRXtl5Z/q4D91g==
-  dependencies:
-    jsep "^0.3.0"
 
 extend-shallow@^2.0.1:
   version "2.0.1"
