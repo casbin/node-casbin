@@ -1,3 +1,10 @@
+# [5.34.0](https://github.com/casbin/node-casbin/compare/v5.33.0...v5.34.0) (2024-11-04)
+
+
+### Features
+
+* switch dependency to our own package: @casbin/expression-eval 5.2.0 ([#489](https://github.com/casbin/node-casbin/issues/489)) ([acf39c2](https://github.com/casbin/node-casbin/commit/acf39c26e578d0125f8246aafafa75e52b17109a))
+
 # [5.32.0](https://github.com/casbin/node-casbin/compare/v5.31.0...v5.32.0) (2024-10-20)
 
 
