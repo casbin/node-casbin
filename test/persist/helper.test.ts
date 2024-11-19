@@ -45,7 +45,7 @@ m = r.sub == p.sub && r.obj == p.obj && r.act == p.act
     ['admin', '/', 'POST'],
     ['admin', '/', 'PUT'],
     ['admin', '/', 'DELETE'],
-    [' admin', '/ ', 'PATCH'],
+    ['admin', '/', 'PATCH'],
   ];
 
   testdata.forEach((n) => {

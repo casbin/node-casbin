@@ -14,20 +14,30 @@ export class Helper {
     for (let i = 0; i < line.length; i++) {
       const char = line[i];
 
-      if (char === '"' && (i === 0 || line[i - 1] !== '\\')) {
-        inQuotes = !inQuotes;
-      } else if (char === '(' && !inQuotes) {
+      if (char === '(') {
         bracketCount++;
-      } else if (char === ')' && !inQuotes) {
+      } else if (char === ')') {
         bracketCount--;
       }
 
+      if (char === '"' && (i === 0 || line[i - 1] !== '\\')) {
+        inQuotes = !inQuotes;
+        currentToken += char;
+        continue;
+      }
+
       if (char === ',' && !inQuotes && bracketCount === 0) {
-        tokens.push(currentToken.trim());
-        currentToken = '';
+        if (currentToken) {
+          tokens.push(currentToken.trim());
+          currentToken = '';
+        }
       } else {
         currentToken += char;
       }
+    }
+
+    if (bracketCount !== 0) {
+      throw new Error(`Unmatched brackets in policy line: ${line}`);
     }
 
     if (currentToken) {
@@ -38,7 +48,11 @@ export class Helper {
       return;
     }
 
-    const key = tokens[0];
+    let key = tokens[0].trim();
+    if (key.startsWith('"') && key.endsWith('"')) {
+      key = key.slice(1, -1);
+    }
+
     const sec = key.substring(0, 1);
     const item = model.model.get(sec);
     if (!item) {
@@ -51,10 +65,11 @@ export class Helper {
     }
 
     const values = tokens.slice(1).map((v) => {
+      v = v.trim();
       if (v.startsWith('"') && v.endsWith('"')) {
         v = v.slice(1, -1);
       }
-      return v.replace(/""/g, '"');
+      return v.replace(/""/g, '"').trim();
     });
 
     policy.policy.push(values);
