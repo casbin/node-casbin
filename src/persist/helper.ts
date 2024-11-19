@@ -6,7 +6,7 @@ export class Helper {
       return;
     }
 
-    let tokens: string[] = [];
+    const tokens: string[] = [];
     let currentToken = '';
     let inQuotes = false;
     let bracketCount = 0;
