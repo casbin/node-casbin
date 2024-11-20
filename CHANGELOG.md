@@ -1,3 +1,10 @@
+# [5.35.0](https://github.com/casbin/node-casbin/compare/v5.34.0...v5.35.0) (2024-11-20)
+
+
+### Features
+
+* update to @casbin/expression-eval 5.3.0 to fix short-circuit bug ([#495](https://github.com/casbin/node-casbin/issues/495)) ([094bef7](https://github.com/casbin/node-casbin/commit/094bef7aec70eac4c5a0e4c79dea8178f81b4626))
+
 # [5.34.0](https://github.com/casbin/node-casbin/compare/v5.33.0...v5.34.0) (2024-11-04)
 
 
