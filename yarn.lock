@@ -301,10 +301,10 @@
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@casbin/expression-eval@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@casbin/expression-eval/-/expression-eval-5.2.0.tgz#a388405077acfca0d9e223a969eb78d0a6c83aaa"
-  integrity sha512-QNyxosVLIyMRPemwLs5IkuEp81YXMxb6uX/Y1dVR9Z8mCRfZjy/FWV1TuKz5q84oKbXwwo7Wg1IBMQ8Jgcw43g==
+"@casbin/expression-eval@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.npmjs.org/@casbin/expression-eval/-/expression-eval-5.3.0.tgz#4721504cbc1fcd7e334c01e44f257ca1f9e2550b"
+  integrity sha512-mMTHMYXcnBBv/zMvxMpcdVyt2bfw8Y0GnmRLbkFQ1CVJZb4XZp7xWjRh7ymOLuJdsu58rci9gmOOv/99DtJvPA==
   dependencies:
     jsep "^0.3.0"
 
