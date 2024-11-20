@@ -1,4 +1,5 @@
 import { Model } from '../model';
+import { parse } from 'csv-parse/sync';
 
 export class Helper {
   public static loadPolicyLine(line: string, model: Model): void {
@@ -6,33 +7,37 @@ export class Helper {
       return;
     }
 
-    const tokens: string[] = [];
+    const rawTokens = parse(line, {
+      delimiter: ',',
+      skip_empty_lines: true,
+      trim: true,
+      relax_quotes: true,
+    });
+
+    if (!rawTokens || rawTokens.length === 0 || !rawTokens[0]) {
+      return;
+    }
+
+    const tokens: string[] = rawTokens[0];
+
+    const processedTokens: string[] = [];
     let currentToken = '';
-    let inQuotes = false;
     let bracketCount = 0;
 
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-
-      if (char === '(') {
-        bracketCount++;
-      } else if (char === ')') {
-        bracketCount--;
-      }
-
-      if (char === '"' && (i === 0 || line[i - 1] !== '\\')) {
-        inQuotes = !inQuotes;
-        currentToken += char;
-        continue;
-      }
-
-      if (char === ',' && !inQuotes && bracketCount === 0) {
-        if (currentToken) {
-          tokens.push(currentToken.trim());
-          currentToken = '';
+    for (const token of tokens) {
+      for (const char of token) {
+        if (char === '(') {
+          bracketCount++;
+        } else if (char === ')') {
+          bracketCount--;
         }
-      } else {
-        currentToken += char;
+      }
+
+      currentToken += (currentToken ? ',' : '') + token;
+
+      if (bracketCount === 0) {
+        processedTokens.push(currentToken);
+        currentToken = '';
       }
     }
 
@@ -40,15 +45,11 @@ export class Helper {
       throw new Error(`Unmatched brackets in policy line: ${line}`);
     }
 
-    if (currentToken) {
-      tokens.push(currentToken.trim());
-    }
-
-    if (!tokens || tokens.length === 0) {
+    if (processedTokens.length === 0) {
       return;
     }
 
-    let key = tokens[0].trim();
+    let key = processedTokens[0].trim();
     if (key.startsWith('"') && key.endsWith('"')) {
       key = key.slice(1, -1);
     }
@@ -64,8 +65,7 @@ export class Helper {
       return;
     }
 
-    const values = tokens.slice(1).map((v) => {
-      v = v.trim();
+    const values = processedTokens.slice(1).map((v) => {
       if (v.startsWith('"') && v.endsWith('"')) {
         v = v.slice(1, -1);
       }
