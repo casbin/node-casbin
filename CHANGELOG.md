@@ -1,3 +1,10 @@
+# [5.36.0](https://github.com/casbin/node-casbin/compare/v5.35.0...v5.36.0) (2024-11-22)
+
+
+### Features
+
+* add BracketAwareCsvParser to parse CSV file better ([#494](https://github.com/casbin/node-casbin/issues/494)) ([4c73883](https://github.com/casbin/node-casbin/commit/4c738831ebbf71f8f3a6ccac8495644c09a5e5dd))
+
 # [5.35.0](https://github.com/casbin/node-casbin/compare/v5.34.0...v5.35.0) (2024-11-20)
 
 
