@@ -34,11 +34,11 @@ export class FileAdapter implements Adapter {
   private async loadPolicyFile(model: Model, handler: (line: string, model: Model) => void): Promise<void> {
     const bodyBuf = await (this.fs ? this.fs : mustGetDefaultFileSystem()).readFileSync(this.filePath);
     const lines = bodyBuf.toString().split('\n');
-    lines.forEach((n: string, index: number) => {
-      if (!n) {
+    lines.forEach((line: string) => {
+      if (!line || line.trim().startsWith('#')) {
         return;
       }
-      handler(n, model);
+      handler(line, model);
     });
   }
 
