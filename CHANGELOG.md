@@ -1,3 +1,10 @@
+# [5.37.0](https://github.com/casbin/node-casbin/compare/v5.36.0...v5.37.0) (2025-01-10)
+
+
+### Features
+
+* use empty array [] as reason for enforceEx() ([#496](https://github.com/casbin/node-casbin/issues/496)) ([c951a8f](https://github.com/casbin/node-casbin/commit/c951a8fd6afb70ecdbbf76e3424ec5107133e254))
+
 # [5.36.0](https://github.com/casbin/node-casbin/compare/v5.35.0...v5.36.0) (2024-11-22)
 
 
