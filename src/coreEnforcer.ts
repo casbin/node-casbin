@@ -595,7 +595,7 @@ export class CoreEnforcer {
       if (explainIndex === -1) {
         return [res, []];
       }
-      return [res, p?.policy[explainIndex]];
+      return [res, p?.policy?.[explainIndex] || []];
     }
 
     return res;
