@@ -1,3 +1,10 @@
+# [5.38.0](https://github.com/casbin/node-casbin/compare/v5.37.0...v5.38.0) (2025-01-23)
+
+
+### Features
+
+* implement `enableAcceptJsonRequest` API ([#497](https://github.com/casbin/node-casbin/issues/497)) ([650db88](https://github.com/casbin/node-casbin/commit/650db88d6703db9ef934a371ba782791376e0088))
+
 # [5.37.0](https://github.com/casbin/node-casbin/compare/v5.36.0...v5.37.0) (2025-01-10)
 
 
