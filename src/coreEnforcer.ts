@@ -61,6 +61,7 @@ export class CoreEnforcer {
   protected autoSave = true;
   protected autoBuildRoleLinks = true;
   protected autoNotifyWatcher = true;
+  protected acceptJsonRequest = false;
   protected fs?: FileSystem;
 
   /**
@@ -352,6 +353,15 @@ export class CoreEnforcer {
   }
 
   /**
+   * enableAcceptJsonRequest determines whether to attempt parsing request args as JSON
+   *
+   * @param enable whether to attempt parsing request args as JSON
+   */
+  public enableAcceptJsonRequest(enable: boolean): void {
+    this.acceptJsonRequest = enable;
+  }
+
+  /**
    * enableAutoBuildRoleLinks controls whether to save a policy rule
    * automatically to the adapter when it is added or removed.
    *
@@ -477,9 +487,20 @@ export class CoreEnforcer {
           throw new Error(`invalid request size: expected ${rTokensLen}, got ${rvals.length}, rvals: ${rvals}"`);
         }
 
-        rTokens.forEach((token, j) => {
-          parameters[token] = rvals[j];
-        });
+        if (this.acceptJsonRequest) {
+          // Attempt to parse each request parameter as JSON; continue with string if failed
+          rTokens.forEach((token, j) => {
+            try {
+              parameters[token] = JSON.parse(rvals[j]);
+            } catch {
+              parameters[token] = rvals[j];
+            }
+          });
+        } else {
+          rTokens.forEach((token, j) => {
+            parameters[token] = rvals[j];
+          });
+        }
 
         p?.tokens.forEach((token, j) => {
           parameters[token] = p?.policy[i][j];

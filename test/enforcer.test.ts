@@ -560,6 +560,10 @@ class TestSub {
     this.Name = name;
     this.Age = age;
   }
+
+  toJSONString(): string {
+    return JSON.stringify(this);
+  }
 }
 
 test('test ABAC Scaling', async () => {
@@ -836,4 +840,32 @@ test('TestEnforceWithMatcher', async () => {
   expect(await e.enforceWithMatcher(m2, 'bob', 'data1', 'read')).toBe(true);
   expect(await e.enforceWithMatcher(m2, 'data2_admin', 'data1', 'read')).toBe(true);
   expect(await e.enforceWithMatcher(m2, 'data2_admin', 'data1', 'write')).toBe(true);
+});
+
+test('TestEnforceWithEnableAcceptJsonRequest', async () => {
+  const e = await newEnforcer('examples/abac_rule_model.conf', 'examples/abac_rule_policy.csv');
+  e.enableAcceptJsonRequest(true);
+
+  const sub1 = new TestSub('alice', 16).toJSONString();
+  const sub2 = new TestSub('alice', 20).toJSONString();
+  const sub3 = new TestSub('alice', 65).toJSONString();
+
+  await testEnforce(e, sub1, '/data1', 'read', false);
+  await testEnforce(e, sub1, '/data2', 'read', false);
+  await testEnforce(e, sub1, '/data1', 'write', false);
+  await testEnforce(e, sub1, '/data2', 'write', true);
+  await testEnforce(e, sub2, '/data1', 'read', true);
+  await testEnforce(e, sub2, '/data2', 'read', false);
+  await testEnforce(e, sub2, '/data1', 'write', false);
+  await testEnforce(e, sub2, '/data2', 'write', true);
+  await testEnforce(e, sub3, '/data1', 'read', true);
+  await testEnforce(e, sub3, '/data2', 'read', false);
+  await testEnforce(e, sub3, '/data1', 'write', false);
+  await testEnforce(e, sub3, '/data2', 'write', false);
+
+  e.enableAcceptJsonRequest(false);
+  await testEnforce(e, sub1, '/data2', 'write', false);
+  await testEnforce(e, sub2, '/data1', 'read', false);
+  await testEnforce(e, sub2, '/data2', 'write', false);
+  await testEnforce(e, sub3, '/data1', 'read', false);
 });
