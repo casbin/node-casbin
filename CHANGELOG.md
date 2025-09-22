@@ -1,3 +1,10 @@
+# [5.39.0](https://github.com/casbin/node-casbin/compare/v5.38.0...v5.39.0) (2025-09-22)
+
+
+### Features
+
+* **adapter:** add lazyLoad parameter to initWithAdapter in newEnforcerWithClass ([#503](https://github.com/casbin/node-casbin/issues/503)) ([b9a3d45](https://github.com/casbin/node-casbin/commit/b9a3d451baabc60f2de0e64807b9930c888b3774))
+
 # [5.38.0](https://github.com/casbin/node-casbin/compare/v5.37.0...v5.38.0) (2025-01-23)
 
 
