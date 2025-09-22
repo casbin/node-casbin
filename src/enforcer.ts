@@ -501,7 +501,7 @@ export async function newEnforcerWithClass<T extends Enforcer>(enforcer: new () 
       if (typeof params[1] === 'string') {
         await e.initWithFile(params[0].toString(), params[1].toString());
       } else {
-        await e.initWithAdapter(params[0].toString(), params[1]);
+        await e.initWithAdapter(params[0].toString(), params[1], params[2] === true);
       }
     } else {
       if (typeof params[1] === 'string') {
