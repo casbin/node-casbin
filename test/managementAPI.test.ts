@@ -377,3 +377,232 @@ test('updateNamedGroupingPolicy', async () => {
   groupingPolicy = await e.getGroupingPolicy();
   testArray2DEquals(groupingPolicy, [['alice', 'update_test']]);
 });
+
+test('addPolicyLocally', async () => {
+  const p = ['eve', 'data3', 'read'];
+  const added = await e.addPolicyLocally(...p);
+  expect(added).toBe(true);
+  expect(await e.hasPolicy(...p)).toBe(true);
+});
+
+test('addPoliciesLocally', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['jack', 'data4', 'read'],
+    ['katy', 'data4', 'write'],
+    ['leyo', 'data4', 'read'],
+    ['ham', 'data4', 'write'],
+  ];
+  const added = await e.addPoliciesLocally(rules);
+  expect(added).toBe(true);
+  for (const rule of rules) {
+    expect(await e.hasPolicy(...rule)).toBe(true);
+  }
+});
+
+test('addNamedPolicyLocally', async () => {
+  const p = ['eve', 'data3', 'read'];
+  const added = await e.addNamedPolicyLocally('p', ...p);
+  expect(added).toBe(true);
+  expect(await e.hasPolicy(...p)).toBe(true);
+});
+
+test('addNamedPoliciesLocally', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['jack', 'data4', 'read'],
+    ['katy', 'data4', 'write'],
+    ['leyo', 'data4', 'read'],
+    ['ham', 'data4', 'write'],
+  ];
+  const added = await e.addNamedPoliciesLocally('p', rules);
+  expect(added).toBe(true);
+  for (const rule of rules) {
+    expect(await e.hasPolicy(...rule)).toBe(true);
+  }
+});
+
+test('updatePolicyLocally', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const p = ['alice', 'data1', 'read'];
+  const q = ['alice', 'data2', 'read'];
+  const updated = await e.updatePolicyLocally(p, q);
+  expect(updated).toBe(true);
+  expect(await e.hasPolicy(...p)).toBe(false);
+  expect(await e.hasPolicy(...q)).toBe(true);
+});
+
+test('updateNamedPolicyLocally', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const p = ['alice', 'data1', 'read'];
+  const q = ['alice', 'data2', 'read'];
+  const updated = await e.updateNamedPolicyLocally('p', p, q);
+  expect(updated).toBe(true);
+  expect(await e.hasPolicy(...p)).toBe(false);
+  expect(await e.hasPolicy(...q)).toBe(true);
+});
+
+test('removePolicyLocally', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const p = ['alice', 'data1', 'read'];
+  const removed = await e.removePolicyLocally(...p);
+  expect(removed).toBe(true);
+  expect(await e.hasPolicy(...p)).toBe(false);
+});
+
+test('removePoliciesLocally', async () => {
+  const rules = [
+    ['jack', 'data4', 'read'],
+    ['katy', 'data4', 'write'],
+    ['leyo', 'data4', 'read'],
+    ['ham', 'data4', 'write'],
+  ];
+  const added = await e.addPoliciesLocally(rules);
+  expect(added).toBe(true);
+  const removed = await e.removePoliciesLocally(rules);
+  expect(removed).toBe(true);
+  for (const rule of rules) {
+    expect(await e.hasPolicy(...rule)).toBe(false);
+  }
+});
+
+test('removeFilteredPolicyLocally', async () => {
+  const p = ['alice', 'data1', 'read'];
+  const removed = await e.removeFilteredPolicyLocally(0, ...p);
+  expect(removed).toBe(true);
+  expect(await e.hasPolicy(...p)).toBe(false);
+});
+
+test('removeNamedPolicyLocally', async () => {
+  const p = ['alice', 'data1', 'read'];
+  const removed = await e.removeNamedPolicyLocally('p', ...p);
+  expect(removed).toBe(true);
+  expect(await e.hasPolicy(...p)).toBe(false);
+});
+
+test('removeNamedPoliciesLocally', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['jack', 'data4', 'read'],
+    ['katy', 'data4', 'write'],
+    ['leyo', 'data4', 'read'],
+    ['ham', 'data4', 'write'],
+  ];
+  const added = await e.addPoliciesLocally(rules);
+  expect(added).toBe(true);
+  const removed = await e.removeNamedPoliciesLocally('p', rules);
+  expect(removed).toBe(true);
+  for (const rule of rules) {
+    expect(await e.hasPolicy(...rule)).toBe(false);
+  }
+});
+
+test('removeFilteredNamedPolicyLocally', async () => {
+  const p = ['alice', 'data1', 'read'];
+  const removed = await e.removeFilteredNamedPolicyLocally('p', 0, ...p);
+  expect(removed).toBe(true);
+  expect(await e.hasPolicy(...p)).toBe(false);
+});
+
+test('addGroupingPolicyLocally', async () => {
+  const added = await e.addGroupingPolicyLocally('group1', 'data2_admin');
+  expect(added).toBe(true);
+});
+
+test('addGroupingPoliciesLocally', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['ham', 'data4_admin'],
+    ['jack', 'data5_admin'],
+  ];
+  const added = await e.addGroupingPoliciesLocally(groupingRules);
+  expect(added).toBe(true);
+});
+
+test('addNamedGroupingPolicyLocally', async () => {
+  const added = await e.addNamedGroupingPolicyLocally('g', 'group1', 'data2_admin');
+  expect(added).toBe(true);
+});
+
+test('addNamedGroupingPoliciesLocally', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['ham', 'data4_admin'],
+    ['jack', 'data5_admin'],
+  ];
+  const added = await e.addNamedGroupingPoliciesLocally('g', groupingRules);
+  expect(added).toBe(true);
+});
+
+test('removeGroupingPolicyLocally', async () => {
+  const removed = await e.removeGroupingPolicyLocally('alice', 'data2_admin');
+  expect(removed).toBe(true);
+});
+
+test('removeGroupingPoliciesLocally', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['ham', 'data4_admin'],
+    ['jack', 'data5_admin'],
+  ];
+  const added = await e.addGroupingPoliciesLocally(groupingRules);
+  expect(added).toBe(true);
+  const removed = await e.removeGroupingPoliciesLocally(groupingRules);
+  expect(removed).toBe(true);
+});
+
+test('removeFilteredGroupingPolicyLocally', async () => {
+  const removed = await e.removeFilteredGroupingPolicyLocally(0, 'alice');
+  expect(removed).toBe(true);
+});
+
+test('removeFilteredNamedGroupingPolicyLocally', async () => {
+  const removed = await e.removeFilteredNamedGroupingPolicyLocally('g', 0, 'alice');
+  expect(removed).toBe(true);
+});
+
+test('removeNamedGroupingPoliciesLocally', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['ham', 'data4_admin'],
+    ['jack', 'data5_admin'],
+  ];
+  const added = await e.addGroupingPoliciesLocally(groupingRules);
+  expect(added).toBe(true);
+  const removed = await e.removeNamedGroupingPoliciesLocally('g', groupingRules);
+  expect(removed).toBe(true);
+});
+
+test('updateGroupingPolicyLocally', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+
+  let groupingPolicy = await e.getGroupingPolicy();
+  testArray2DEquals(groupingPolicy, [['alice', 'data2_admin']]);
+
+  const updated = e.updateGroupingPolicyLocally(['alice', 'data2_admin'], ['alice', 'update_test']);
+  groupingPolicy = await e.getGroupingPolicy();
+  testArray2DEquals(groupingPolicy, [['alice', 'update_test']]);
+});
+
+test('updateNamedGroupingPolicyLocally', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+
+  let groupingPolicy = await e.getGroupingPolicy();
+  testArray2DEquals(groupingPolicy, [['alice', 'data2_admin']]);
+
+  const updated = e.updateNamedGroupingPolicyLocally('g', ['alice', 'data2_admin'], ['alice', 'update_test']);
+  groupingPolicy = await e.getGroupingPolicy();
+  testArray2DEquals(groupingPolicy, [['alice', 'update_test']]);
+});
