@@ -722,6 +722,158 @@ export class ManagementEnforcer extends InternalEnforcer {
     return this.removeFilteredPolicyInternal('p', ptype, fieldIndex, fieldValues, false, false);
   }
 
+  /**
+   * addGroupingPolicy adds a role inheritance rule to the current policy.
+   * If the rule already exists, the function returns false and the rule will not be added.
+   * Otherwise the function returns true by adding the new rule.
+   *
+   * @param params the "g" policy rule, ptype "g" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async addGroupingPolicyLocally(...params: string[]): Promise<boolean> {
+    return this.addNamedGroupingPolicyLocally('g', ...params);
+  }
+
+  /**
+   * addGroupingPolicies adds a role inheritance rules to the current policy without
+   * persistence via the adapter and without calling the update() function of the watcher.
+   * If the rule already exists, the function returns false and the rules will not be added.
+   * Otherwise the function returns true by adding the new rules.
+   *
+   * @param rules the "g" policy rules, ptype "g" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async addGroupingPoliciesLocally(rules: string[][]): Promise<boolean> {
+    return this.addNamedGroupingPoliciesLocally('g', rules);
+  }
+
+  /**
+   * addNamedGroupingPolicy adds a named role inheritance rule to the current policy without
+   * persistence via the adapter and without calling the update() function of the watcher.
+   * If the rule already exists, the function returns false and the rule will not be added.
+   * Otherwise the function returns true by adding the new rule.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param params the "g" policy rule.
+   * @return succeeds or not.
+   */
+  public async addNamedGroupingPolicyLocally(ptype: string, ...params: string[]): Promise<boolean> {
+    return this.addPolicyInternal('g', ptype, params, false, false);
+  }
+
+  /**
+   * addNamedGroupingPolicies adds named role inheritance rules to the current policy without
+   * persistence via the adapter and without calling the update() function of the watcher.
+   * If the rule already exists, the function returns false and the rules will not be added.
+   * Otherwise the function returns true by adding the new rules.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param rules the "g" policy rule.
+   * @return succeeds or not.
+   */
+  public async addNamedGroupingPoliciesLocally(ptype: string, rules: string[][]): Promise<boolean> {
+    return this.addPoliciesInternal('g', ptype, rules, false, false);
+  }
+
+  /**
+   * removeGroupingPolicy removes a role inheritance rule from the current policy without
+   * persistence via the adapter and without calling the update() function of the watcher.
+   *
+   * @param params the "g" policy rule, ptype "g" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async removeGroupingPolicyLocally(...params: string[]): Promise<boolean> {
+    return this.removeNamedGroupingPolicyLocally('g', ...params);
+  }
+
+  /**
+   * removeGroupingPolicies removes role inheritance rules from the current policy without
+   * persistence via the adapter and without calling the update() function of the watcher.
+   *
+   * @param rules the "g" policy rules, ptype "g" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async removeGroupingPoliciesLocally(rules: string[][]): Promise<boolean> {
+    return this.removeNamedGroupingPoliciesLocally('g', rules);
+  }
+
+  /**
+   * removeFilteredGroupingPolicy removes a role inheritance rule from the current policy, field filters can be specified without
+   * persistence via the adapter and without calling the update() function of the watcher.
+   *
+   * @param fieldIndex the policy rule's start index to be matched.
+   * @param fieldValues the field values to be matched, value ""
+   *                    means not to match this field.
+   * @return succeeds or not.
+   */
+  public async removeFilteredGroupingPolicyLocally(fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
+    return this.removeFilteredNamedGroupingPolicyLocally('g', fieldIndex, ...fieldValues);
+  }
+
+  /**
+   * removeNamedGroupingPolicy removes a role inheritance rule from the current named policy without
+   * persistence via the adapter and without calling the update() function of the watcher.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param params the "g" policy rule.
+   * @return succeeds or not.
+   */
+  public async removeNamedGroupingPolicyLocally(ptype: string, ...params: string[]): Promise<boolean> {
+    return this.removePolicyInternal('g', ptype, params, false, false);
+  }
+
+  /**
+   * removeNamedGroupingPolicies removes role inheritance rules from the current named policy without
+   * persistence via the adapter and without calling the update() function of the watcher.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param rules the "g" policy rules.
+   * @return succeeds or not.
+   */
+  public async removeNamedGroupingPoliciesLocally(ptype: string, rules: string[][]): Promise<boolean> {
+    return this.removePoliciesInternal('g', ptype, rules, false, false);
+  }
+
+  /**
+   * removeFilteredNamedGroupingPolicy removes a role inheritance rule from the current named policy without
+   * persistence via the adapter and without calling the update() function of the watcher.
+   * Field filters can be specified.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param fieldIndex the policy rule's start index to be matched.
+   * @param fieldValues the field values to be matched, value ""
+   *                    means not to match this field.
+   * @return succeeds or not.
+   */
+  public async removeFilteredNamedGroupingPolicyLocally(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
+    return this.removeFilteredPolicyInternal('g', ptype, fieldIndex, fieldValues, false, false);
+  }
+
+  /**
+   * UpdateGroupingPolicy updates an rule to the current named policy without
+   * persistence via the adapter and without calling the update() function of the watcher.
+   *
+   * @param oldRule the old rule.
+   * @param newRule the new rule.
+   * @return succeeds or not.
+   */
+  public async updateGroupingPolicyLocally(oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.updateNamedGroupingPolicyLocally('g', oldRule, newRule);
+  }
+
+  /**
+   * updateNamedGroupingPolicy updates an rule to the current named policy without
+   * persistence via the adapter and without calling the update() function of the watcher.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param oldRule the old rule.
+   * @param newRule the new rule.
+   * @return succeeds or not.
+   */
+  public async updateNamedGroupingPolicyLocally(ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.updatePolicyInternal('g', ptype, oldRule, newRule, false, false);
+  }
+
   public async selfRemovePolicyLocally(sec: string, ptype: string, rule: string[]): Promise<boolean> {
     return this.removePolicyInternal(sec, ptype, rule, false, false);
   }
