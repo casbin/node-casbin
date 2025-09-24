@@ -894,4 +894,3 @@ export class ManagementEnforcer extends InternalEnforcer {
     return this.removePoliciesInternal(sec, ptype, rule, false, false);
   }
 }
-
