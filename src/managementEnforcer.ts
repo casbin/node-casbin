@@ -565,7 +565,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * addPolicy adds an authorization rule to the current policy without
+   * addPolicyLocally adds an authorization rule to the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rule will not be added.
    * Otherwise the function returns true by adding the new rule.
@@ -578,7 +578,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * addPolicies adds authorization rules to the current policy without
+   * addPoliciesLocally adds authorization rules to the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rules will not be added.
    * Otherwise the function returns true by adding the new rules.
@@ -591,7 +591,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * addNamedPolicy adds an authorization rule to the current named policy without
+   * addNamedPolicyLocally adds an authorization rule to the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rule will not be added.
    * Otherwise the function returns true by adding the new rule.
@@ -605,7 +605,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * addNamedPolicies adds authorization rules to the current named policy without
+   * addNamedPoliciesLocally adds authorization rules to the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rules will not be added.
    * Otherwise the function returns true by adding the new rules.
@@ -619,7 +619,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * updatePolicy updates an authorization rule from the current policy without
+   * updatePolicyLocally updates an authorization rule from the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule not exists, the function returns false.
    * Otherwise the function returns true by changing it to the new rule.
@@ -633,7 +633,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * updateNamedPolicy updates an authorization rule from the current named policy without
+   * updateNamedPolicyLocally updates an authorization rule from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule not exists, the function returns false.
    * Otherwise the function returns true by changing it to the new rule.
@@ -648,7 +648,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * removePolicy removes an authorization rule from the current policy without
+   * removePolicyLocally removes an authorization rule from the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param params the "p" policy rule, ptype "p" is implicitly used.
@@ -659,7 +659,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * removePolicies removes an authorization rules from the current policy without
+   * removePoliciesLocally removes authorization rules from the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param rules the "p" policy rules, ptype "p" is implicitly used.
@@ -684,7 +684,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * removeNamedPolicy removes an authorization rule from the current named policy without
+   * removeNamedPolicyLocally removes an authorization rule from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param ptype the policy type, can be "p", "p2", "p3", ..
@@ -696,7 +696,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * removeNamedPolicies removes authorization rules from the current named policy without
+   * removeNamedPoliciesLocally removes authorization rules from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param ptype the policy type, can be "p", "p2", "p3", ..
@@ -708,7 +708,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * removeFilteredNamedPolicy removes an authorization rule from the current named policy without
+   * removeFilteredNamedPolicyLocally removes an authorization rule from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * Field filters can be specified.
    *
@@ -723,7 +723,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * addGroupingPolicy adds a role inheritance rule to the current policy.
+   * addGroupingPolicyLocally adds a role inheritance rule to the current policy.
    * If the rule already exists, the function returns false and the rule will not be added.
    * Otherwise the function returns true by adding the new rule.
    *
@@ -735,7 +735,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * addGroupingPolicies adds a role inheritance rules to the current policy without
+   * addGroupingPoliciesLocally adds a role inheritance rules to the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rules will not be added.
    * Otherwise the function returns true by adding the new rules.
@@ -748,7 +748,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * addNamedGroupingPolicy adds a named role inheritance rule to the current policy without
+   * addNamedGroupingPolicyLocally adds a named role inheritance rule to the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rule will not be added.
    * Otherwise the function returns true by adding the new rule.
@@ -762,7 +762,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * addNamedGroupingPolicies adds named role inheritance rules to the current policy without
+   * addNamedGroupingPoliciesLocally adds named role inheritance rules to the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rules will not be added.
    * Otherwise the function returns true by adding the new rules.
@@ -776,7 +776,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * removeGroupingPolicy removes a role inheritance rule from the current policy without
+   * removeGroupingPolicyLocally removes a role inheritance rule from the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param params the "g" policy rule, ptype "g" is implicitly used.
@@ -787,7 +787,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * removeGroupingPolicies removes role inheritance rules from the current policy without
+   * removeGroupingPoliciesLocally removes role inheritance rules from the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param rules the "g" policy rules, ptype "g" is implicitly used.
@@ -798,7 +798,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * removeFilteredGroupingPolicy removes a role inheritance rule from the current policy, field filters can be specified without
+   * removeFilteredGroupingPolicyLocally removes a role inheritance rule from the current policy, field filters can be specified without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param fieldIndex the policy rule's start index to be matched.
@@ -811,7 +811,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * removeNamedGroupingPolicy removes a role inheritance rule from the current named policy without
+   * removeNamedGroupingPolicyLocally removes a role inheritance rule from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param ptype the policy type, can be "g", "g2", "g3", ..
@@ -823,7 +823,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * removeNamedGroupingPolicies removes role inheritance rules from the current named policy without
+   * removeNamedGroupingPoliciesLocally removes role inheritance rules from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param ptype the policy type, can be "g", "g2", "g3", ..
@@ -835,7 +835,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * removeFilteredNamedGroupingPolicy removes a role inheritance rule from the current named policy without
+   * removeFilteredNamedGroupingPolicyLocally removes a role inheritance rule from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * Field filters can be specified.
    *
@@ -850,7 +850,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * UpdateGroupingPolicy updates an rule to the current named policy without
+   * UpdateGroupingPolicyLocally updates an rule to the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param oldRule the old rule.
@@ -862,7 +862,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * updateNamedGroupingPolicy updates an rule to the current named policy without
+   * updateNamedGroupingPolicyLocally updates an rule to the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param ptype the policy type, can be "g", "g2", "g3", ..
