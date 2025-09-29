@@ -565,7 +565,7 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
-   * addPolicyLocally adds an authorization rule to the current policy without
+   * selfAddPolicyLocally adds an authorization rule to the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rule will not be added.
    * Otherwise the function returns true by adding the new rule.
@@ -573,12 +573,12 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param params the "p" policy rule, ptype "p" is implicitly used.
    * @return succeeds or not.
    */
-  public async addPolicyLocally(...params: string[]): Promise<boolean> {
-    return this.addNamedPolicyLocally('p', ...params);
+  public async selfAddPolicyLocally(...params: string[]): Promise<boolean> {
+    return this.selfAddNamedPolicyLocally('p', ...params);
   }
 
   /**
-   * addPoliciesLocally adds authorization rules to the current policy without
+   * selfAddPoliciesLocally adds authorization rules to the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rules will not be added.
    * Otherwise the function returns true by adding the new rules.
@@ -586,12 +586,12 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param rules the "p" policy rules, ptype "p" is implicitly used.
    * @return succeeds or not.
    */
-  public async addPoliciesLocally(rules: string[][]): Promise<boolean> {
-    return this.addNamedPoliciesLocally('p', rules);
+  public async selfAddPoliciesLocally(rules: string[][]): Promise<boolean> {
+    return this.selfAddNamedPoliciesLocally('p', rules);
   }
 
   /**
-   * addNamedPolicyLocally adds an authorization rule to the current named policy without
+   * selfAddNamedPolicyLocally adds an authorization rule to the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rule will not be added.
    * Otherwise the function returns true by adding the new rule.
@@ -600,12 +600,12 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param params the "p" policy rule.
    * @return succeeds or not.
    */
-  public async addNamedPolicyLocally(ptype: string, ...params: string[]): Promise<boolean> {
+  public async selfAddNamedPolicyLocally(ptype: string, ...params: string[]): Promise<boolean> {
     return this.addPolicyInternal('p', ptype, params, false, false);
   }
 
   /**
-   * addNamedPoliciesLocally adds authorization rules to the current named policy without
+   * selfAddNamedPoliciesLocally adds authorization rules to the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rules will not be added.
    * Otherwise the function returns true by adding the new rules.
@@ -614,12 +614,12 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param rules the "p" policy rules.
    * @return succeeds or not.
    */
-  public async addNamedPoliciesLocally(ptype: string, rules: string[][]): Promise<boolean> {
+  public async selfAddNamedPoliciesLocally(ptype: string, rules: string[][]): Promise<boolean> {
     return this.addPoliciesInternal('p', ptype, rules, false, false);
   }
 
   /**
-   * updatePolicyLocally updates an authorization rule from the current policy without
+   * selfUpdatePolicyLocally updates an authorization rule from the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule not exists, the function returns false.
    * Otherwise the function returns true by changing it to the new rule.
@@ -628,12 +628,12 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param oldRule the policy will be remove
    * @param newRule the policy will be added
    */
-  public async updatePolicyLocally(oldRule: string[], newRule: string[]): Promise<boolean> {
-    return this.updateNamedPolicyLocally('p', oldRule, newRule);
+  public async selfUpdatePolicyLocally(oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.selfUpdateNamedPolicyLocally('p', oldRule, newRule);
   }
 
   /**
-   * updateNamedPolicyLocally updates an authorization rule from the current named policy without
+   * selfUpdateNamedPolicyLocally updates an authorization rule from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule not exists, the function returns false.
    * Otherwise the function returns true by changing it to the new rule.
@@ -643,34 +643,34 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param newRule the policy rule will be added
    * @return succeeds or not.
    */
-  public async updateNamedPolicyLocally(ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+  public async selfUpdateNamedPolicyLocally(ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
     return this.updatePolicyInternal('p', ptype, oldRule, newRule, false, false);
   }
 
   /**
-   * removePolicyLocally removes an authorization rule from the current policy without
+   * selfRemovePolicyLocally removes an authorization rule from the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param params the "p" policy rule, ptype "p" is implicitly used.
    * @return succeeds or not.
    */
-  public async removePolicyLocally(...params: string[]): Promise<boolean> {
-    return this.removeNamedPolicyLocally('p', ...params);
+  public async selfRemovePolicyLocally(...params: string[]): Promise<boolean> {
+    return this.selfRemoveNamedPolicyLocally('p', ...params);
   }
 
   /**
-   * removePoliciesLocally removes authorization rules from the current policy without
+   * selfRemovePoliciesLocally removes authorization rules from the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param rules the "p" policy rules, ptype "p" is implicitly used.
    * @return succeeds or not.
    */
-  public async removePoliciesLocally(rules: string[][]): Promise<boolean> {
-    return this.removeNamedPoliciesLocally('p', rules);
+  public async selfRemovePoliciesLocally(rules: string[][]): Promise<boolean> {
+    return this.selfRemoveNamedPoliciesLocally('p', rules);
   }
 
   /**
-   * removeFilteredPolicy removes an authorization rule from the current policy without
+   * selfRemoveFilteredPolicyLocally removes an authorization rule from the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * Field filters can be specified.
    *
@@ -679,36 +679,36 @@ export class ManagementEnforcer extends InternalEnforcer {
    *                    means not to match this field.
    * @return succeeds or not.
    */
-  public async removeFilteredPolicyLocally(fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
-    return this.removeFilteredNamedPolicyLocally('p', fieldIndex, ...fieldValues);
+  public async selfRemoveFilteredPolicyLocally(fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
+    return this.selfRemoveFilteredNamedPolicyLocally('p', fieldIndex, ...fieldValues);
   }
 
   /**
-   * removeNamedPolicyLocally removes an authorization rule from the current named policy without
+   * selfRemoveNamedPolicyLocally removes an authorization rule from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param ptype the policy type, can be "p", "p2", "p3", ..
    * @param params the "p" policy rule.
    * @return succeeds or not.
    */
-  public async removeNamedPolicyLocally(ptype: string, ...params: string[]): Promise<boolean> {
+  public async selfRemoveNamedPolicyLocally(ptype: string, ...params: string[]): Promise<boolean> {
     return this.removePolicyInternal('p', ptype, params, false, false);
   }
 
   /**
-   * removeNamedPoliciesLocally removes authorization rules from the current named policy without
+   * selfRemoveNamedPoliciesLocally removes authorization rules from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param ptype the policy type, can be "p", "p2", "p3", ..
    * @param rules the "p" policy rules.
    * @return succeeds or not.
    */
-  public async removeNamedPoliciesLocally(ptype: string, rules: string[][]): Promise<boolean> {
+  public async selfRemoveNamedPoliciesLocally(ptype: string, rules: string[][]): Promise<boolean> {
     return this.removePoliciesInternal('p', ptype, rules, false, false);
   }
 
   /**
-   * removeFilteredNamedPolicyLocally removes an authorization rule from the current named policy without
+   * selfRemoveFilteredNamedPolicyLocally removes an authorization rule from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * Field filters can be specified.
    *
@@ -718,24 +718,24 @@ export class ManagementEnforcer extends InternalEnforcer {
    *                    means not to match this field.
    * @return succeeds or not.
    */
-  public async removeFilteredNamedPolicyLocally(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
+  public async selfRemoveFilteredNamedPolicyLocally(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
     return this.removeFilteredPolicyInternal('p', ptype, fieldIndex, fieldValues, false, false);
   }
 
   /**
-   * addGroupingPolicyLocally adds a role inheritance rule to the current policy.
+   * selfAddGroupingPolicyLocally adds a role inheritance rule to the current policy.
    * If the rule already exists, the function returns false and the rule will not be added.
    * Otherwise the function returns true by adding the new rule.
    *
    * @param params the "g" policy rule, ptype "g" is implicitly used.
    * @return succeeds or not.
    */
-  public async addGroupingPolicyLocally(...params: string[]): Promise<boolean> {
-    return this.addNamedGroupingPolicyLocally('g', ...params);
+  public async selfAddGroupingPolicyLocally(...params: string[]): Promise<boolean> {
+    return this.selfAddNamedGroupingPolicyLocally('g', ...params);
   }
 
   /**
-   * addGroupingPoliciesLocally adds a role inheritance rules to the current policy without
+   * selfAddGroupingPoliciesLocally adds a role inheritance rules to the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rules will not be added.
    * Otherwise the function returns true by adding the new rules.
@@ -743,12 +743,12 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param rules the "g" policy rules, ptype "g" is implicitly used.
    * @return succeeds or not.
    */
-  public async addGroupingPoliciesLocally(rules: string[][]): Promise<boolean> {
-    return this.addNamedGroupingPoliciesLocally('g', rules);
+  public async selfAddGroupingPoliciesLocally(rules: string[][]): Promise<boolean> {
+    return this.selfAddNamedGroupingPoliciesLocally('g', rules);
   }
 
   /**
-   * addNamedGroupingPolicyLocally adds a named role inheritance rule to the current policy without
+   * selfAddNamedGroupingPolicyLocally adds a named role inheritance rule to the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rule will not be added.
    * Otherwise the function returns true by adding the new rule.
@@ -757,12 +757,12 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param params the "g" policy rule.
    * @return succeeds or not.
    */
-  public async addNamedGroupingPolicyLocally(ptype: string, ...params: string[]): Promise<boolean> {
+  public async selfAddNamedGroupingPolicyLocally(ptype: string, ...params: string[]): Promise<boolean> {
     return this.addPolicyInternal('g', ptype, params, false, false);
   }
 
   /**
-   * addNamedGroupingPoliciesLocally adds named role inheritance rules to the current policy without
+   * selfAddNamedGroupingPoliciesLocally adds named role inheritance rules to the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * If the rule already exists, the function returns false and the rules will not be added.
    * Otherwise the function returns true by adding the new rules.
@@ -771,34 +771,34 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param rules the "g" policy rule.
    * @return succeeds or not.
    */
-  public async addNamedGroupingPoliciesLocally(ptype: string, rules: string[][]): Promise<boolean> {
+  public async selfAddNamedGroupingPoliciesLocally(ptype: string, rules: string[][]): Promise<boolean> {
     return this.addPoliciesInternal('g', ptype, rules, false, false);
   }
 
   /**
-   * removeGroupingPolicyLocally removes a role inheritance rule from the current policy without
+   * selfRemoveGroupingPolicyLocally removes a role inheritance rule from the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param params the "g" policy rule, ptype "g" is implicitly used.
    * @return succeeds or not.
    */
-  public async removeGroupingPolicyLocally(...params: string[]): Promise<boolean> {
-    return this.removeNamedGroupingPolicyLocally('g', ...params);
+  public async selfRemoveGroupingPolicyLocally(...params: string[]): Promise<boolean> {
+    return this.selfRemoveNamedGroupingPolicyLocally('g', ...params);
   }
 
   /**
-   * removeGroupingPoliciesLocally removes role inheritance rules from the current policy without
+   * selfRemoveGroupingPoliciesLocally removes role inheritance rules from the current policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param rules the "g" policy rules, ptype "g" is implicitly used.
    * @return succeeds or not.
    */
-  public async removeGroupingPoliciesLocally(rules: string[][]): Promise<boolean> {
-    return this.removeNamedGroupingPoliciesLocally('g', rules);
+  public async selfRemoveGroupingPoliciesLocally(rules: string[][]): Promise<boolean> {
+    return this.selfRemoveNamedGroupingPoliciesLocally('g', rules);
   }
 
   /**
-   * removeFilteredGroupingPolicyLocally removes a role inheritance rule from the current policy, field filters can be specified without
+   * selfRemoveFilteredGroupingPolicyLocally removes a role inheritance rule from the current policy, field filters can be specified without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param fieldIndex the policy rule's start index to be matched.
@@ -806,36 +806,36 @@ export class ManagementEnforcer extends InternalEnforcer {
    *                    means not to match this field.
    * @return succeeds or not.
    */
-  public async removeFilteredGroupingPolicyLocally(fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
-    return this.removeFilteredNamedGroupingPolicyLocally('g', fieldIndex, ...fieldValues);
+  public async selfRemoveFilteredGroupingPolicyLocally(fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
+    return this.selfRemoveFilteredNamedGroupingPolicyLocally('g', fieldIndex, ...fieldValues);
   }
 
   /**
-   * removeNamedGroupingPolicyLocally removes a role inheritance rule from the current named policy without
+   * selfRemoveNamedGroupingPolicyLocally removes a role inheritance rule from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param ptype the policy type, can be "g", "g2", "g3", ..
    * @param params the "g" policy rule.
    * @return succeeds or not.
    */
-  public async removeNamedGroupingPolicyLocally(ptype: string, ...params: string[]): Promise<boolean> {
+  public async selfRemoveNamedGroupingPolicyLocally(ptype: string, ...params: string[]): Promise<boolean> {
     return this.removePolicyInternal('g', ptype, params, false, false);
   }
 
   /**
-   * removeNamedGroupingPoliciesLocally removes role inheritance rules from the current named policy without
+   * selfRemoveNamedGroupingPoliciesLocally removes role inheritance rules from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param ptype the policy type, can be "g", "g2", "g3", ..
    * @param rules the "g" policy rules.
    * @return succeeds or not.
    */
-  public async removeNamedGroupingPoliciesLocally(ptype: string, rules: string[][]): Promise<boolean> {
+  public async selfRemoveNamedGroupingPoliciesLocally(ptype: string, rules: string[][]): Promise<boolean> {
     return this.removePoliciesInternal('g', ptype, rules, false, false);
   }
 
   /**
-   * removeFilteredNamedGroupingPolicyLocally removes a role inheritance rule from the current named policy without
+   * selfRemoveFilteredNamedGroupingPolicyLocally removes a role inheritance rule from the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    * Field filters can be specified.
    *
@@ -845,24 +845,24 @@ export class ManagementEnforcer extends InternalEnforcer {
    *                    means not to match this field.
    * @return succeeds or not.
    */
-  public async removeFilteredNamedGroupingPolicyLocally(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
+  public async selfRemoveFilteredNamedGroupingPolicyLocally(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
     return this.removeFilteredPolicyInternal('g', ptype, fieldIndex, fieldValues, false, false);
   }
 
   /**
-   * UpdateGroupingPolicyLocally updates an rule to the current named policy without
+   * selfUpdateGroupingPolicyLocally updates an rule to the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param oldRule the old rule.
    * @param newRule the new rule.
    * @return succeeds or not.
    */
-  public async updateGroupingPolicyLocally(oldRule: string[], newRule: string[]): Promise<boolean> {
-    return this.updateNamedGroupingPolicyLocally('g', oldRule, newRule);
+  public async selfUpdateGroupingPolicyLocally(oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.selfUpdateNamedGroupingPolicyLocally('g', oldRule, newRule);
   }
 
   /**
-   * updateNamedGroupingPolicyLocally updates an rule to the current named policy without
+   * selfUpdateNamedGroupingPolicyLocally updates an rule to the current named policy without
    * persistence via the adapter and without calling the update() function of the watcher.
    *
    * @param ptype the policy type, can be "g", "g2", "g3", ..
@@ -870,27 +870,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * @param newRule the new rule.
    * @return succeeds or not.
    */
-  public async updateNamedGroupingPolicyLocally(ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+  public async selfUpdateNamedGroupingPolicyLocally(ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
     return this.updatePolicyInternal('g', ptype, oldRule, newRule, false, false);
-  }
-
-  public async selfRemovePolicyLocally(sec: string, ptype: string, rule: string[]): Promise<boolean> {
-    return this.removePolicyInternal(sec, ptype, rule, false, false);
-  }
-
-  public async selfRemoveFilteredPolicyLocally(sec: string, ptype: string, fieldIndex: number, fieldValues: string[]): Promise<boolean> {
-    return this.removeFilteredPolicyInternal(sec, ptype, fieldIndex, fieldValues, false, false);
-  }
-
-  public async selfUpdatePolicyLocally(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
-    return this.updatePolicyInternal(sec, ptype, oldRule, newRule, false, false);
-  }
-
-  public async selfAddPoliciesLocally(sec: string, ptype: string, rule: string[][]): Promise<boolean> {
-    return this.addPoliciesInternal(sec, ptype, rule, false, false);
-  }
-
-  public async selfRemovePoliciesLocally(sec: string, ptype: string, rule: string[][]): Promise<boolean> {
-    return this.removePoliciesInternal(sec, ptype, rule, false, false);
   }
 }
