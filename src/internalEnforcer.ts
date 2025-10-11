@@ -23,6 +23,11 @@ import { PolicyOp } from './model';
 export class InternalEnforcer extends CoreEnforcer {
   /**
    * addPolicyInternal adds a rule to the current policy.
+   * @param sec section name
+   * @param ptype policy type
+   * @param rule policy rule
+   * @param useWatcher whether to notify the watcher
+   * @param useAdapter whether to call the adapter to persist the policy (defaults to true)
    */
   protected async addPolicyInternal(sec: string, ptype: string, rule: string[], useWatcher: boolean, useAdapter = true): Promise<boolean> {
     if (this.model.hasPolicy(sec, ptype, rule)) {
@@ -58,8 +63,15 @@ export class InternalEnforcer extends CoreEnforcer {
     return ok;
   }
 
-  // addPolicies adds rules to the current policy.
-  // removePolicies removes rules from the current policy.
+  /**
+   * addPolicies adds rules to the current policy.
+   * removePolicies removes rules from the current policy.
+   * @param sec section name
+   * @param ptype policy type
+   * @param rules policy rules
+   * @param useWatcher whether to notify the watcher
+   * @param useAdapter whether to call the adapter to persist the policies (defaults to true)
+   */
   protected async addPoliciesInternal(
     sec: string,
     ptype: string,
@@ -107,6 +119,12 @@ export class InternalEnforcer extends CoreEnforcer {
 
   /**
    * updatePolicyInternal updates a rule from the current policy.
+   * @param sec section name
+   * @param ptype policy type
+   * @param oldRule old policy rule
+   * @param newRule new policy rule
+   * @param useWatcher whether to notify the watcher
+   * @param useAdapter whether to call the adapter to persist the policy update (defaults to true)
    */
   protected async updatePolicyInternal(
     sec: string,
@@ -155,6 +173,11 @@ export class InternalEnforcer extends CoreEnforcer {
 
   /**
    * removePolicyInternal removes a rule from the current policy.
+   * @param sec section name
+   * @param ptype policy type
+   * @param rule policy rule
+   * @param useWatcher whether to notify the watcher
+   * @param useAdapter whether to call the adapter to persist the policy removal (defaults to true)
    */
   protected async removePolicyInternal(
     sec: string,
@@ -195,7 +218,14 @@ export class InternalEnforcer extends CoreEnforcer {
     return ok;
   }
 
-  // removePolicies removes rules from the current policy.
+  /**
+   * removePolicies removes rules from the current policy.
+   * @param sec section name
+   * @param ptype policy type
+   * @param rules policy rules
+   * @param useWatcher whether to notify the watcher
+   * @param useAdapter whether to call the adapter to persist the policy removals (defaults to true)
+   */
   protected async removePoliciesInternal(
     sec: string,
     ptype: string,
@@ -243,6 +273,12 @@ export class InternalEnforcer extends CoreEnforcer {
 
   /**
    * removeFilteredPolicyInternal removes rules based on field filters from the current policy.
+   * @param sec section name
+   * @param ptype policy type
+   * @param fieldIndex field index
+   * @param fieldValues field values
+   * @param useWatcher whether to notify the watcher
+   * @param useAdapter whether to call the adapter to persist the filtered policy removal (defaults to true)
    */
   protected async removeFilteredPolicyInternal(
     sec: string,
