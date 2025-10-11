@@ -24,12 +24,12 @@ export class InternalEnforcer extends CoreEnforcer {
   /**
    * addPolicyInternal adds a rule to the current policy.
    */
-  protected async addPolicyInternal(sec: string, ptype: string, rule: string[], useWatcher: boolean): Promise<boolean> {
+  protected async addPolicyInternal(sec: string, ptype: string, rule: string[], useWatcher: boolean, useAdapter = true): Promise<boolean> {
     if (this.model.hasPolicy(sec, ptype, rule)) {
       return false;
     }
 
-    if (this.adapter && this.autoSave) {
+    if (useAdapter && this.adapter && this.autoSave) {
       try {
         await this.adapter.addPolicy(sec, ptype, rule);
       } catch (e) {
@@ -60,14 +60,20 @@ export class InternalEnforcer extends CoreEnforcer {
 
   // addPolicies adds rules to the current policy.
   // removePolicies removes rules from the current policy.
-  protected async addPoliciesInternal(sec: string, ptype: string, rules: string[][], useWatcher: boolean): Promise<boolean> {
+  protected async addPoliciesInternal(
+    sec: string,
+    ptype: string,
+    rules: string[][],
+    useWatcher: boolean,
+    useAdapter = true
+  ): Promise<boolean> {
     for (const rule of rules) {
       if (this.model.hasPolicy(sec, ptype, rule)) {
         return false;
       }
     }
 
-    if (this.autoSave) {
+    if (useAdapter && this.autoSave) {
       if ('addPolicies' in this.adapter) {
         try {
           await this.adapter.addPolicies(sec, ptype, rules);
@@ -107,13 +113,14 @@ export class InternalEnforcer extends CoreEnforcer {
     ptype: string,
     oldRule: string[],
     newRule: string[],
-    useWatcher: boolean
+    useWatcher: boolean,
+    useAdapter = true
   ): Promise<boolean> {
     if (!this.model.hasPolicy(sec, ptype, oldRule)) {
       return false;
     }
 
-    if (this.autoSave) {
+    if (useAdapter && this.autoSave) {
       if ('updatePolicy' in this.adapter) {
         try {
           await this.adapter.updatePolicy(sec, ptype, oldRule, newRule);
@@ -149,12 +156,18 @@ export class InternalEnforcer extends CoreEnforcer {
   /**
    * removePolicyInternal removes a rule from the current policy.
    */
-  protected async removePolicyInternal(sec: string, ptype: string, rule: string[], useWatcher: boolean): Promise<boolean> {
+  protected async removePolicyInternal(
+    sec: string,
+    ptype: string,
+    rule: string[],
+    useWatcher: boolean,
+    useAdapter = true
+  ): Promise<boolean> {
     if (!this.model.hasPolicy(sec, ptype, rule)) {
       return false;
     }
 
-    if (this.adapter && this.autoSave) {
+    if (useAdapter && this.adapter && this.autoSave) {
       try {
         await this.adapter.removePolicy(sec, ptype, rule);
       } catch (e) {
@@ -183,14 +196,20 @@ export class InternalEnforcer extends CoreEnforcer {
   }
 
   // removePolicies removes rules from the current policy.
-  protected async removePoliciesInternal(sec: string, ptype: string, rules: string[][], useWatcher: boolean): Promise<boolean> {
+  protected async removePoliciesInternal(
+    sec: string,
+    ptype: string,
+    rules: string[][],
+    useWatcher: boolean,
+    useAdapter = true
+  ): Promise<boolean> {
     for (const rule of rules) {
       if (!this.model.hasPolicy(sec, ptype, rule)) {
         return false;
       }
     }
 
-    if (this.autoSave) {
+    if (useAdapter && this.autoSave) {
       if ('removePolicies' in this.adapter) {
         try {
           await this.adapter.removePolicies(sec, ptype, rules);
@@ -230,9 +249,10 @@ export class InternalEnforcer extends CoreEnforcer {
     ptype: string,
     fieldIndex: number,
     fieldValues: string[],
-    useWatcher: boolean
+    useWatcher: boolean,
+    useAdapter = true
   ): Promise<boolean> {
-    if (this.adapter && this.autoSave) {
+    if (useAdapter && this.adapter && this.autoSave) {
       try {
         await this.adapter.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
       } catch (e) {

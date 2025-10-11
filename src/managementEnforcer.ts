@@ -541,26 +541,26 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   public async selfAddPolicy(sec: string, ptype: string, rule: string[]): Promise<boolean> {
-    return this.addPolicyInternal(sec, ptype, rule, false);
+    return this.addPolicyInternal(sec, ptype, rule, false, false);
   }
 
   public async selfRemovePolicy(sec: string, ptype: string, rule: string[]): Promise<boolean> {
-    return this.removePolicyInternal(sec, ptype, rule, false);
+    return this.removePolicyInternal(sec, ptype, rule, false, false);
   }
 
   public async selfRemoveFilteredPolicy(sec: string, ptype: string, fieldIndex: number, fieldValues: string[]): Promise<boolean> {
-    return this.removeFilteredPolicyInternal(sec, ptype, fieldIndex, fieldValues, false);
+    return this.removeFilteredPolicyInternal(sec, ptype, fieldIndex, fieldValues, false, false);
   }
 
   public async selfUpdatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
-    return this.updatePolicyInternal(sec, ptype, oldRule, newRule, false);
+    return this.updatePolicyInternal(sec, ptype, oldRule, newRule, false, false);
   }
 
   public async selfAddPolicies(sec: string, ptype: string, rule: string[][]): Promise<boolean> {
-    return this.addPoliciesInternal(sec, ptype, rule, false);
+    return this.addPoliciesInternal(sec, ptype, rule, false, false);
   }
 
   public async selfRemovePolicies(sec: string, ptype: string, rule: string[][]): Promise<boolean> {
-    return this.removePoliciesInternal(sec, ptype, rule, false);
+    return this.removePoliciesInternal(sec, ptype, rule, false, false);
   }
 }
