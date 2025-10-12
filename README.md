@@ -1,12 +1,11 @@
 # Node-Casbin
 
-[![NPM version][npm-image]][npm-url]
-[![NPM download][download-image]][download-url]
-[![install size](https://packagephobia.now.sh/badge?p=casbin)](https://packagephobia.now.sh/result?p=casbin)
-[![codebeat badge](https://codebeat.co/badges/c17c9ee1-da42-4db3-8047-9574ad2b23b1)](https://codebeat.co/projects/github-com-casbin-node-casbin-master)
 [![GitHub Actions](https://github.com/casbin/node-casbin/workflows/main/badge.svg)](https://github.com/casbin/node-casbin/actions)
 [![Coverage Status](https://coveralls.io/repos/github/casbin/node-casbin/badge.svg?branch=master)](https://coveralls.io/github/casbin/node-casbin?branch=master)
 [![Release](https://img.shields.io/github/release/casbin/node-casbin.svg)](https://github.com/casbin/node-casbin/releases/latest)
+[![NPM version][npm-image]][npm-url]
+[![NPM download][download-image]][download-url]
+[![install size](https://packagephobia.now.sh/badge?p=casbin)](https://packagephobia.now.sh/result?p=casbin)
 [![Discord](https://img.shields.io/discord/1022748306096537660?logo=discord&label=discord&color=5865F2)](https://discord.gg/S5UjpzGZjN)
 
 [npm-image]: https://img.shields.io/npm/v/casbin.svg?style=flat-square
