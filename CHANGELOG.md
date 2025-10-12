@@ -1,3 +1,10 @@
+# [5.40.0](https://github.com/casbin/node-casbin/compare/v5.39.0...v5.40.0) (2025-10-12)
+
+
+### Features
+
+* remove codebeat badge in README ([015251e](https://github.com/casbin/node-casbin/commit/015251e7b93fa591ccfccc2183ac922e038b005a))
+
 # [5.39.0](https://github.com/casbin/node-casbin/compare/v5.38.0...v5.39.0) (2025-09-22)
 
 
