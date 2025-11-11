@@ -761,7 +761,6 @@ test('TestSubjectPriorityWithDomain', async () => {
 
 test('TestSubjectPriority simpler with CSV', async () => {
   const e = await newEnforcer('examples/subject_priority_model.conf', 'examples/subject_priority_policy_simple.csv');
-  fs.writeFileSync('/tmp/csv_policies.txt', JSON.stringify(e.getPolicy(), null, 2));
   // user should be allowed to read data1 because the direct allow policy takes priority over the inherited deny policy from the group role
   testEnforceEx(e, 'user', 'data1', 'read', [true, ['user', 'data1', 'read', 'allow']]);
 });
@@ -771,7 +770,6 @@ test('TestSubjectPriority simpler with addPolicy', async () => {
   await e.addPolicy('group', 'data1', 'read', 'deny');
   await e.addPolicy('user', 'data1', 'read', 'allow');
   await e.addGroupingPolicy('user', 'group');
-  fs.writeFileSync('/tmp/addpolicy_policies.txt', JSON.stringify(e.getPolicy(), null, 2));
   // user should be allowed to read data1 because the direct allow policy takes priority over the inherited deny policy from the group role
   testEnforceEx(e, 'user', 'data1', 'read', [true, ['user', 'data1', 'read', 'allow']]);
 });

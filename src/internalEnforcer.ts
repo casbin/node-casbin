@@ -54,6 +54,11 @@ export class InternalEnforcer extends CoreEnforcer {
 
     if (sec === 'g' && ok) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, [rule]);
+      // Sort policies by subject hierarchy after adding grouping policy
+      this.model.sortPoliciesBySubjectHierarchy();
+    } else if (sec === 'p' && ok) {
+      // Sort policies by subject hierarchy after adding policy
+      this.model.sortPoliciesBySubjectHierarchy();
     }
     return ok;
   }
@@ -95,6 +100,11 @@ export class InternalEnforcer extends CoreEnforcer {
     const [ok, effects] = await this.model.addPolicies(sec, ptype, rules);
     if (sec === 'g' && ok && effects?.length) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, effects);
+      // Sort policies by subject hierarchy after adding grouping policies
+      this.model.sortPoliciesBySubjectHierarchy();
+    } else if (sec === 'p' && ok) {
+      // Sort policies by subject hierarchy after adding policies
+      this.model.sortPoliciesBySubjectHierarchy();
     }
     return ok;
   }
@@ -141,6 +151,11 @@ export class InternalEnforcer extends CoreEnforcer {
     if (sec === 'g' && ok) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, [oldRule]);
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, [newRule]);
+      // Sort policies by subject hierarchy after updating grouping policy
+      this.model.sortPoliciesBySubjectHierarchy();
+    } else if (sec === 'p' && ok) {
+      // Sort policies by subject hierarchy after updating policy
+      this.model.sortPoliciesBySubjectHierarchy();
     }
 
     return ok;
@@ -178,6 +193,11 @@ export class InternalEnforcer extends CoreEnforcer {
     const ok = await this.model.removePolicy(sec, ptype, rule);
     if (sec === 'g' && ok) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, [rule]);
+      // Sort policies by subject hierarchy after removing grouping policy
+      this.model.sortPoliciesBySubjectHierarchy();
+    } else if (sec === 'p' && ok) {
+      // Sort policies by subject hierarchy after removing policy
+      this.model.sortPoliciesBySubjectHierarchy();
     }
     return ok;
   }
@@ -218,6 +238,11 @@ export class InternalEnforcer extends CoreEnforcer {
     const [ok, effects] = this.model.removePolicies(sec, ptype, rules);
     if (sec === 'g' && ok && effects?.length) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, effects);
+      // Sort policies by subject hierarchy after removing grouping policies
+      this.model.sortPoliciesBySubjectHierarchy();
+    } else if (sec === 'p' && ok) {
+      // Sort policies by subject hierarchy after removing policies
+      this.model.sortPoliciesBySubjectHierarchy();
     }
     return ok;
   }
@@ -256,6 +281,11 @@ export class InternalEnforcer extends CoreEnforcer {
     const [ok, effects] = this.model.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
     if (sec === 'g' && ok && effects?.length) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, effects);
+      // Sort policies by subject hierarchy after removing filtered grouping policies
+      this.model.sortPoliciesBySubjectHierarchy();
+    } else if (sec === 'p' && ok) {
+      // Sort policies by subject hierarchy after removing filtered policies
+      this.model.sortPoliciesBySubjectHierarchy();
     }
     return ok;
   }
