@@ -228,3 +228,27 @@ test('bracketCompatible', () => {
     )
   ).toEqual("g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act || r.obj in ['data2', 'data3'] || r.obj in ['data4', 'data5']");
 });
+
+test('test escapeAssertion', () => {
+  expect(util.escapeAssertion('r_sub == r_obj.value')).toEqual('r_sub == r_obj.value');
+  expect(util.escapeAssertion('p_sub == r_sub.value')).toEqual('p_sub == r_sub.value');
+  expect(util.escapeAssertion('r.attr.value == p.attr')).toEqual('r_attr.value == p_attr');
+  expect(util.escapeAssertion('r.attr.value == p.attr')).toEqual('r_attr.value == p_attr');
+  expect(util.escapeAssertion('r.attp.value || p.attr')).toEqual('r_attp.value || p_attr');
+  expect(util.escapeAssertion('r2.attr.value == p2.attr')).toEqual('r2_attr.value == p2_attr');
+  expect(util.escapeAssertion('r2.attp.value || p2.attr')).toEqual('r2_attp.value || p2_attr');
+  expect(util.escapeAssertion('r.attp.value &&p.attr')).toEqual('r_attp.value &&p_attr');
+  expect(util.escapeAssertion('r.attp.value >p.attr')).toEqual('r_attp.value >p_attr');
+  expect(util.escapeAssertion('r.attp.value <p.attr')).toEqual('r_attp.value <p_attr');
+  expect(util.escapeAssertion('r.attp.value +p.attr')).toEqual('r_attp.value +p_attr');
+  expect(util.escapeAssertion('r.attp.value -p.attr')).toEqual('r_attp.value -p_attr');
+  expect(util.escapeAssertion('r.attp.value *p.attr')).toEqual('r_attp.value *p_attr');
+  expect(util.escapeAssertion('r.attp.value /p.attr')).toEqual('r_attp.value /p_attr');
+  expect(util.escapeAssertion('!r.attp.value /p.attr')).toEqual('!r_attp.value /p_attr');
+  expect(util.escapeAssertion('g(r.sub, p.sub) == p.attr')).toEqual('g(r_sub, p_sub) == p_attr');
+  expect(util.escapeAssertion('g(r.sub,p.sub) == p.attr')).toEqual('g(r_sub,p_sub) == p_attr');
+  expect(util.escapeAssertion('(r.attp.value || p.attr)p.u')).toEqual('(r_attp.value || p_attr)p_u');
+  // Test that patterns inside strings are not escaped
+  expect(util.escapeAssertion('r.sub == "a.p.p.l.e"')).toEqual('r_sub == "a.p.p.l.e"');
+  expect(util.escapeAssertion('r.sub == "test.p.value"')).toEqual('r_sub == "test.p.value"');
+});

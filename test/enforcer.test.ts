@@ -627,6 +627,26 @@ test('test ABAC single eval() with r. in unexpected places', async () => {
   await testEnforce(e, { id: 3 }, ({ owner: { id: 2 } } as unknown) as string, 'read', false);
 });
 
+test('test escapeAssertion with string literals (issue)', async () => {
+  // Test case from GitHub issue: escapeAssertion should not replace r./p. inside string literals
+  const MY_RESOURCE_NAME = 'r.my_resource';
+  const model = newModel();
+  model.addDef('r', 'r', 'act, obj');
+  model.addDef('p', 'p', 'act, obj, rule');
+  model.addDef('e', 'e', 'some(where (p.eft == allow))');
+  model.addDef('m', 'm', 'r.act == p.act && r.obj == p.obj && eval(p.rule)');
+
+  const enforcer = await newEnforcer(model);
+  enforcer.addPolicy('alice', MY_RESOURCE_NAME, `p.obj == "${MY_RESOURCE_NAME}"`);
+
+  // Should work because string literals are not escaped
+  await expect(enforcer.enforce('alice', MY_RESOURCE_NAME)).resolves.toBe(true);
+
+  // Test with single quotes as well
+  enforcer.addPolicy('bob', 'p.resource', `p.obj == 'p.resource'`);
+  await expect(enforcer.enforce('bob', 'p.resource')).resolves.toBe(true);
+});
+
 test('TestEnforceSync', async () => {
   const m = newModel();
   m.addDef('r', 'r', 'sub, obj, act');

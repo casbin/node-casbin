@@ -17,11 +17,16 @@
 
 import { mustGetDefaultFileSystem } from '../persist';
 
-const escapeAssertionReg = new RegExp(/(^|[^A-Za-z0-9_])([rp])[0-9]*\./g);
+const escapeAssertionReg = new RegExp(/([()\s|&,=!><+\-*/]|^)((r|p)[0-9]*)\./g);
 
 function escapeAssertion(s: string): string {
-  s = s.replace(escapeAssertionReg, (match, p1, p2) => {
-    return p1 + p2 + match.substring(p1.length + p2.length).replace('.', '_');
+  s = s.replace(escapeAssertionReg, (match) => {
+    // Replace only the last dot with underscore (preserve the prefix character)
+    const lastDotIdx = match.lastIndexOf('.');
+    if (lastDotIdx > 0) {
+      return match.substring(0, lastDotIdx) + '_';
+    }
+    return match;
   });
   return s;
 }
