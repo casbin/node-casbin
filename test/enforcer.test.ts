@@ -759,6 +759,40 @@ test('TestSubjectPriorityWithDomain', async () => {
   testEnforceEx(e, 'bob', 'data2', 'write', [true, ['bob', 'data2', 'domain2', 'write', 'allow']], 'domain2');
 });
 
+test('TestSubjectPriority simpler with CSV', async () => {
+  const e = await newEnforcer('examples/subject_priority_model.conf', 'examples/subject_priority_policy_simple.csv');
+  fs.writeFileSync('/tmp/csv_policies.txt', JSON.stringify(e.getPolicy(), null, 2));
+  // user should be allowed to read data1 because the direct allow policy takes priority over the inherited deny policy from the group role
+  testEnforceEx(e, 'user', 'data1', 'read', [true, ['user', 'data1', 'read', 'allow']]);
+});
+
+test('TestSubjectPriority simpler with addPolicy', async () => {
+  const e = await newEnforcer('examples/subject_priority_model.conf');
+  await e.addPolicy('group', 'data1', 'read', 'deny');
+  await e.addPolicy('user', 'data1', 'read', 'allow');
+  await e.addGroupingPolicy('user', 'group');
+  fs.writeFileSync('/tmp/addpolicy_policies.txt', JSON.stringify(e.getPolicy(), null, 2));
+  // user should be allowed to read data1 because the direct allow policy takes priority over the inherited deny policy from the group role
+  testEnforceEx(e, 'user', 'data1', 'read', [true, ['user', 'data1', 'read', 'allow']]);
+});
+
+test('TestSubjectPriority with CSV converted to addPolicy/addGroupingPolicy', async () => {
+  const e = await newEnforcer('examples/subject_priority_model.conf');
+  await e.addPolicy('root', 'data1', 'read', 'deny');
+  await e.addPolicy('admin', 'data1', 'read', 'deny');
+  await e.addPolicy('editor', 'data1', 'read', 'deny');
+  await e.addPolicy('subscriber', 'data1', 'read', 'deny');
+  await e.addPolicy('jane', 'data1', 'read', 'allow');
+  await e.addPolicy('alice', 'data1', 'read', 'allow');
+  await e.addGroupingPolicy('admin', 'root');
+  await e.addGroupingPolicy('editor', 'admin');
+  await e.addGroupingPolicy('subscriber', 'admin');
+  await e.addGroupingPolicy('jane', 'editor');
+  await e.addGroupingPolicy('alice', 'subscriber');
+  testEnforceEx(e, 'jane', 'data1', 'read', [true, ['jane', 'data1', 'read', 'allow']]);
+  testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
+});
+
 test('TestEnforcerWithScopeFileSystem', async () => {
   const e = await newEnforcer();
   const defaultFileSystem = {
