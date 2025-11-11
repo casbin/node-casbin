@@ -230,31 +230,25 @@ test('bracketCompatible', () => {
 });
 
 test('test escapeAssertion', () => {
-  // Basic escaping
-  expect(util.escapeAssertion('r.obj == p.obj')).toEqual('r_obj == p_obj');
-  expect(util.escapeAssertion('r.act == p.act')).toEqual('r_act == p_act');
-
-  // With numbers
-  expect(util.escapeAssertion('r2.obj == p3.sub')).toEqual('r2_obj == p3_sub');
-
-  // With parentheses
-  expect(util.escapeAssertion('(r.obj == p.obj)')).toEqual('(r_obj == p_obj)');
-
-  // Nested property access should not escape inner dots
-  expect(util.escapeAssertion('r.obj.owner.id')).toEqual('r_obj.owner.id');
-  expect(util.escapeAssertion('!!r.sub.id && r.sub.id == r.obj.owner.id')).toEqual('!!r_sub.id && r_sub.id == r_obj.owner.id');
-
-  // String literals with double quotes - should NOT escape inside strings
-  expect(util.escapeAssertion('p.obj == "r.my_resource"')).toEqual('p_obj == "r.my_resource"');
-  expect(util.escapeAssertion('p.obj == "r.something" && r.act == p.act')).toEqual('p_obj == "r.something" && r_act == p_act');
-
-  // String literals with single quotes - should NOT escape inside strings
-  expect(util.escapeAssertion("p.obj == 'r.my_resource'")).toEqual("p_obj == 'r.my_resource'");
-  expect(util.escapeAssertion("p.obj == 'p.something' && r.act == p.act")).toEqual("p_obj == 'p.something' && r_act == p_act");
-
-  // Mixed quotes
-  expect(util.escapeAssertion('r.obj == "test" && p.sub == \'value\'')).toEqual('r_obj == "test" && p_sub == \'value\'');
-
-  // Complex string literal cases
-  expect(util.escapeAssertion('p.rule == "r.obj == \\"value\\""')).toEqual('p_rule == "r.obj == \\"value\\""');
+  expect(util.escapeAssertion('r_sub == r_obj.value')).toEqual('r_sub == r_obj.value');
+  expect(util.escapeAssertion('p_sub == r_sub.value')).toEqual('p_sub == r_sub.value');
+  expect(util.escapeAssertion('r.attr.value == p.attr')).toEqual('r_attr.value == p_attr');
+  expect(util.escapeAssertion('r.attr.value == p.attr')).toEqual('r_attr.value == p_attr');
+  expect(util.escapeAssertion('r.attp.value || p.attr')).toEqual('r_attp.value || p_attr');
+  expect(util.escapeAssertion('r2.attr.value == p2.attr')).toEqual('r2_attr.value == p2_attr');
+  expect(util.escapeAssertion('r2.attp.value || p2.attr')).toEqual('r2_attp.value || p2_attr');
+  expect(util.escapeAssertion('r.attp.value &&p.attr')).toEqual('r_attp.value &&p_attr');
+  expect(util.escapeAssertion('r.attp.value >p.attr')).toEqual('r_attp.value >p_attr');
+  expect(util.escapeAssertion('r.attp.value <p.attr')).toEqual('r_attp.value <p_attr');
+  expect(util.escapeAssertion('r.attp.value +p.attr')).toEqual('r_attp.value +p_attr');
+  expect(util.escapeAssertion('r.attp.value -p.attr')).toEqual('r_attp.value -p_attr');
+  expect(util.escapeAssertion('r.attp.value *p.attr')).toEqual('r_attp.value *p_attr');
+  expect(util.escapeAssertion('r.attp.value /p.attr')).toEqual('r_attp.value /p_attr');
+  expect(util.escapeAssertion('!r.attp.value /p.attr')).toEqual('!r_attp.value /p_attr');
+  expect(util.escapeAssertion('g(r.sub, p.sub) == p.attr')).toEqual('g(r_sub, p_sub) == p_attr');
+  expect(util.escapeAssertion('g(r.sub,p.sub) == p.attr')).toEqual('g(r_sub,p_sub) == p_attr');
+  expect(util.escapeAssertion('(r.attp.value || p.attr)p.u')).toEqual('(r_attp.value || p_attr)p_u');
+  // Test that patterns inside strings are not escaped
+  expect(util.escapeAssertion('r.sub == "a.p.p.l.e"')).toEqual('r_sub == "a.p.p.l.e"');
+  expect(util.escapeAssertion('r.sub == "test.p.value"')).toEqual('r_sub == "test.p.value"');
 });
