@@ -1,3 +1,10 @@
+# [5.41.0](https://github.com/casbin/node-casbin/compare/v5.40.0...v5.41.0) (2025-11-11)
+
+
+### Features
+
+* upgrade CI Node.js versions from 18/20 to 20/22 ([#511](https://github.com/casbin/node-casbin/issues/511)) ([657ce9a](https://github.com/casbin/node-casbin/commit/657ce9a14d8615b68364018aa89301d9aaa77f94))
+
 # [5.40.0](https://github.com/casbin/node-casbin/compare/v5.39.0...v5.40.0) (2025-10-12)
 
 
