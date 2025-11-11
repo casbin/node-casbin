@@ -643,12 +643,17 @@ export class CoreEnforcer {
   /**
    * If the matchers does not contain an asynchronous method, call it faster.
    *
-   * enforceSync decides whether a "subject" can access a "object" with
+   * enforceExSync decides whether a "subject" can access a "object" with
    * the operation "action", input parameters are usually: (sub, obj, act).
+   *
+   * This is the synchronous version of enforceEx. It returns both the enforcement
+   * result and the matched policy rule.
    *
    * @param rvals the request needs to be mediated, usually an array
    *              of strings, can be class instances if ABAC is used.
-   * @return whether to allow the request and the reason rule.
+   * @return A tuple containing:
+   *         - boolean: whether to allow the request
+   *         - string[]: the matched policy rule (see enforceEx for details)
    */
   public enforceExSync(...rvals: any[]): [boolean, string[]] {
     if (rvals[0] instanceof EnforceContext) {
@@ -700,12 +705,31 @@ export class CoreEnforcer {
   }
 
   /**
-   * enforce decides whether a "subject" can access a "object" with
+   * enforceEx decides whether a "subject" can access a "object" with
    * the operation "action", input parameters are usually: (sub, obj, act).
+   *
+   * This function returns both the enforcement result and the matched policy rule.
+   * The matched rule is especially useful for RBAC models where access may be granted
+   * through role inheritance.
    *
    * @param rvals the request needs to be mediated, usually an array
    *              of strings, can be class instances if ABAC is used.
-   * @return whether to allow the request and the reason rule.
+   * @return A tuple containing:
+   *         - boolean: whether to allow the request
+   *         - string[]: the matched policy rule that allowed/denied the request
+   *                     For RBAC models, this will be the role's policy rule if access
+   *                     was granted through role inheritance, e.g., ['role_name', 'obj', 'act']
+   *                     Returns empty array [] if no policy matched.
+   *
+   * @example
+   * // Direct permission
+   * const [allowed1, rule1] = await enforcer.enforceEx('alice', 'data1', 'read');
+   * // allowed1 = true, rule1 = ['alice', 'data1', 'read']
+   *
+   * @example
+   * // RBAC permission (alice has role 'admin', and admin can read data1)
+   * const [allowed2, rule2] = await enforcer.enforceEx('alice', 'data1', 'read');
+   * // allowed2 = true, rule2 = ['admin', 'data1', 'read']
    */
   public async enforceEx(...rvals: any[]): Promise<[boolean, string[]]> {
     if (rvals[0] instanceof EnforceContext) {

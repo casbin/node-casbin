@@ -97,6 +97,27 @@ if (res) {
 }
 ```
 
+### Explain enforcement with `enforceEx`
+
+Besides `enforce()`, `node-casbin` also provides `enforceEx()`. This function will return which policy rule was matched when making an enforcement decision. This is especially useful when using RBAC with roles and permissions.
+
+```node.js
+// enforceEx returns [boolean, string[]]
+// The second element is the matched policy rule
+const [allowed, explanation] = await enforcer.enforceEx(sub, obj, act);
+
+if (allowed) {
+  // permit alice to read data1
+  console.log('Matched rule:', explanation);
+  // For direct permissions: ['alice', 'data1', 'read']
+  // For RBAC permissions: ['role_name', 'data1', 'read'] where alice has role_name
+} else {
+  // deny the request
+}
+```
+
+**Note**: When using RBAC models, `enforceEx()` will return the matched policy rule which may be associated with a role rather than the user directly. For example, if user `alice` has role `admin` and the policy allows `admin` to `read` `data1`, then `enforceEx('alice', 'data1', 'read')` will return `[true, ['admin', 'data1', 'read']]`.
+
 Besides the static policy file, `node-casbin` also provides API for permission management at run-time.
 For example, You can get all the roles assigned to a user as below:
 

@@ -696,6 +696,28 @@ test('TestKeyGet2', async () => {
   expect(await e.enforce('alice', '/data/1')).toBe(true);
 });
 
+test('TestEnforceExWithRBACModel', async () => {
+  // This test demonstrates enforceEx behavior with standard RBAC model
+  // It shows that enforceEx correctly returns the matched policy rule,
+  // which may be a role's policy when using role-based access
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_policy.csv');
+
+  // Test direct permission - should match alice's direct policy
+  await testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read']]);
+
+  // Test role-based permission - alice has role data2_admin
+  // The matched rule should be the role's policy, not alice's
+  await testEnforceEx(e, 'alice', 'data2', 'read', [true, ['data2_admin', 'data2', 'read']]);
+  await testEnforceEx(e, 'alice', 'data2', 'write', [true, ['data2_admin', 'data2', 'write']]);
+
+  // Test bob's direct permission
+  await testEnforceEx(e, 'bob', 'data2', 'write', [true, ['bob', 'data2', 'write']]);
+
+  // Test failed permission - no matching policy
+  await testEnforceEx(e, 'bob', 'data2', 'read', [false, []]);
+  await testEnforceEx(e, 'alice', 'data1', 'write', [false, []]);
+});
+
 test('TestEnforceExWithRBACDenyModel', async () => {
   const e = await newEnforcer('examples/rbac_with_deny_model.conf', 'examples/rbac_with_deny_policy.csv');
   testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
