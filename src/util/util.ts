@@ -20,10 +20,62 @@ import { mustGetDefaultFileSystem } from '../persist';
 const escapeAssertionReg = new RegExp(/(^|[^A-Za-z0-9_])([rp])[0-9]*\./g);
 
 function escapeAssertion(s: string): string {
-  s = s.replace(escapeAssertionReg, (match, p1, p2) => {
-    return p1 + p2 + match.substring(p1.length + p2.length).replace('.', '_');
-  });
-  return s;
+  // Track whether we're inside a string literal
+  let result = '';
+  let inSingleQuote = false;
+  let inDoubleQuote = false;
+  let i = 0;
+
+  while (i < s.length) {
+    const char = s[i];
+
+    // Toggle quote tracking
+    if (char === "'" && !inDoubleQuote) {
+      inSingleQuote = !inSingleQuote;
+      result += char;
+      i++;
+      continue;
+    }
+    if (char === '"' && !inSingleQuote) {
+      inDoubleQuote = !inDoubleQuote;
+      result += char;
+      i++;
+      continue;
+    }
+
+    // If inside a string literal, just append the character
+    if (inSingleQuote || inDoubleQuote) {
+      result += char;
+      i++;
+      continue;
+    }
+
+    // Check if current position is the start of an r/p pattern that should be escaped
+    // Pattern: (^|[^A-Za-z0-9_])([rp])[0-9]*\.
+    const remaining = s.substring(i);
+    const match = remaining.match(/^([rp])([0-9]*)\./);
+
+    if (match) {
+      // Check if this is a valid boundary (either start of string or preceded by non-alphanumeric)
+      const prevChar = i > 0 ? s[i - 1] : '';
+      const isValidBoundary = i === 0 || /[^A-Za-z0-9_]/.test(prevChar);
+
+      if (isValidBoundary) {
+        // Replace the dot with underscore
+        result += match[1] + match[2] + '_';
+        i += match[0].length;
+      } else {
+        // Not a valid boundary, just add the character
+        result += char;
+        i++;
+      }
+    } else {
+      result += char;
+      i++;
+    }
+  }
+
+  return result;
 }
 
 // removeComments removes the comments starting with # in the text.
