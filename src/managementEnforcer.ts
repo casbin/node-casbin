@@ -540,27 +540,315 @@ export class ManagementEnforcer extends InternalEnforcer {
     this.fm.addFunction(name, func);
   }
 
-  public async selfAddPolicy(sec: string, ptype: string, rule: string[]): Promise<boolean> {
-    return this.addPolicyInternal(sec, ptype, rule, false);
+  /**
+   * selfAddPolicy adds an authorization rule to the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   * If the rule already exists, the function returns false and the rule will not be added.
+   * Otherwise the function returns true by adding the new rule.
+   *
+   * @param params the "p" policy rule, ptype "p" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async selfAddPolicy(...params: string[]): Promise<boolean> {
+    return this.selfAddNamedPolicy('p', ...params);
   }
 
-  public async selfRemovePolicy(sec: string, ptype: string, rule: string[]): Promise<boolean> {
-    return this.removePolicyInternal(sec, ptype, rule, false);
+  /**
+   * selfAddNamedPolicy adds an authorization rule to the in-memory named policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   * If the rule already exists, the function returns false and the rule will not be added.
+   * Otherwise the function returns true by adding the new rule.
+   *
+   * @param ptype the policy type, can be "p", "p2", "p3", ..
+   * @param params the "p" policy rule.
+   * @return succeeds or not.
+   */
+  public async selfAddNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
+    return this.addPolicySelf('p', ptype, params);
   }
 
-  public async selfRemoveFilteredPolicy(sec: string, ptype: string, fieldIndex: number, fieldValues: string[]): Promise<boolean> {
-    return this.removeFilteredPolicyInternal(sec, ptype, fieldIndex, fieldValues, false);
+  /**
+   * selfAddPolicies adds authorization rules to the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   * If any rule already exists, the function returns false and the rules will not be added.
+   * Otherwise the function returns true by adding the new rules.
+   *
+   * @param rules the "p" policy rules, ptype "p" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async selfAddPolicies(rules: string[][]): Promise<boolean> {
+    return this.selfAddNamedPolicies('p', rules);
   }
 
-  public async selfUpdatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
-    return this.updatePolicyInternal(sec, ptype, oldRule, newRule, false);
+  /**
+   * selfAddNamedPolicies adds authorization rules to the in-memory named policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   * If any rule already exists, the function returns false and the rules will not be added.
+   * Otherwise the function returns true by adding the new rules.
+   *
+   * @param ptype the policy type, can be "p", "p2", "p3", ..
+   * @param rules the "p" policy rules.
+   * @return succeeds or not.
+   */
+  public async selfAddNamedPolicies(ptype: string, rules: string[][]): Promise<boolean> {
+    return this.addPoliciesSelf('p', ptype, rules);
   }
 
-  public async selfAddPolicies(sec: string, ptype: string, rule: string[][]): Promise<boolean> {
-    return this.addPoliciesInternal(sec, ptype, rule, false);
+  /**
+   * selfUpdatePolicy updates an authorization rule in the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   * If the rule does not exist, the function returns false.
+   * Otherwise the function returns true by changing it to the new rule.
+   *
+   * @param oldRule the policy will be removed
+   * @param newRule the policy will be added
+   * @return succeeds or not.
+   */
+  public async selfUpdatePolicy(oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.selfUpdateNamedPolicy('p', oldRule, newRule);
   }
 
-  public async selfRemovePolicies(sec: string, ptype: string, rule: string[][]): Promise<boolean> {
-    return this.removePoliciesInternal(sec, ptype, rule, false);
+  /**
+   * selfUpdateNamedPolicy updates an authorization rule in the in-memory named policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   * If the rule does not exist, the function returns false.
+   * Otherwise the function returns true by changing it to the new rule.
+   *
+   * @param ptype the policy type, can be "p", "p2", "p3", ..
+   * @param oldRule the policy rule will be removed
+   * @param newRule the policy rule will be added
+   * @return succeeds or not.
+   */
+  public async selfUpdateNamedPolicy(ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.updatePolicySelf('p', ptype, oldRule, newRule);
+  }
+
+  /**
+   * selfRemovePolicy removes an authorization rule from the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   *
+   * @param params the "p" policy rule, ptype "p" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async selfRemovePolicy(...params: string[]): Promise<boolean> {
+    return this.selfRemoveNamedPolicy('p', ...params);
+  }
+
+  /**
+   * selfRemoveNamedPolicy removes an authorization rule from the in-memory named policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   *
+   * @param ptype the policy type, can be "p", "p2", "p3", ..
+   * @param params the "p" policy rule.
+   * @return succeeds or not.
+   */
+  public async selfRemoveNamedPolicy(ptype: string, ...params: string[]): Promise<boolean> {
+    return this.removePolicySelf('p', ptype, params);
+  }
+
+  /**
+   * selfRemovePolicies removes authorization rules from the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   *
+   * @param rules the "p" policy rules, ptype "p" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async selfRemovePolicies(rules: string[][]): Promise<boolean> {
+    return this.selfRemoveNamedPolicies('p', rules);
+  }
+
+  /**
+   * selfRemoveNamedPolicies removes authorization rules from the in-memory named policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   *
+   * @param ptype the policy type, can be "p", "p2", "p3", ..
+   * @param rules the "p" policy rules.
+   * @return succeeds or not.
+   */
+  public async selfRemoveNamedPolicies(ptype: string, rules: string[][]): Promise<boolean> {
+    return this.removePoliciesSelf('p', ptype, rules);
+  }
+
+  /**
+   * selfRemoveFilteredPolicy removes an authorization rule from the in-memory policy only, field filters can be specified.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   *
+   * @param fieldIndex the policy rule's start index to be matched.
+   * @param fieldValues the field values to be matched, value ""
+   *                    means not to match this field.
+   * @return succeeds or not.
+   */
+  public async selfRemoveFilteredPolicy(fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
+    return this.selfRemoveFilteredNamedPolicy('p', fieldIndex, ...fieldValues);
+  }
+
+  /**
+   * selfRemoveFilteredNamedPolicy removes an authorization rule from the in-memory named policy only, field filters can be specified.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   *
+   * @param ptype the policy type, can be "p", "p2", "p3", ..
+   * @param fieldIndex the policy rule's start index to be matched.
+   * @param fieldValues the field values to be matched, value ""
+   *                    means not to match this field.
+   * @return succeeds or not.
+   */
+  public async selfRemoveFilteredNamedPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
+    return this.removeFilteredPolicySelf('p', ptype, fieldIndex, fieldValues);
+  }
+
+  /**
+   * selfAddGroupingPolicy adds a role inheritance rule to the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   * If the rule already exists, the function returns false and the rule will not be added.
+   * Otherwise the function returns true by adding the new rule.
+   *
+   * @param params the "g" policy rule, ptype "g" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async selfAddGroupingPolicy(...params: string[]): Promise<boolean> {
+    return this.selfAddNamedGroupingPolicy('g', ...params);
+  }
+
+  /**
+   * selfAddNamedGroupingPolicy adds a named role inheritance rule to the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   * If the rule already exists, the function returns false and the rule will not be added.
+   * Otherwise the function returns true by adding the new rule.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param params the "g" policy rule.
+   * @return succeeds or not.
+   */
+  public async selfAddNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
+    return this.addPolicySelf('g', ptype, params);
+  }
+
+  /**
+   * selfAddGroupingPolicies adds role inheritance rules to the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   * If any rule already exists, the function returns false and the rules will not be added.
+   * Otherwise the function returns true by adding the new rules.
+   *
+   * @param rules the "g" policy rules, ptype "g" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async selfAddGroupingPolicies(rules: string[][]): Promise<boolean> {
+    return this.selfAddNamedGroupingPolicies('g', rules);
+  }
+
+  /**
+   * selfAddNamedGroupingPolicies adds named role inheritance rules to the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   * If any rule already exists, the function returns false and the rules will not be added.
+   * Otherwise the function returns true by adding the new rules.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param rules the "g" policy rules.
+   * @return succeeds or not.
+   */
+  public async selfAddNamedGroupingPolicies(ptype: string, rules: string[][]): Promise<boolean> {
+    return this.addPoliciesSelf('g', ptype, rules);
+  }
+
+  /**
+   * selfUpdateGroupingPolicy updates a role inheritance rule in the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   * If the rule does not exist, the function returns false.
+   * Otherwise the function returns true by changing it to the new rule.
+   *
+   * @param oldRule the old rule.
+   * @param newRule the new rule.
+   * @return succeeds or not.
+   */
+  public async selfUpdateGroupingPolicy(oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.selfUpdateNamedGroupingPolicy('g', oldRule, newRule);
+  }
+
+  /**
+   * selfUpdateNamedGroupingPolicy updates a named role inheritance rule in the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   * If the rule does not exist, the function returns false.
+   * Otherwise the function returns true by changing it to the new rule.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param oldRule the old rule.
+   * @param newRule the new rule.
+   * @return succeeds or not.
+   */
+  public async selfUpdateNamedGroupingPolicy(ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+    return this.updatePolicySelf('g', ptype, oldRule, newRule);
+  }
+
+  /**
+   * selfRemoveGroupingPolicy removes a role inheritance rule from the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   *
+   * @param params the "g" policy rule, ptype "g" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async selfRemoveGroupingPolicy(...params: string[]): Promise<boolean> {
+    return this.selfRemoveNamedGroupingPolicy('g', ...params);
+  }
+
+  /**
+   * selfRemoveNamedGroupingPolicy removes a named role inheritance rule from the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param params the "g" policy rule.
+   * @return succeeds or not.
+   */
+  public async selfRemoveNamedGroupingPolicy(ptype: string, ...params: string[]): Promise<boolean> {
+    return this.removePolicySelf('g', ptype, params);
+  }
+
+  /**
+   * selfRemoveGroupingPolicies removes role inheritance rules from the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   *
+   * @param rules the "g" policy rules, ptype "g" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async selfRemoveGroupingPolicies(rules: string[][]): Promise<boolean> {
+    return this.selfRemoveNamedGroupingPolicies('g', rules);
+  }
+
+  /**
+   * selfRemoveNamedGroupingPolicies removes named role inheritance rules from the in-memory policy only.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param rules the "g" policy rules.
+   * @return succeeds or not.
+   */
+  public async selfRemoveNamedGroupingPolicies(ptype: string, rules: string[][]): Promise<boolean> {
+    return this.removePoliciesSelf('g', ptype, rules);
+  }
+
+  /**
+   * selfRemoveFilteredGroupingPolicy removes a role inheritance rule from the in-memory policy only, field filters can be specified.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   *
+   * @param fieldIndex the policy rule's start index to be matched.
+   * @param fieldValues the field values to be matched, value ""
+   *                    means not to match this field.
+   * @return succeeds or not.
+   */
+  public async selfRemoveFilteredGroupingPolicy(fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
+    return this.selfRemoveFilteredNamedGroupingPolicy('g', fieldIndex, ...fieldValues);
+  }
+
+  /**
+   * selfRemoveFilteredNamedGroupingPolicy removes a named role inheritance rule from the in-memory policy only, field filters can be specified.
+   * This method does not call the adapter or watcher, regardless of autoSave or autoNotifyWatcher settings.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param fieldIndex the policy rule's start index to be matched.
+   * @param fieldValues the field values to be matched, value ""
+   *                    means not to match this field.
+   * @return succeeds or not.
+   */
+  public async selfRemoveFilteredNamedGroupingPolicy(ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
+    return this.removeFilteredPolicySelf('g', ptype, fieldIndex, fieldValues);
   }
 }

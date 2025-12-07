@@ -274,4 +274,103 @@ export class InternalEnforcer extends CoreEnforcer {
     const assertion = this.model.model.get('p')?.get(ptype);
     assertion?.fieldIndexMap.set(field, index);
   }
+
+  /**
+   * addPolicySelf adds a rule to the in-memory policy only.
+   * This method does not call the adapter or watcher.
+   */
+  protected async addPolicySelf(sec: string, ptype: string, rule: string[]): Promise<boolean> {
+    if (this.model.hasPolicy(sec, ptype, rule)) {
+      return false;
+    }
+
+    const ok = this.model.addPolicy(sec, ptype, rule);
+
+    if (sec === 'g' && ok) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, [rule]);
+    }
+    return ok;
+  }
+
+  /**
+   * addPoliciesSelf adds rules to the in-memory policy only.
+   * This method does not call the adapter or watcher.
+   */
+  protected async addPoliciesSelf(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
+    for (const rule of rules) {
+      if (this.model.hasPolicy(sec, ptype, rule)) {
+        return false;
+      }
+    }
+
+    const [ok, effects] = await this.model.addPolicies(sec, ptype, rules);
+    if (sec === 'g' && ok && effects?.length) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, effects);
+    }
+    return ok;
+  }
+
+  /**
+   * updatePolicySelf updates a rule in the in-memory policy only.
+   * This method does not call the adapter or watcher.
+   */
+  protected async updatePolicySelf(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+    if (!this.model.hasPolicy(sec, ptype, oldRule)) {
+      return false;
+    }
+
+    const ok = this.model.updatePolicy(sec, ptype, oldRule, newRule);
+    if (sec === 'g' && ok) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, [oldRule]);
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, [newRule]);
+    }
+
+    return ok;
+  }
+
+  /**
+   * removePolicySelf removes a rule from the in-memory policy only.
+   * This method does not call the adapter or watcher.
+   */
+  protected async removePolicySelf(sec: string, ptype: string, rule: string[]): Promise<boolean> {
+    if (!this.model.hasPolicy(sec, ptype, rule)) {
+      return false;
+    }
+
+    const ok = await this.model.removePolicy(sec, ptype, rule);
+    if (sec === 'g' && ok) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, [rule]);
+    }
+    return ok;
+  }
+
+  /**
+   * removePoliciesSelf removes rules from the in-memory policy only.
+   * This method does not call the adapter or watcher.
+   */
+  protected async removePoliciesSelf(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
+    for (const rule of rules) {
+      if (!this.model.hasPolicy(sec, ptype, rule)) {
+        return false;
+      }
+    }
+
+    const [ok, effects] = this.model.removePolicies(sec, ptype, rules);
+    if (sec === 'g' && ok && effects?.length) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, effects);
+    }
+    return ok;
+  }
+
+  /**
+   * removeFilteredPolicySelf removes rules based on field filters from the in-memory policy only.
+   * This method does not call the adapter or watcher.
+   */
+  protected async removeFilteredPolicySelf(sec: string, ptype: string, fieldIndex: number, fieldValues: string[]): Promise<boolean> {
+    const [ok, effects] = this.model.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
+    if (sec === 'g' && ok && effects?.length) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, effects);
+    }
+    return ok;
+  }
 }
