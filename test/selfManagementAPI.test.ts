@@ -42,6 +42,10 @@ class MockAdapter implements Adapter {
   async removeFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<void> {
     this.removeFilteredPolicyCalls.push({ sec, ptype, fieldIndex, fieldValues });
   }
+
+  async updatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<void> {
+    this.updatePolicyCalls.push({ sec, ptype, oldRule, newRule });
+  }
 }
 
 // Mock watcher that tracks calls

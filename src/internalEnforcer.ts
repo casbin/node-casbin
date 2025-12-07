@@ -337,7 +337,7 @@ export class InternalEnforcer extends CoreEnforcer {
       return false;
     }
 
-    const ok = await this.model.removePolicy(sec, ptype, rule);
+    const ok = this.model.removePolicy(sec, ptype, rule);
     if (sec === 'g' && ok) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, [rule]);
     }
