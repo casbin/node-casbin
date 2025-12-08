@@ -479,24 +479,13 @@ export class CoreEnforcer {
     const effectStream = this.eft.newStream(effectExpr);
 
     // Get all policy types from the 'p' section
-    const policyTypes: string[] = [];
-    if (policyMap) {
-      for (const ptype of policyMap.keys()) {
-        policyTypes.push(ptype);
-      }
-    }
+    const policyTypes: string[] = policyMap ? Array.from(policyMap.keys()) : [];
 
     // Check if we have any policies to evaluate
-    let hasPolicies = false;
-    if (policyMap) {
-      for (const ptype of policyTypes) {
-        const policyDef = policyMap.get(ptype);
-        if (policyDef && policyDef.policy && policyDef.policy.length > 0) {
-          hasPolicies = true;
-          break;
-        }
-      }
-    }
+    const hasPolicies = policyTypes.some((ptype) => {
+      const policyDef = policyMap?.get(ptype);
+      return policyDef && policyDef.policy && policyDef.policy.length > 0;
+    });
 
     let effectDone = false;
     if (hasPolicies) {
