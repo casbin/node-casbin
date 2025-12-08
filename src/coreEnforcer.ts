@@ -438,6 +438,7 @@ export class CoreEnforcer {
     }
 
     let explainIndex = -1;
+    let explainPtype = '';
 
     const functions: { [key: string]: any } = {};
     this.fm.getFunctions().forEach((value: any, key: string) => {
@@ -471,103 +472,139 @@ export class CoreEnforcer {
     const HasEval: boolean = hasEval(expString);
     let expression: Matcher | undefined = undefined;
 
-    const p = this.model.model.get('p')?.get(enforceContext.pType);
-    const policyLen = p?.policy?.length;
-
+    const policyMap = this.model.model.get('p');
     const rTokens = this.model.model.get('r')?.get(enforceContext.rType)?.tokens;
     const rTokensLen = rTokens?.length;
 
     const effectStream = this.eft.newStream(effectExpr);
 
-    if (policyLen && policyLen !== 0) {
-      for (let i = 0; i < policyLen; i++) {
-        const parameters: { [key: string]: any } = {};
+    // Get all policy types from the 'p' section
+    const policyTypes: string[] = [];
+    if (policyMap) {
+      for (const ptype of policyMap.keys()) {
+        policyTypes.push(ptype);
+      }
+    }
 
-        if (rTokens?.length !== rvals.length) {
-          throw new Error(`invalid request size: expected ${rTokensLen}, got ${rvals.length}, rvals: ${rvals}"`);
+    // Check if we have any policies to evaluate
+    let hasPolicies = false;
+    if (policyMap) {
+      for (const ptype of policyTypes) {
+        const policyDef = policyMap.get(ptype);
+        if (policyDef && policyDef.policy && policyDef.policy.length > 0) {
+          hasPolicies = true;
+          break;
+        }
+      }
+    }
+
+    if (hasPolicies) {
+      // Iterate through all policy types (p, p2, p3, etc.)
+      for (const ptype of policyTypes) {
+        const policyDef = policyMap?.get(ptype);
+        if (!policyDef || !policyDef.policy) {
+          continue;
         }
 
-        if (this.acceptJsonRequest) {
-          // Attempt to parse each request parameter as JSON; continue with string if failed
-          rTokens.forEach((token, j) => {
-            try {
-              parameters[token] = JSON.parse(rvals[j]);
-            } catch {
-              parameters[token] = rvals[j];
-            }
-          });
-        } else {
-          rTokens.forEach((token, j) => {
-            parameters[token] = rvals[j];
-          });
-        }
+        const policyLen = policyDef.policy.length;
 
-        p?.tokens.forEach((token, j) => {
-          parameters[token] = p?.policy[i][j];
-        });
+        // Iterate through all policies of this type
+        for (let i = 0; i < policyLen; i++) {
+          const parameters: { [key: string]: any } = {};
 
-        if (HasEval) {
-          const ruleNames: string[] = getEvalValue(expString);
-          let expWithRule = expString;
-          for (const ruleName of ruleNames) {
-            if (ruleName in parameters) {
-              const rule = escapeAssertion(parameters[ruleName]);
-              expWithRule = replaceEval(expWithRule, ruleName, rule);
-            } else {
-              throw new Error(`${ruleName} not in ${parameters}`);
-            }
+          if (rTokens?.length !== rvals.length) {
+            throw new Error(`invalid request size: expected ${rTokensLen}, got ${rvals.length}, rvals: ${rvals}"`);
           }
-          expression = this.getExpression(asyncCompile, expWithRule);
-        } else {
-          if (expression === undefined) {
-            expression = this.getExpression(asyncCompile, expString);
-          }
-        }
 
-        const context = { ...parameters, ...functions };
-        const result = asyncCompile ? yield expression(context) : expression(context);
-
-        let eftRes: Effect;
-        switch (typeof result) {
-          case 'boolean':
-            eftRes = result ? Effect.Allow : Effect.Indeterminate;
-            break;
-          case 'number':
-            if (result === 0) {
-              eftRes = Effect.Indeterminate;
-            } else {
-              eftRes = result;
-            }
-            break;
-          case 'string':
-            if (result === '') {
-              eftRes = Effect.Indeterminate;
-            } else {
-              eftRes = Effect.Allow;
-            }
-            break;
-          default:
-            throw new Error('matcher result should only be of type boolean, number, or string');
-        }
-
-        const eft = parameters[`${enforceContext.pType}_eft`];
-        if (eft && eftRes === Effect.Allow) {
-          if (eft === 'allow') {
-            eftRes = Effect.Allow;
-          } else if (eft === 'deny') {
-            eftRes = Effect.Deny;
+          if (this.acceptJsonRequest) {
+            // Attempt to parse each request parameter as JSON; continue with string if failed
+            rTokens.forEach((token, j) => {
+              try {
+                parameters[token] = JSON.parse(rvals[j]);
+              } catch {
+                parameters[token] = rvals[j];
+              }
+            });
           } else {
-            eftRes = Effect.Indeterminate;
+            rTokens.forEach((token, j) => {
+              parameters[token] = rvals[j];
+            });
+          }
+
+          // Add tokens for the current policy type
+          policyDef.tokens.forEach((token, j) => {
+            parameters[token] = policyDef.policy[i][j];
+          });
+
+          if (HasEval) {
+            const ruleNames: string[] = getEvalValue(expString);
+            let expWithRule = expString;
+            for (const ruleName of ruleNames) {
+              if (ruleName in parameters) {
+                const rule = escapeAssertion(parameters[ruleName]);
+                expWithRule = replaceEval(expWithRule, ruleName, rule);
+              } else {
+                throw new Error(`${ruleName} not in ${parameters}`);
+              }
+            }
+            expression = this.getExpression(asyncCompile, expWithRule);
+          } else {
+            if (expression === undefined) {
+              expression = this.getExpression(asyncCompile, expString);
+            }
+          }
+
+          const context = { ...parameters, ...functions };
+          const result = asyncCompile ? yield expression(context) : expression(context);
+
+          let eftRes: Effect;
+          switch (typeof result) {
+            case 'boolean':
+              eftRes = result ? Effect.Allow : Effect.Indeterminate;
+              break;
+            case 'number':
+              if (result === 0) {
+                eftRes = Effect.Indeterminate;
+              } else {
+                eftRes = result;
+              }
+              break;
+            case 'string':
+              if (result === '') {
+                eftRes = Effect.Indeterminate;
+              } else {
+                eftRes = Effect.Allow;
+              }
+              break;
+            default:
+              throw new Error('matcher result should only be of type boolean, number, or string');
+          }
+
+          const eft = parameters[`${ptype}_eft`];
+          if (eft && eftRes === Effect.Allow) {
+            if (eft === 'allow') {
+              eftRes = Effect.Allow;
+            } else if (eft === 'deny') {
+              eftRes = Effect.Deny;
+            } else {
+              eftRes = Effect.Indeterminate;
+            }
+          }
+
+          const [res, rec, done] = effectStream.pushEffect(eftRes);
+
+          if (rec) {
+            explainIndex = i;
+            explainPtype = ptype;
+          }
+
+          if (done) {
+            break;
           }
         }
 
-        const [res, rec, done] = effectStream.pushEffect(eftRes);
-
-        if (rec) {
-          explainIndex = i;
-        }
-
-        if (done) {
+        // If effect is already determined, no need to check other policy types
+        if (effectStream.current()) {
           break;
         }
       }
@@ -580,9 +617,15 @@ export class CoreEnforcer {
         parameters[token] = rvals[j];
       });
 
-      p?.tokens?.forEach((token) => {
-        parameters[token] = '';
-      });
+      // Add empty tokens for all policy types
+      if (policyMap) {
+        for (const ptype of policyTypes) {
+          const policyDef = policyMap.get(ptype);
+          policyDef?.tokens?.forEach((token) => {
+            parameters[token] = '';
+          });
+        }
+      }
 
       expression = this.getExpression(asyncCompile, expString);
       const context = { ...parameters, ...functions };
@@ -616,7 +659,8 @@ export class CoreEnforcer {
       if (explainIndex === -1) {
         return [res, []];
       }
-      return [res, p?.policy?.[explainIndex] || []];
+      const explainPolicy = policyMap?.get(explainPtype);
+      return [res, explainPolicy?.policy?.[explainIndex] || []];
     }
 
     return res;
