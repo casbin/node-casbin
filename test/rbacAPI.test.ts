@@ -202,3 +202,20 @@ test('test getImplicitUsersForRole', async () => {
   expect(await e.getImplicitUsersForRole('admin')).toEqual(['alice']);
   expect(await e.getImplicitUsersForRole('data1_admin')).toEqual(['admin', 'alice']);
 });
+
+test('test rbac with multiple policy definitions', async () => {
+  const e = await newEnforcer('examples/rbac_with_multiple_policy_model.conf', 'examples/rbac_with_multiple_policy_policy.csv');
+
+  // Test getting named policies for different policy types
+  const pPolicies = await e.getNamedPolicy('p');
+  expect(pPolicies).toEqual([
+    ['user', '/data', 'GET'],
+    ['admin', '/data', 'POST'],
+  ]);
+
+  const p2Policies = await e.getNamedPolicy('p2');
+  expect(p2Policies).toEqual([
+    ['user', 'view'],
+    ['admin', 'create'],
+  ]);
+});
