@@ -1,3 +1,10 @@
+# [5.43.0](https://github.com/casbin/node-casbin/compare/v5.42.0...v5.43.0) (2025-12-08)
+
+
+### Features
+
+* add no-policy ABAC example and test ([#523](https://github.com/casbin/node-casbin/issues/523)) ([d982c05](https://github.com/casbin/node-casbin/commit/d982c058ef098716dbc5c7d4b218cc19950421a8))
+
 # [5.42.0](https://github.com/casbin/node-casbin/compare/v5.41.0...v5.42.0) (2025-12-08)
 
 
