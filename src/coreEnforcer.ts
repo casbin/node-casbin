@@ -498,9 +498,14 @@ export class CoreEnforcer {
       }
     }
 
+    let effectDone = false;
     if (hasPolicies) {
       // Iterate through all policy types (p, p2, p3, etc.)
       for (const ptype of policyTypes) {
+        if (effectDone) {
+          break;
+        }
+
         const policyDef = policyMap?.get(ptype);
         if (!policyDef || !policyDef.policy) {
           continue;
@@ -599,13 +604,9 @@ export class CoreEnforcer {
           }
 
           if (done) {
+            effectDone = true;
             break;
           }
-        }
-
-        // If effect is already determined, no need to check other policy types
-        if (effectStream.current()) {
-          break;
         }
       }
     } else {

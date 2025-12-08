@@ -124,4 +124,27 @@ p, bob, data2, write
     await expect(e.enforce('bob', 'data2', 'write')).resolves.toBe(true);
     await expect(e.enforce('alice', 'data2', 'write')).resolves.toBe(false);
   });
+
+  test('Multiple policy types with explicit eft column', async () => {
+    // Test that eft column works correctly with multiple policy types
+    const m = newModel();
+    m.addDef('r', 'r', 'sub, obj, act');
+    m.addDef('p', 'p', 'sub, obj, act, eft');
+    m.addDef('p', 'p2', 'sub, act, eft');
+    m.addDef('e', 'e', 'some(where (p.eft == allow)) && !some(where (p.eft == deny))');
+    m.addDef('m', 'm', 'r.sub == p.sub && r.obj == p.obj && r.act == p.act || r.sub == p2.sub && r.act == p2.act');
+
+    const policyText = `
+p, alice, data1, read, allow
+p, alice, data1, write, deny
+p2, bob, write, allow
+`;
+
+    const a = new StringAdapter(policyText);
+    const e = await newEnforcer(m, a);
+
+    await expect(e.enforce('alice', 'data1', 'read')).resolves.toBe(true);
+    await expect(e.enforce('alice', 'data1', 'write')).resolves.toBe(false);
+    await expect(e.enforce('bob', 'data1', 'write')).resolves.toBe(true);
+  });
 });
