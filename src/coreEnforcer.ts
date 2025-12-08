@@ -479,7 +479,7 @@ export class CoreEnforcer {
 
     const effectStream = this.eft.newStream(effectExpr);
 
-    if (policyLen && policyLen !== 0) {
+    if (policyLen && policyLen !== 0 && expString.includes(`${enforceContext.pType}_`)) {
       for (let i = 0; i < policyLen; i++) {
         const parameters: { [key: string]: any } = {};
 
