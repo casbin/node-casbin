@@ -479,7 +479,12 @@ export class CoreEnforcer {
 
     const effectStream = this.eft.newStream(effectExpr);
 
-    if (policyLen && policyLen !== 0) {
+    // Check if the matcher references policy tokens (e.g., p.sub, p.obj)
+    // Note: escapeAssertion transforms "p." to "p_", so we check for "p_" in the escaped expression
+    // If the matcher doesn't reference policy tokens, we can skip policy iteration (no-policy ABAC)
+    const matcherUsesPolicyTokens = expString.includes(`${enforceContext.pType}_`);
+
+    if (policyLen && policyLen !== 0 && matcherUsesPolicyTokens) {
       for (let i = 0; i < policyLen; i++) {
         const parameters: { [key: string]: any } = {};
 
@@ -572,13 +577,29 @@ export class CoreEnforcer {
         }
       }
     } else {
+      // When matcher doesn't use policy tokens or there are no policies
+      if (HasEval && (!policyLen || policyLen === 0)) {
+        throw new Error('please make sure rule exists in policy when using eval() in matcher');
+      }
+
       explainIndex = 0;
 
       const parameters: { [key: string]: any } = {};
 
-      rTokens?.forEach((token, j): void => {
-        parameters[token] = rvals[j];
-      });
+      if (this.acceptJsonRequest) {
+        // Attempt to parse each request parameter as JSON; continue with string if failed
+        rTokens?.forEach((token, j) => {
+          try {
+            parameters[token] = JSON.parse(rvals[j]);
+          } catch {
+            parameters[token] = rvals[j];
+          }
+        });
+      } else {
+        rTokens?.forEach((token, j): void => {
+          parameters[token] = rvals[j];
+        });
+      }
 
       p?.tokens?.forEach((token) => {
         parameters[token] = '';

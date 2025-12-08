@@ -189,6 +189,20 @@ test('TestABACModel', async () => {
   await testEnforce(e, 'bob', data2, 'write', true);
 });
 
+test('TestABACNotUsingPolicy', async () => {
+  const e = await newEnforcer('examples/abac_not_using_policy_model.conf', 'examples/abac_rule_effect_policy.csv');
+
+  const data1 = new TestResource('data1', 'alice');
+  const data2 = new TestResource('data2', 'bob');
+
+  // Matcher is "r.sub == r.obj.Owner" which doesn't use policy
+  // Policy file is loaded but ignored since matcher doesn't reference p.*
+  await testEnforce(e, 'alice', data1, 'read', true);
+  await testEnforce(e, 'alice', data1, 'write', true);
+  await testEnforce(e, 'alice', data2, 'read', false);
+  await testEnforce(e, 'alice', data2, 'write', false);
+});
+
 test('TestKeyMatchModel', async () => {
   const e = await newEnforcer('examples/keymatch_model.conf', 'examples/keymatch_policy.csv');
 

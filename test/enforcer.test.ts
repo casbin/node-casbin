@@ -627,6 +627,21 @@ test('test ABAC single eval() with r. in unexpected places', async () => {
   await testEnforce(e, { id: 3 }, ({ owner: { id: 2 } } as unknown) as string, 'read', false);
 });
 
+test('test ABAC not using policy with JSON request', async () => {
+  const e = await newEnforcer('examples/abac_not_using_policy_model.conf', 'examples/abac_rule_effect_policy.csv');
+  e.enableAcceptJsonRequest(true);
+
+  const data1Json = '{ "Name": "data1", "Owner": "alice"}';
+  const data2Json = '{ "Name": "data2", "Owner": "bob"}';
+
+  // Matcher is "r.sub == r.obj.Owner" which doesn't use policy
+  // Policy file is loaded but ignored since matcher doesn't reference p.*
+  await testEnforce(e, 'alice', data1Json, 'read', true);
+  await testEnforce(e, 'alice', data1Json, 'write', true);
+  await testEnforce(e, 'alice', data2Json, 'read', false);
+  await testEnforce(e, 'alice', data2Json, 'write', false);
+});
+
 test('test escapeAssertion with string literals (issue)', async () => {
   // Test case from GitHub issue: escapeAssertion should not replace r./p. inside string literals
   const MY_RESOURCE_NAME = 'r.my_resource';
