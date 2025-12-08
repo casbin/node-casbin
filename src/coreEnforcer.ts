@@ -490,6 +490,8 @@ export class CoreEnforcer {
     let effectDone = false;
     if (hasPolicies) {
       // Iterate through all policy types (p, p2, p3, etc.)
+      // This allows a single matcher to reference multiple policy types
+      // For example: m = r.sub == p.sub && ... || r.sub == p2.sub && ...
       for (const ptype of policyTypes) {
         if (effectDone) {
           break;
@@ -497,6 +499,12 @@ export class CoreEnforcer {
 
         const policyDef = policyMap?.get(ptype);
         if (!policyDef || !policyDef.policy) {
+          continue;
+        }
+
+        // Check if the matcher expression contains references to this policy type
+        // This is consistent with Go Casbin's behavior
+        if (!expString.includes(`${ptype}_`)) {
           continue;
         }
 
