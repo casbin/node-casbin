@@ -46,4 +46,12 @@ test('test getDomainsForUser', async () => {
   await e.addGroupingPolicy('alice', 'admin', 'domain2');
   const aliceDomains = await e.getDomainsForUser('alice');
   expect(aliceDomains.sort()).toEqual(['domain1', 'domain2']);
+
+  // Test that empty string domains are filtered out
+  await e.addGroupingPolicy('charlie', 'member', '');
+  expect(await e.getDomainsForUser('charlie')).toEqual([]);
+
+  // Test that whitespace-only domains are filtered out
+  await e.addGroupingPolicy('dave', 'member', '   ');
+  expect(await e.getDomainsForUser('dave')).toEqual([]);
 });

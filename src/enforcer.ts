@@ -482,7 +482,7 @@ export class Enforcer extends ManagementEnforcer {
 
     for (const policy of groupingPolicies) {
       // In a policy like ["alice", "admin", "domain1"], domain is at index 2
-      if (policy.length > 2 && policy[2]) {
+      if (policy.length > 2 && policy[2] && policy[2].trim() !== '') {
         domains.add(policy[2]);
       }
     }
