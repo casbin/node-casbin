@@ -364,8 +364,13 @@ export class DefaultRoleManager implements RoleManager {
         return;
       }
       const role = roles.get(name);
-      if (role && (role.getRoles().length > 0 || this.hasUserOrRole(roles, name))) {
-        domains.push(domain);
+      if (role) {
+        // Check if role has any roles it inherits OR if any other role inherits from it
+        const hasRoles = role.getRoles().length > 0;
+        const hasUsers = this.hasUserForRole(roles, name);
+        if (hasRoles || hasUsers) {
+          domains.push(domain);
+        }
       }
     });
     return domains;
@@ -383,7 +388,7 @@ export class DefaultRoleManager implements RoleManager {
     return domains;
   }
 
-  private hasUserOrRole(roles: Roles, name: string): boolean {
+  private hasUserForRole(roles: Roles, name: string): boolean {
     for (const role of roles.values()) {
       if (role.hasDirectRole(name)) {
         return true;

@@ -466,7 +466,7 @@ export class Enforcer extends ManagementEnforcer {
   }
 
   /**
-   * getDomainsForUser gets all domains.
+   * getDomainsForUser gets all domains that a user has.
    */
   public async getDomainsForUser(user: string): Promise<string[]> {
     const domains: string[] = [];
