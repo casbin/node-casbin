@@ -64,6 +64,11 @@ export class CoreEnforcer {
   protected acceptJsonRequest = false;
   protected fs?: FileSystem;
 
+  private batchEnabled = false;
+  private batchAutoSave = true;
+  private batchAutoBuildRoleLinks = true;
+  private batchAutoNotifyWatcher = true;
+
   /**
    * setFileSystem sets a file system to read the model file or the policy file.
    * @param fs {@link FileSystem}
@@ -395,6 +400,76 @@ export class CoreEnforcer {
     if (rm) {
       return await (<DefaultRoleManager>rm).addDomainMatchingFunc(fn);
     }
+  }
+
+  /**
+   * startBatch starts a batch operation mode which temporarily disables
+   * autoSave, autoBuildRoleLinks, and autoNotifyWatcher for better performance
+   * when performing multiple policy changes.
+   *
+   * After all changes are made, call endBatch() to re-enable these features
+   * and save all changes at once.
+   *
+   * @example
+   * ```typescript
+   * enforcer.startBatch();
+   * for (const policy of policiesToRemove) {
+   *   await enforcer.removePolicy(...policy);
+   * }
+   * await enforcer.endBatch(); // Saves all changes and rebuilds role links
+   * ```
+   */
+  public startBatch(): void {
+    if (this.batchEnabled) {
+      throw new Error('Batch mode is already enabled');
+    }
+    this.batchEnabled = true;
+    this.batchAutoSave = this.autoSave;
+    this.batchAutoBuildRoleLinks = this.autoBuildRoleLinks;
+    this.batchAutoNotifyWatcher = this.autoNotifyWatcher;
+
+    this.autoSave = false;
+    this.autoBuildRoleLinks = false;
+    this.autoNotifyWatcher = false;
+  }
+
+  /**
+   * endBatch ends the batch operation mode and re-enables autoSave,
+   * autoBuildRoleLinks, and autoNotifyWatcher. It then saves the policy
+   * to the adapter if autoSave was previously enabled and rebuilds role
+   * links if autoBuildRoleLinks was previously enabled.
+   *
+   * @returns true if the policy was saved successfully (or if save was not needed), false otherwise
+   */
+  public async endBatch(): Promise<boolean> {
+    if (!this.batchEnabled) {
+      throw new Error('Batch mode is not enabled');
+    }
+
+    this.batchEnabled = false;
+    this.autoSave = this.batchAutoSave;
+    this.autoBuildRoleLinks = this.batchAutoBuildRoleLinks;
+    this.autoNotifyWatcher = this.batchAutoNotifyWatcher;
+
+    // Rebuild role links if it was previously enabled
+    if (this.autoBuildRoleLinks) {
+      await this.buildRoleLinksInternal();
+    }
+
+    // Save policy if autoSave was previously enabled
+    if (this.autoSave) {
+      try {
+        return await this.savePolicy();
+      } catch (e) {
+        if (e.message === 'not implemented') {
+          // Adapter doesn't support savePolicy, which is fine
+          return true;
+        }
+        throw e;
+      }
+    }
+
+    return true;
   }
 
   /**
