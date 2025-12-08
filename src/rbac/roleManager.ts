@@ -36,4 +36,8 @@ export interface RoleManager {
   getUsers(name: string, ...domain: string[]): Promise<string[]>;
   // PrintRoles prints all the roles to log.
   printRoles(): Promise<void>;
+  // GetDomains gets domains that a user has
+  getDomains(name: string): Promise<string[]>;
+  // GetAllDomains gets all domains
+  getAllDomains(): Promise<string[]>;
 }

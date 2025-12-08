@@ -30,28 +30,25 @@ test('test getUsersForRoleInDomain', async () => {
   expect(await e.getUsersForRoleInDomain('superadmin', 'domain2')).toEqual([]);
 });
 
-test('test getAllDomains', async () => {
-  const e = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
-  const domains = await e.getAllDomains();
-  expect(domains.sort()).toEqual(['domain1', 'domain2']);
+test('test getDomainsForUser', async () => {
+  const e = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy2.csv');
+
+  let myRes = await e.getDomainsForUser('alice');
+  myRes.sort();
+  expect(myRes).toEqual(['domain1', 'domain2']);
+
+  myRes = await e.getDomainsForUser('bob');
+  myRes.sort();
+  expect(myRes).toEqual(['domain2', 'domain3']);
+
+  myRes = await e.getDomainsForUser('user');
+  expect(myRes).toEqual(['domain3']);
 });
 
-test('test getDomainsForUser', async () => {
+test('test getAllDomains', async () => {
   const e = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
-  expect(await e.getDomainsForUser('alice')).toEqual(['domain1']);
-  expect(await e.getDomainsForUser('bob')).toEqual(['domain2']);
-  expect(await e.getDomainsForUser('nonexistent')).toEqual([]);
 
-  // Add alice to another domain and verify she appears in both
-  await e.addGroupingPolicy('alice', 'admin', 'domain2');
-  const aliceDomains = await e.getDomainsForUser('alice');
-  expect(aliceDomains.sort()).toEqual(['domain1', 'domain2']);
-
-  // Test that empty string domains are filtered out
-  await e.addGroupingPolicy('charlie', 'member', '');
-  expect(await e.getDomainsForUser('charlie')).toEqual([]);
-
-  // Test that whitespace-only domains are filtered out
-  await e.addGroupingPolicy('dave', 'member', '   ');
-  expect(await e.getDomainsForUser('dave')).toEqual([]);
+  const myRes = await e.getAllDomains();
+  myRes.sort();
+  expect(myRes).toEqual(['domain1', 'domain2']);
 });

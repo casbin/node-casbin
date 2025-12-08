@@ -352,4 +352,43 @@ export class DefaultRoleManager implements RoleManager {
       });
     }
   }
+
+  /**
+   * getDomains gets domains that a user has.
+   */
+  public async getDomains(name: string): Promise<string[]> {
+    const domains: string[] = [];
+    this.allDomains.forEach((roles, domain) => {
+      // Skip the default domain if there are other domains
+      if (domain === DEFAULT_DOMAIN && this.allDomains.size > 1) {
+        return;
+      }
+      const role = roles.get(name);
+      if (role && (role.getRoles().length > 0 || this.hasUserOrRole(roles, name))) {
+        domains.push(domain);
+      }
+    });
+    return domains;
+  }
+
+  /**
+   * getAllDomains gets all domains.
+   */
+  public async getAllDomains(): Promise<string[]> {
+    const domains = Array.from(this.allDomains.keys());
+    // Filter out the default domain if there are other domains
+    if (domains.length > 1) {
+      return domains.filter((d) => d !== DEFAULT_DOMAIN);
+    }
+    return domains;
+  }
+
+  private hasUserOrRole(roles: Roles, name: string): boolean {
+    for (const role of roles.values()) {
+      if (role.hasDirectRole(name)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

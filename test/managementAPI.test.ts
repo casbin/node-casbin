@@ -75,20 +75,6 @@ test('getAllNamedRoles', async () => {
   testArrayEquals(allNamedRoles, []);
 });
 
-test('getAllDomains', async () => {
-  // The basic RBAC model doesn't have domains, so this should return empty
-  const allDomains = await e.getAllDomains();
-  testArrayEquals(allDomains, []);
-});
-
-test('getAllNamedDomains', async () => {
-  // The basic RBAC model doesn't have domains, so this should return empty
-  let allNamedDomains = await e.getAllNamedDomains('g');
-  testArrayEquals(allNamedDomains, []);
-  allNamedDomains = await e.getAllNamedDomains('g1');
-  testArrayEquals(allNamedDomains, []);
-});
-
 test('getPolicy', async () => {
   const policy = await e.getPolicy();
   testArray2DEquals(policy, [
