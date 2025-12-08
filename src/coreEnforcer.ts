@@ -502,7 +502,8 @@ export class CoreEnforcer {
     // Check if the matcher references policy tokens (e.g., p.sub, p.obj, p2.sub)
     // Note: escapeAssertion transforms "p." to "p_", so we check for "p_" or "p<digit>_" in the escaped expression
     // If the matcher doesn't reference policy tokens, we can skip policy iteration (no-policy ABAC)
-    const policyTokenPattern = new RegExp(`${enforceContext.pType}\\d*_`);
+    const escapedPType = enforceContext.pType.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const policyTokenPattern = new RegExp(`${escapedPType}\\d*_`);
     const matcherUsesPolicyTokens = policyTokenPattern.test(expString);
 
     if (policyLen && policyLen !== 0 && matcherUsesPolicyTokens) {
