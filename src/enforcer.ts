@@ -464,6 +464,30 @@ export class Enforcer extends ManagementEnforcer {
 
     return res.filter((n) => !inherits.some((m) => n === m));
   }
+
+  /**
+   * getDomainsForUser gets all domains that a user has.
+   */
+  public async getDomainsForUser(user: string): Promise<string[]> {
+    const domains: string[] = [];
+    for (const rm of this.rmMap.values()) {
+      const domain = await rm.getDomains(user);
+      domains.push(...domain);
+    }
+    return domains;
+  }
+
+  /**
+   * getAllDomains gets all domains.
+   */
+  public async getAllDomains(): Promise<string[]> {
+    const domains: string[] = [];
+    for (const rm of this.rmMap.values()) {
+      const domain = await rm.getAllDomains();
+      domains.push(...domain);
+    }
+    return arrayRemoveDuplicates(domains);
+  }
 }
 
 export async function newEnforcerWithClass<T extends Enforcer>(enforcer: new () => T, ...params: any[]): Promise<T> {

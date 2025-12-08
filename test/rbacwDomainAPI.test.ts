@@ -29,3 +29,26 @@ test('test getUsersForRoleInDomain', async () => {
   expect(await e.getUsersForRoleInDomain('superadmin', 'domain1')).toEqual([]);
   expect(await e.getUsersForRoleInDomain('superadmin', 'domain2')).toEqual([]);
 });
+
+test('test getDomainsForUser', async () => {
+  const e = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy2.csv');
+
+  let myRes = await e.getDomainsForUser('alice');
+  myRes.sort();
+  expect(myRes).toEqual(['domain1', 'domain2']);
+
+  myRes = await e.getDomainsForUser('bob');
+  myRes.sort();
+  expect(myRes).toEqual(['domain2', 'domain3']);
+
+  myRes = await e.getDomainsForUser('user');
+  expect(myRes).toEqual(['domain3']);
+});
+
+test('test getAllDomains', async () => {
+  const e = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
+
+  const myRes = await e.getAllDomains();
+  myRes.sort();
+  expect(myRes).toEqual(['domain1', 'domain2']);
+});
