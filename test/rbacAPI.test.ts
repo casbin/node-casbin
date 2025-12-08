@@ -219,3 +219,81 @@ test('test rbac with multiple policy definitions', async () => {
     ['admin', 'create'],
   ]);
 });
+
+test('test deleteUser with empty string should throw error', async () => {
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  
+  // Store initial state
+  const initialGPolicies = await e.getGroupingPolicy();
+  const initialPPolicies = await e.getPolicy();
+  expect(initialGPolicies.length).toBeGreaterThan(0);
+  expect(initialPPolicies.length).toBeGreaterThan(0);
+  
+  // Attempt to delete with empty string should throw
+  await expect(e.deleteUser('')).rejects.toThrow('user must not be empty');
+  
+  // Verify nothing was deleted
+  expect(await e.getGroupingPolicy()).toEqual(initialGPolicies);
+  expect(await e.getPolicy()).toEqual(initialPPolicies);
+});
+
+test('test deleteRole with empty string should throw error', async () => {
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  
+  const initialGPolicies = await e.getGroupingPolicy();
+  const initialPPolicies = await e.getPolicy();
+  expect(initialGPolicies.length).toBeGreaterThan(0);
+  expect(initialPPolicies.length).toBeGreaterThan(0);
+  
+  await expect(e.deleteRole('')).rejects.toThrow('role must not be empty');
+  
+  expect(await e.getGroupingPolicy()).toEqual(initialGPolicies);
+  expect(await e.getPolicy()).toEqual(initialPPolicies);
+});
+
+test('test deletePermissionsForUser with empty string should throw error', async () => {
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  
+  const initialPPolicies = await e.getPolicy();
+  expect(initialPPolicies.length).toBeGreaterThan(0);
+  
+  await expect(e.deletePermissionsForUser('')).rejects.toThrow('user must not be empty');
+  
+  expect(await e.getPolicy()).toEqual(initialPPolicies);
+});
+
+test('test deleteRolesForUser with empty string should throw error', async () => {
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  
+  const initialGPolicies = await e.getGroupingPolicy();
+  expect(initialGPolicies.length).toBeGreaterThan(0);
+  
+  await expect(e.deleteRolesForUser('')).rejects.toThrow('user must not be empty');
+  
+  expect(await e.getGroupingPolicy()).toEqual(initialGPolicies);
+});
+
+test('test deleteRoleForUser with empty strings should throw error', async () => {
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  
+  await expect(e.deleteRoleForUser('', 'admin')).rejects.toThrow('user must not be empty');
+  await expect(e.deleteRoleForUser('alice', '')).rejects.toThrow('role must not be empty');
+  await expect(e.deleteRoleForUser('', '')).rejects.toThrow('user must not be empty');
+});
+
+test('test deletePermissionForUser with empty string should throw error', async () => {
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  
+  await expect(e.deletePermissionForUser('', 'data1', 'read')).rejects.toThrow('user must not be empty');
+});
+
+test('test deletePermission with empty array should throw error', async () => {
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  
+  const initialPPolicies = await e.getPolicy();
+  expect(initialPPolicies.length).toBeGreaterThan(0);
+  
+  await expect(e.deletePermission()).rejects.toThrow('permission must not be empty');
+  
+  expect(await e.getPolicy()).toEqual(initialPPolicies);
+});
