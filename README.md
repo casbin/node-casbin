@@ -113,6 +113,32 @@ Casbin provides two sets of APIs to manage permissions:
 - [Management API](https://casbin.org/docs/management-api): the primitive API that provides full support for Casbin policy management.
 - [RBAC API](https://casbin.org/docs/rbac-api): a more friendly API for RBAC. This API is a subset of Management API. The RBAC users could use this API to simplify the code.
 
+### Batch Operations for Better Performance
+
+When performing multiple policy changes (e.g., thousands of add/remove operations), using individual API calls can be slow because each operation triggers automatic saving and role link rebuilding. To optimize this scenario, use batch mode:
+
+```typescript
+// Start batch mode - temporarily disables autoSave and autoBuildRoleLinks
+enforcer.startBatch();
+
+// Perform multiple policy changes
+for (const policy of policiesToRemove) {
+  await enforcer.removePolicy(...policy);
+}
+
+for (const policy of policiesToAdd) {
+  await enforcer.addPolicy(...policy);
+}
+
+// End batch mode - saves all changes at once and rebuilds role links
+await enforcer.endBatch();
+```
+
+**Important:** 
+- When `autoSave` is enabled, you do NOT need to call `loadPolicy()` after policy modifications. The in-memory model is automatically kept in sync.
+- Only call `loadPolicy()` when you need to reload policies from the storage (e.g., when policies were modified externally).
+- Use batch mode (`startBatch()`/`endBatch()`) when performing mass policy updates to avoid performance issues.
+
 ## Official Model
 
 https://casbin.org/docs/supported-models
