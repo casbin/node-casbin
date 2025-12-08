@@ -426,6 +426,26 @@ export class CoreEnforcer {
     }
   }
 
+  /**
+   * Helper method to populate request parameters with JSON parsing support
+   */
+  private populateRequestParameters(parameters: { [key: string]: any }, rTokens: string[] | undefined, rvals: any[]): void {
+    if (this.acceptJsonRequest) {
+      // Attempt to parse each request parameter as JSON; continue with string if failed
+      rTokens?.forEach((token, j) => {
+        try {
+          parameters[token] = JSON.parse(rvals[j]);
+        } catch {
+          parameters[token] = rvals[j];
+        }
+      });
+    } else {
+      rTokens?.forEach((token, j): void => {
+        parameters[token] = rvals[j];
+      });
+    }
+  }
+
   private *privateEnforce(
     asyncCompile = true,
     explain = false,
@@ -479,10 +499,11 @@ export class CoreEnforcer {
 
     const effectStream = this.eft.newStream(effectExpr);
 
-    // Check if the matcher references policy tokens (e.g., p.sub, p.obj)
-    // Note: escapeAssertion transforms "p." to "p_", so we check for "p_" in the escaped expression
+    // Check if the matcher references policy tokens (e.g., p.sub, p.obj, p2.sub)
+    // Note: escapeAssertion transforms "p." to "p_", so we check for "p_" or "p<digit>_" in the escaped expression
     // If the matcher doesn't reference policy tokens, we can skip policy iteration (no-policy ABAC)
-    const matcherUsesPolicyTokens = expString.includes(`${enforceContext.pType}_`);
+    const policyTokenPattern = new RegExp(`${enforceContext.pType}\\d*_`);
+    const matcherUsesPolicyTokens = policyTokenPattern.test(expString);
 
     if (policyLen && policyLen !== 0 && matcherUsesPolicyTokens) {
       for (let i = 0; i < policyLen; i++) {
@@ -492,20 +513,7 @@ export class CoreEnforcer {
           throw new Error(`invalid request size: expected ${rTokensLen}, got ${rvals.length}, rvals: ${rvals}"`);
         }
 
-        if (this.acceptJsonRequest) {
-          // Attempt to parse each request parameter as JSON; continue with string if failed
-          rTokens.forEach((token, j) => {
-            try {
-              parameters[token] = JSON.parse(rvals[j]);
-            } catch {
-              parameters[token] = rvals[j];
-            }
-          });
-        } else {
-          rTokens.forEach((token, j) => {
-            parameters[token] = rvals[j];
-          });
-        }
+        this.populateRequestParameters(parameters, rTokens, rvals);
 
         p?.tokens.forEach((token, j) => {
           parameters[token] = p?.policy[i][j];
@@ -578,7 +586,7 @@ export class CoreEnforcer {
       }
     } else {
       // When matcher doesn't use policy tokens or there are no policies
-      if (HasEval && (!policyLen || policyLen === 0)) {
+      if (HasEval && !policyLen) {
         throw new Error('please make sure rule exists in policy when using eval() in matcher');
       }
 
@@ -586,20 +594,7 @@ export class CoreEnforcer {
 
       const parameters: { [key: string]: any } = {};
 
-      if (this.acceptJsonRequest) {
-        // Attempt to parse each request parameter as JSON; continue with string if failed
-        rTokens?.forEach((token, j) => {
-          try {
-            parameters[token] = JSON.parse(rvals[j]);
-          } catch {
-            parameters[token] = rvals[j];
-          }
-        });
-      } else {
-        rTokens?.forEach((token, j): void => {
-          parameters[token] = rvals[j];
-        });
-      }
+      this.populateRequestParameters(parameters, rTokens, rvals);
 
       p?.tokens?.forEach((token) => {
         parameters[token] = '';
