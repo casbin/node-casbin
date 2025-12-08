@@ -315,6 +315,8 @@ export class Enforcer extends ManagementEnforcer {
         });
         
         // Also check for roles with wildcard domain if a specific domain was provided
+        // This supports matcher patterns like: g(r.sub, p.sub, r.dom) || g(r.sub, p.sub, '*')
+        // We only check wildcard for the first domain parameter (most common use case)
         if (domain && domain.length > 0 && domain[0] !== '*') {
           const wildcardRoles = await rm.getRoles(n, '*');
           wildcardRoles.forEach((r) => {
@@ -358,10 +360,14 @@ export class Enforcer extends ManagementEnforcer {
         // Filter policies to match the requested domain or wildcard domain
         const p = allPolicies.filter((policy) => {
           if (domainIndex === -1) {
-            // No domain field in policy, use old behavior
+            // No domain field in policy definition, use old behavior
+            // Match domain parameters sequentially starting at field 1
             return domain.every((d, i) => policy[i + 1] === d);
           }
+          // Domain field exists in policy
           // Check if policy domain matches requested domain or is wildcard
+          // For simplicity, we only support single domain + wildcard pattern
+          // Multi-domain scenarios would need more complex wildcard logic
           const policyDomain = policy[domainIndex];
           return policyDomain === domain[0] || policyDomain === '*';
         });
