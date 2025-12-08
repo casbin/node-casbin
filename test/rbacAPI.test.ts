@@ -219,3 +219,32 @@ test('test rbac with multiple policy definitions', async () => {
     ['admin', 'create'],
   ]);
 });
+
+test('test getImplicitPermissionsForUser with role hierarchy and wildcard domain', async () => {
+  const e = await newEnforcer(
+    'examples/rbac_with_hierarchy_with_wildcard_domain_model.conf',
+    'examples/rbac_with_hierarchy_with_wildcard_domain_policy.csv'
+  );
+
+  // Test user 'michael' who has role1 in tenant1
+  // role1 inherits from abstract_role1 in tenant1
+  // abstract_role1 has permissions with wildcard domain '*'
+  const michaelPerms = await e.getImplicitPermissionsForUser('michael', 'tenant1');
+  expect(michaelPerms).toContainEqual(['abstract_role1', 'devis', 'read', '*']);
+  expect(michaelPerms).toContainEqual(['abstract_role1', 'devis', 'create', '*']);
+
+  // Test user 'thomas' who has role2 in tenant1
+  // role2 inherits from abstract_role2 in tenant1
+  // abstract_role2 has multiple permissions with wildcard domain '*'
+  const thomasPerms = await e.getImplicitPermissionsForUser('thomas', 'tenant1');
+  expect(thomasPerms).toContainEqual(['abstract_role2', 'devis', 'read', '*']);
+  expect(thomasPerms).toContainEqual(['abstract_role2', 'organization', 'read', '*']);
+  expect(thomasPerms).toContainEqual(['abstract_role2', 'organization', 'write', '*']);
+
+  // Test user 'theo' who has super_user role with wildcard domain
+  // super_user inherits from abstract_role2 with wildcard domain '*'
+  const theoPerms = await e.getImplicitPermissionsForUser('theo', 'any_tenant');
+  expect(theoPerms).toContainEqual(['abstract_role2', 'devis', 'read', '*']);
+  expect(theoPerms).toContainEqual(['abstract_role2', 'organization', 'read', '*']);
+  expect(theoPerms).toContainEqual(['abstract_role2', 'organization', 'write', '*']);
+});

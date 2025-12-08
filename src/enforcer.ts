@@ -305,6 +305,7 @@ export class Enforcer extends ManagementEnforcer {
     let n: string | undefined;
     while ((n = q.shift()) !== undefined) {
       for (const rm of this.rmMap.values()) {
+        // Get roles for the specified domain
         const role = await rm.getRoles(n, ...domain);
         role.forEach((r) => {
           if (!res.has(r)) {
@@ -312,6 +313,17 @@ export class Enforcer extends ManagementEnforcer {
             q.push(r);
           }
         });
+        
+        // Also check for roles with wildcard domain if a specific domain was provided
+        if (domain && domain.length > 0 && domain[0] !== '*') {
+          const wildcardRoles = await rm.getRoles(n, '*');
+          wildcardRoles.forEach((r) => {
+            if (!res.has(r)) {
+              res.add(r);
+              q.push(r);
+            }
+          });
+        }
       }
     }
 
@@ -337,7 +349,23 @@ export class Enforcer extends ManagementEnforcer {
 
     for (const n of roles) {
       if (withDomain) {
-        const p = await this.getFilteredPolicy(0, n, ...domain);
+        // Get all policies for this role/user (filter by subject only)
+        const allPolicies = await this.getFilteredPolicy(0, n);
+        
+        // Get the domain field index from the model
+        const domainIndex = this.model.getFieldIndex('p', FieldIndex.Domain);
+        
+        // Filter policies to match the requested domain or wildcard domain
+        const p = allPolicies.filter((policy) => {
+          if (domainIndex === -1) {
+            // No domain field in policy, use old behavior
+            return domain.every((d, i) => policy[i + 1] === d);
+          }
+          // Check if policy domain matches requested domain or is wildcard
+          const policyDomain = policy[domainIndex];
+          return policyDomain === domain[0] || policyDomain === '*';
+        });
+        
         res.push(...p);
       } else {
         const p = await this.getPermissionsForUser(n);
