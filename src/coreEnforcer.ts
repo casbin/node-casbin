@@ -460,15 +460,15 @@ export class CoreEnforcer {
     if (this.autoSave) {
       try {
         const saved = await this.savePolicy();
-        // Notify watcher after successful save if autoNotifyWatcher was enabled
-        // Note: savePolicy() already notifies watchers, so we don't need to do it again here
+        // Note: savePolicy() already handles watcher notification internally,
+        // so we don't need to duplicate that here on successful save
         return saved;
       } catch (e) {
         // Check if the error is due to adapter not implementing savePolicy
         // We check both the error message and if it's a standard Error
         if (e instanceof Error && (e.message === 'not implemented' || e.message.includes('not implemented'))) {
-          // Adapter doesn't support savePolicy, which is fine
-          // Still notify watcher if it was enabled
+          // Adapter doesn't support savePolicy, which is acceptable for some adapters
+          // In this case, still notify watcher if it was enabled, since savePolicy didn't run
           if (this.autoNotifyWatcher) {
             if (this.watcherEx) {
               await this.watcherEx.updateForSavePolicy(this.model);
