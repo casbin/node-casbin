@@ -1,3 +1,13 @@
+# [5.42.0](https://github.com/casbin/node-casbin/compare/v5.41.0...v5.42.0) (2025-12-08)
+
+
+### Features
+
+* configure CI workflow to trigger on master branch ([#521](https://github.com/casbin/node-casbin/issues/521)) ([02ec045](https://github.com/casbin/node-casbin/commit/02ec04525b95691ff5f9b76e6b42ade194e9745f))
+* fix duplicate CI runs on pull requests ([#513](https://github.com/casbin/node-casbin/issues/513)) ([67ab8ee](https://github.com/casbin/node-casbin/commit/67ab8ee43a8b695d11dd73558a0c0cf0348756a7))
+* fix escapeAssertion to preserve string literals ([#514](https://github.com/casbin/node-casbin/issues/514)) ([7801732](https://github.com/casbin/node-casbin/commit/7801732d5f050093a2d844917c7ad9862af78bd2))
+* Support multiple policy definitions (p, p2) ([#518](https://github.com/casbin/node-casbin/issues/518)) ([1b1f1bb](https://github.com/casbin/node-casbin/commit/1b1f1bb181ea6c5bb43c330802a435d93f2fa2f0))
+
 # [5.41.0](https://github.com/casbin/node-casbin/compare/v5.40.0...v5.41.0) (2025-11-11)
 
 
