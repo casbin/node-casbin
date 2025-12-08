@@ -119,6 +119,31 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
+   * getAllDomains gets the list of domains that show up in the current policy.
+   *
+   * @return all the domains in "g" policy rules. It actually collects
+   *         the 2-index elements of "g" policy rules. So make sure your
+   *         domain is the 2-index element, like (sub, role, domain).
+   *         Duplicates are removed.
+   */
+  public async getAllDomains(): Promise<string[]> {
+    return this.getAllNamedDomains('g');
+  }
+
+  /**
+   * getAllNamedDomains gets the list of domains that show up in the current named policy.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @return all the domains in policy rules of the ptype type. It actually
+   *         collects the 2-index elements of the policy rules. So make
+   *         sure your domain is the 2-index element, like (sub, role, domain).
+   *         Duplicates are removed.
+   */
+  public async getAllNamedDomains(ptype: string): Promise<string[]> {
+    return this.model.getValuesForFieldInPolicy('g', ptype, 2).filter((domain) => domain !== undefined && domain !== '');
+  }
+
+  /**
    * getPolicy gets all the authorization rules in the policy.
    *
    * @return all the "p" policy rules.

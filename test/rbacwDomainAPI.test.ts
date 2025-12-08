@@ -29,3 +29,21 @@ test('test getUsersForRoleInDomain', async () => {
   expect(await e.getUsersForRoleInDomain('superadmin', 'domain1')).toEqual([]);
   expect(await e.getUsersForRoleInDomain('superadmin', 'domain2')).toEqual([]);
 });
+
+test('test getAllDomains', async () => {
+  const e = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
+  const domains = await e.getAllDomains();
+  expect(domains.sort()).toEqual(['domain1', 'domain2']);
+});
+
+test('test getDomainsForUser', async () => {
+  const e = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
+  expect(await e.getDomainsForUser('alice')).toEqual(['domain1']);
+  expect(await e.getDomainsForUser('bob')).toEqual(['domain2']);
+  expect(await e.getDomainsForUser('nonexistent')).toEqual([]);
+
+  // Add alice to another domain and verify she appears in both
+  await e.addGroupingPolicy('alice', 'admin', 'domain2');
+  const aliceDomains = await e.getDomainsForUser('alice');
+  expect(aliceDomains.sort()).toEqual(['domain1', 'domain2']);
+});

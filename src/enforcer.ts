@@ -464,6 +464,31 @@ export class Enforcer extends ManagementEnforcer {
 
     return res.filter((n) => !inherits.some((m) => n === m));
   }
+
+  /**
+   * getDomainsForUser gets all domains that a user has.
+   * For example:
+   * g, alice, admin, domain1
+   * g, alice, member, domain2
+   *
+   * getDomainsForUser("alice") will get: ["domain1", "domain2"].
+   *
+   * @param user the user.
+   * @return the domains that the user has.
+   */
+  public async getDomainsForUser(user: string): Promise<string[]> {
+    const groupingPolicies = await this.getFilteredGroupingPolicy(0, user);
+    const domains = new Set<string>();
+
+    for (const policy of groupingPolicies) {
+      // In a policy like ["alice", "admin", "domain1"], domain is at index 2
+      if (policy.length > 2 && policy[2]) {
+        domains.add(policy[2]);
+      }
+    }
+
+    return Array.from(domains);
+  }
 }
 
 export async function newEnforcerWithClass<T extends Enforcer>(enforcer: new () => T, ...params: any[]): Promise<T> {
