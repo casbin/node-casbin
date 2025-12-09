@@ -263,9 +263,11 @@ export class Model {
         const insertIndex = policy.findIndex((oneRule) => oneRule[priorityIndex] >= priorityRule);
 
         if (insertIndex === -1) {
+          // No position found, add to end
           policy.push(rule);
           ast.addPolicyIndex(rule, policy.length - 1);
         } else {
+          // Insert at the found position
           policy.splice(insertIndex, 0, rule);
           // Rebuild index for this section since indices have shifted
           ast.buildPolicyIndex();

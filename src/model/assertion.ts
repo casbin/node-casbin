@@ -77,23 +77,12 @@ export class Assertion {
 
   /**
    * removePolicyIndex removes an index entry for a deleted policy.
+   * Since we don't track exact indices, we rebuild the entire index for efficiency.
    */
   public removePolicyIndex(rule: string[]): void {
-    if (rule.length > 0) {
-      const subject = rule[0];
-      const indices = this.policyIndexMap.get(subject);
-      if (indices) {
-        // Rebuild the index for this subject since we don't know the exact index
-        this.policyIndexMap.delete(subject);
-        for (let i = 0; i < this.policy.length; i++) {
-          if (this.policy[i][0] === subject) {
-            const newIndices = this.policyIndexMap.get(subject) || [];
-            newIndices.push(i);
-            this.policyIndexMap.set(subject, newIndices);
-          }
-        }
-      }
-    }
+    // Simply rebuild the entire index
+    // This is more efficient than trying to track and update individual indices
+    this.buildPolicyIndex();
   }
 
   public async buildIncrementalRoleLinks(rm: rbac.RoleManager, op: PolicyOp, rules: string[][]): Promise<void> {

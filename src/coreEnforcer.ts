@@ -468,6 +468,7 @@ export class CoreEnforcer {
   /**
    * Get policy indices to check for a given subject.
    * This method is called before enforcement to optimize which policies to check.
+   * Returns null if indexing is not enabled or if an error occurs (with logging).
    */
   protected async getPolicyIndicesToCheck(subject: string, enforceContext: EnforceContext): Promise<number[] | null> {
     if (!this.autoBuildPolicyIndex) {
@@ -492,7 +493,8 @@ export class CoreEnforcer {
             const roles = await rm.getRoles(subject);
             roles.forEach((role) => subjects.add(role));
           } catch (e) {
-            // If there's an error getting roles, fall back to checking all policies
+            // Log error and fall back to checking all policies
+            logPrint(`Error getting roles for subject ${subject}: ${e}`);
             return null;
           }
         }
