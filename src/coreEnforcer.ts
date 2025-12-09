@@ -486,6 +486,7 @@ export class CoreEnforcer {
     // Get all roles for the subject
     const astMap = this.model.model.get('g');
     if (astMap) {
+      let hasError = false;
       for (const [key, value] of astMap) {
         const rm = value.rm;
         if (rm) {
@@ -493,11 +494,15 @@ export class CoreEnforcer {
             const roles = await rm.getRoles(subject);
             roles.forEach((role) => subjects.add(role));
           } catch (e) {
-            // Log error and fall back to checking all policies
-            logPrint(`Error getting roles for subject ${subject}: ${e}`);
-            return null;
+            // Log error but continue with other role managers
+            logPrint(`Error getting roles for subject ${subject} from ${key}: ${e}`);
+            hasError = true;
           }
         }
+      }
+      // If there was an error, fall back to checking all policies
+      if (hasError) {
+        return null;
       }
     }
 
