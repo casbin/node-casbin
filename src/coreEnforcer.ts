@@ -50,7 +50,7 @@ export class CoreEnforcer {
   protected fm: FunctionMap = FunctionMap.loadFunctionMap();
   protected eft: Effector = new DefaultEffector();
   private matcherMap: Map<string, Matcher> = new Map();
-  private defaultEnforceContext: EnforceContext = new EnforceContext('r', 'p', 'e', 'm');
+  protected defaultEnforceContext: EnforceContext = new EnforceContext('r', 'p', 'e', 'm');
 
   protected adapter: UpdatableAdapter | FilteredAdapter | Adapter | BatchAdapter;
   protected watcher: Watcher | null = null;
