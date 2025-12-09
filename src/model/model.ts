@@ -262,13 +262,18 @@ export class Model {
         const priorityRule = rule[priorityIndex];
         const insertIndex = policy.findIndex((oneRule) => oneRule[priorityIndex] >= priorityRule);
 
-        if (priorityIndex === -1) {
+        if (insertIndex === -1) {
           policy.push(rule);
+          ast.addPolicyIndex(rule, policy.length - 1);
         } else {
           policy.splice(insertIndex, 0, rule);
+          // Rebuild index for this section since indices have shifted
+          ast.buildPolicyIndex();
         }
       } else {
+        const index = policy.length;
         policy.push(rule);
+        ast.addPolicyIndex(rule, index);
       }
       return true;
     }
@@ -296,7 +301,12 @@ export class Model {
         this.addPolicy(sec, ptype, rule);
       });
     } else {
+      const startIndex = ast.policy.length;
       ast.policy = ast.policy.concat(rules);
+      // Add index entries for all new policies
+      rules.forEach((rule, i) => {
+        ast.addPolicyIndex(rule, startIndex + i);
+      });
     }
 
     return [true, rules];
@@ -319,6 +329,10 @@ export class Model {
     if (priorityIndex !== -1) {
       if (oldRule[priorityIndex] === newRule[priorityIndex]) {
         ast.policy[index] = newRule;
+        // Update index if subject changed
+        if (oldRule[0] !== newRule[0]) {
+          ast.buildPolicyIndex();
+        }
       } else {
         // this.removePolicy(sec, ptype, oldRule);
         // this.addPolicy(sec, ptype, newRule);
@@ -326,6 +340,10 @@ export class Model {
       }
     } else {
       ast.policy[index] = newRule;
+      // Update index if subject changed
+      if (oldRule[0] !== newRule[0]) {
+        ast.buildPolicyIndex();
+      }
     }
 
     return true;
@@ -339,6 +357,8 @@ export class Model {
         return false;
       }
       ast.policy = ast.policy.filter((r) => !util.arrayEquals(rule, r));
+      // Rebuild index since we removed a policy
+      ast.buildPolicyIndex();
       return true;
     }
 
@@ -368,6 +388,9 @@ export class Model {
         return !equals;
       });
     }
+
+    // Rebuild index since we removed policies
+    ast.buildPolicyIndex();
 
     return [true, effects];
   }
@@ -429,6 +452,8 @@ export class Model {
 
     if (effects.length !== 0) {
       ast.policy = res;
+      // Rebuild index since we removed policies
+      ast.buildPolicyIndex();
     }
 
     return [bool, effects];
