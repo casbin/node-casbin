@@ -313,7 +313,7 @@ export class Enforcer extends ManagementEnforcer {
             q.push(r);
           }
         });
-        
+
         // Also get roles with wildcard domain '*' if domain is provided and not already '*'
         if (domain && domain.length > 0 && domain[0] !== '*') {
           const wildcardDomain = [...domain];
@@ -354,7 +354,7 @@ export class Enforcer extends ManagementEnforcer {
         // Get policies matching the specific domain
         const p = await this.getFilteredPolicy(0, n, ...domain);
         res.push(...p);
-        
+
         // Also get policies with wildcard domain '*' if the domain is not already '*'
         if (domain[0] !== '*') {
           const wildcardDomain = [...domain];
