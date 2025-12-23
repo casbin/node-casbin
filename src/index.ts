@@ -18,6 +18,7 @@ import { setDefaultFileSystem } from './persist';
 export * from './config';
 export * from './enforcer';
 export * from './cachedEnforcer';
+export * from './indexedEnforcer';
 export * from './syncedEnforcer';
 export * from './effect';
 export * from './model';
