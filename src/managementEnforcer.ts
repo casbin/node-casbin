@@ -546,7 +546,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * It only updates the policy in the enforcer's memory.
    * Useful in distributed setups with watchers to sync policies across instances without triggering
    * duplicate saves or notifications.
-   * 
+   *
    * @param sec section, "p" or "g"
    * @param ptype the policy type, can be "p", "p2", "p3", "g", "g2", etc.
    * @param rule the policy rule
@@ -562,7 +562,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * It only updates the policy in the enforcer's memory.
    * Useful in distributed setups with watchers to sync policies across instances without triggering
    * duplicate saves or notifications.
-   * 
+   *
    * @param sec section, "p" or "g"
    * @param ptype the policy type, can be "p", "p2", "p3", "g", "g2", etc.
    * @param rule the policy rule
@@ -578,7 +578,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * It only updates the policy in the enforcer's memory.
    * Useful in distributed setups with watchers to sync policies across instances without triggering
    * duplicate saves or notifications.
-   * 
+   *
    * @param sec section, "p" or "g"
    * @param ptype the policy type, can be "p", "p2", "p3", "g", "g2", etc.
    * @param fieldIndex the policy rule's start index to be matched
@@ -595,7 +595,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * It only updates the policy in the enforcer's memory.
    * Useful in distributed setups with watchers to sync policies across instances without triggering
    * duplicate saves or notifications.
-   * 
+   *
    * @param sec section, "p" or "g"
    * @param ptype the policy type, can be "p", "p2", "p3", "g", "g2", etc.
    * @param oldRule the old policy rule
@@ -612,7 +612,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * It only updates the policy in the enforcer's memory.
    * Useful in distributed setups with watchers to sync policies across instances without triggering
    * duplicate saves or notifications.
-   * 
+   *
    * @param sec section, "p" or "g"
    * @param ptype the policy type, can be "p", "p2", "p3", "g", "g2", etc.
    * @param rules the policy rules
@@ -628,7 +628,7 @@ export class ManagementEnforcer extends InternalEnforcer {
    * It only updates the policy in the enforcer's memory.
    * Useful in distributed setups with watchers to sync policies across instances without triggering
    * duplicate saves or notifications.
-   * 
+   *
    * @param sec section, "p" or "g"
    * @param ptype the policy type, can be "p", "p2", "p3", "g", "g2", etc.
    * @param rules the policy rules

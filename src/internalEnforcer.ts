@@ -60,7 +60,13 @@ export class InternalEnforcer extends CoreEnforcer {
 
   // addPolicies adds rules to the current policy.
   // removePolicies removes rules from the current policy.
-  protected async addPoliciesInternal(sec: string, ptype: string, rules: string[][], useWatcher: boolean, useAdapter = true): Promise<boolean> {
+  protected async addPoliciesInternal(
+    sec: string,
+    ptype: string,
+    rules: string[][],
+    useWatcher: boolean,
+    useAdapter = true
+  ): Promise<boolean> {
     for (const rule of rules) {
       if (this.model.hasPolicy(sec, ptype, rule)) {
         return false;
@@ -150,7 +156,13 @@ export class InternalEnforcer extends CoreEnforcer {
   /**
    * removePolicyInternal removes a rule from the current policy.
    */
-  protected async removePolicyInternal(sec: string, ptype: string, rule: string[], useWatcher: boolean, useAdapter = true): Promise<boolean> {
+  protected async removePolicyInternal(
+    sec: string,
+    ptype: string,
+    rule: string[],
+    useWatcher: boolean,
+    useAdapter = true
+  ): Promise<boolean> {
     if (!this.model.hasPolicy(sec, ptype, rule)) {
       return false;
     }
@@ -184,7 +196,13 @@ export class InternalEnforcer extends CoreEnforcer {
   }
 
   // removePolicies removes rules from the current policy.
-  protected async removePoliciesInternal(sec: string, ptype: string, rules: string[][], useWatcher: boolean, useAdapter = true): Promise<boolean> {
+  protected async removePoliciesInternal(
+    sec: string,
+    ptype: string,
+    rules: string[][],
+    useWatcher: boolean,
+    useAdapter = true
+  ): Promise<boolean> {
     for (const rule of rules) {
       if (!this.model.hasPolicy(sec, ptype, rule)) {
         return false;
