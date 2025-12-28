@@ -13,20 +13,6 @@
 [download-image]: https://img.shields.io/npm/dm/casbin.svg?style=flat-square
 [download-url]: https://npmjs.org/package/casbin
 
-<p align="center">
-  <sup>Sponsored by</sup>
-  <br>
-  <a href="https://stytch.com/docs?utm_source=oss-sponsorship&utm_medium=paid_sponsorship&utm_campaign=casbin">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://cdn.casbin.org/img/stytch-white.png">
-      <source media="(prefers-color-scheme: light)" srcset="https://cdn.casbin.org/img/stytch-charcoal.png">
-      <img src="https://cdn.casbin.org/img/stytch-charcoal.png" width="275">
-    </picture>
-  </a><br/>
-  <a href="https://stytch.com/docs?utm_source=oss-sponsorship&utm_medium=paid_sponsorship&utm_campaign=casbin"><b>Build auth with fraud prevention, faster.</b><br/> Try Stytch for API-first authentication, user & org management, multi-tenant SSO, MFA, device fingerprinting, and more.</a>
-  <br>
-</p>
-
 **News**: still worry about how to write the correct `node-casbin` policy? [Casbin online editor](http://casbin.org/editor) is coming to help!
 
 ![casbin Logo](casbin-logo.png)
