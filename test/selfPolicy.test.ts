@@ -14,7 +14,6 @@
 
 import { newEnforcer, Enforcer } from '../src';
 import { FileAdapter, BatchAdapter, UpdatableAdapter } from '../src/persist';
-import { Model } from '../src/model';
 
 // SpyAdapter to track if adapter methods are called
 class SpyAdapter extends FileAdapter implements BatchAdapter, UpdatableAdapter {
