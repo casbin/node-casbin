@@ -123,7 +123,7 @@ export class InternalEnforcer extends CoreEnforcer {
           }
         }
       } else {
-        throw new Error('cannot to save policy, the adapter does not implement the BatchAdapter');
+        throw new Error('cannot save policy, the adapter does not implement the BatchAdapter');
       }
     }
 
