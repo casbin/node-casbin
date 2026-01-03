@@ -100,6 +100,52 @@ export class InternalEnforcer extends CoreEnforcer {
   }
 
   /**
+   * addPoliciesInternalEx adds rules to the current policy.
+   * Unlike addPoliciesInternal, this method will filter out rules that already exist
+   * and continue to add the remaining rules instead of returning false immediately.
+   */
+  protected async addPoliciesInternalEx(sec: string, ptype: string, rules: string[][], useWatcher: boolean): Promise<boolean> {
+    // Filter out existing rules
+    const newRules = rules.filter((rule) => !this.model.hasPolicy(sec, ptype, rule));
+
+    // If no new rules to add, return false
+    if (newRules.length === 0) {
+      return false;
+    }
+
+    if (this.autoSave) {
+      if ('addPolicies' in this.adapter) {
+        try {
+          await this.adapter.addPolicies(sec, ptype, newRules);
+        } catch (e) {
+          if (e.message !== 'not implemented') {
+            throw e;
+          }
+        }
+      } else {
+        throw new Error('cannot to save policy, the adapter does not implement the BatchAdapter');
+      }
+    }
+
+    if (useWatcher) {
+      if (this.autoNotifyWatcher) {
+        // error intentionally ignored
+        if (this.watcherEx) {
+          this.watcherEx.updateForAddPolicies(sec, ptype, ...newRules);
+        } else if (this.watcher) {
+          this.watcher.update();
+        }
+      }
+    }
+
+    const [ok, effects] = await this.model.addPolicies(sec, ptype, newRules);
+    if (sec === 'g' && ok && effects?.length) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, effects);
+    }
+    return ok;
+  }
+
+  /**
    * updatePolicyInternal updates a rule from the current policy.
    */
   protected async updatePolicyInternal(
