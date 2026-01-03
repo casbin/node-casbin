@@ -377,3 +377,88 @@ test('updateNamedGroupingPolicy', async () => {
   groupingPolicy = await e.getGroupingPolicy();
   testArray2DEquals(groupingPolicy, [['alice', 'update_test']]);
 });
+
+test('addPoliciesEx', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['alice', 'data1', 'read'], // already exists
+    ['bob', 'data2', 'write'], // already exists
+    ['jack', 'data4', 'read'], // new rule
+    ['katy', 'data4', 'write'], // new rule
+  ];
+  const added = await e.addPoliciesEx(rules);
+  expect(added).toBe(true);
+  // Check that new rules were added
+  expect(await e.hasPolicy('jack', 'data4', 'read')).toBe(true);
+  expect(await e.hasPolicy('katy', 'data4', 'write')).toBe(true);
+  // Check that existing rules are still there
+  expect(await e.hasPolicy('alice', 'data1', 'read')).toBe(true);
+  expect(await e.hasPolicy('bob', 'data2', 'write')).toBe(true);
+});
+
+test('addPoliciesEx - all existing rules', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['alice', 'data1', 'read'], // already exists
+    ['bob', 'data2', 'write'], // already exists
+  ];
+  const added = await e.addPoliciesEx(rules);
+  expect(added).toBe(false);
+});
+
+test('addNamedPoliciesEx', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const rules = [
+    ['alice', 'data1', 'read'], // already exists
+    ['jack', 'data4', 'read'], // new rule
+    ['katy', 'data4', 'write'], // new rule
+  ];
+  const added = await e.addNamedPoliciesEx('p', rules);
+  expect(added).toBe(true);
+  expect(await e.hasPolicy('jack', 'data4', 'read')).toBe(true);
+  expect(await e.hasPolicy('katy', 'data4', 'write')).toBe(true);
+  expect(await e.hasPolicy('alice', 'data1', 'read')).toBe(true);
+});
+
+test('addGroupingPoliciesEx', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['alice', 'data2_admin'], // already exists
+    ['ham', 'data4_admin'], // new rule
+    ['jack', 'data5_admin'], // new rule
+  ];
+  const added = await e.addGroupingPoliciesEx(groupingRules);
+  expect(added).toBe(true);
+  expect(await e.hasGroupingPolicy('ham', 'data4_admin')).toBe(true);
+  expect(await e.hasGroupingPolicy('jack', 'data5_admin')).toBe(true);
+  expect(await e.hasGroupingPolicy('alice', 'data2_admin')).toBe(true);
+});
+
+test('addGroupingPoliciesEx - all existing rules', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['alice', 'data2_admin'], // already exists
+  ];
+  const added = await e.addGroupingPoliciesEx(groupingRules);
+  expect(added).toBe(false);
+});
+
+test('addNamedGroupingPoliciesEx', async () => {
+  const a = new FileAdapter('examples/rbac_policy.csv');
+  e.setAdapter(a);
+  const groupingRules = [
+    ['alice', 'data2_admin'], // already exists
+    ['ham', 'data4_admin'], // new rule
+    ['jack', 'data5_admin'], // new rule
+  ];
+  const added = await e.addNamedGroupingPoliciesEx('g', groupingRules);
+  expect(added).toBe(true);
+  expect(await e.hasGroupingPolicy('ham', 'data4_admin')).toBe(true);
+  expect(await e.hasGroupingPolicy('jack', 'data5_admin')).toBe(true);
+  expect(await e.hasGroupingPolicy('alice', 'data2_admin')).toBe(true);
+});
