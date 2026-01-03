@@ -277,6 +277,31 @@ export class ManagementEnforcer extends InternalEnforcer {
   }
 
   /**
+   * addPoliciesEx adds authorization rules to the current policy.
+   * If a rule already exists, the function will skip it and continue to add the remaining rules.
+   * The function returns true if at least one rule was added successfully.
+   *
+   * @param rules the "p" policy rules, ptype "p" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async addPoliciesEx(rules: string[][]): Promise<boolean> {
+    return this.addNamedPoliciesEx('p', rules);
+  }
+
+  /**
+   * addNamedPoliciesEx adds authorization rules to the current named policy.
+   * If a rule already exists, the function will skip it and continue to add the remaining rules.
+   * The function returns true if at least one rule was added successfully.
+   *
+   * @param ptype the policy type, can be "p", "p2", "p3", ..
+   * @param rules the "p" policy rules.
+   * @return succeeds or not.
+   */
+  public async addNamedPoliciesEx(ptype: string, rules: string[][]): Promise<boolean> {
+    return this.addPoliciesInternalEx('p', ptype, rules, true);
+  }
+
+  /**
    * updatePolicy updates an authorization rule from the current policy.
    * If the rule not exists, the function returns false.
    * Otherwise the function returns true by changing it to the new rule.
@@ -439,6 +464,31 @@ export class ManagementEnforcer extends InternalEnforcer {
    */
   public async addNamedGroupingPolicies(ptype: string, rules: string[][]): Promise<boolean> {
     return this.addPoliciesInternal('g', ptype, rules, true);
+  }
+
+  /**
+   * addGroupingPoliciesEx adds role inheritance rules to the current policy.
+   * If a rule already exists, the function will skip it and continue to add the remaining rules.
+   * The function returns true if at least one rule was added successfully.
+   *
+   * @param rules the "g" policy rules, ptype "g" is implicitly used.
+   * @return succeeds or not.
+   */
+  public async addGroupingPoliciesEx(rules: string[][]): Promise<boolean> {
+    return this.addNamedGroupingPoliciesEx('g', rules);
+  }
+
+  /**
+   * addNamedGroupingPoliciesEx adds named role inheritance rules to the current policy.
+   * If a rule already exists, the function will skip it and continue to add the remaining rules.
+   * The function returns true if at least one rule was added successfully.
+   *
+   * @param ptype the policy type, can be "g", "g2", "g3", ..
+   * @param rules the "g" policy rules.
+   * @return succeeds or not.
+   */
+  public async addNamedGroupingPoliciesEx(ptype: string, rules: string[][]): Promise<boolean> {
+    return this.addPoliciesInternalEx('g', ptype, rules, true);
   }
 
   /**
