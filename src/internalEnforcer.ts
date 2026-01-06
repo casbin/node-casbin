@@ -29,6 +29,7 @@ export class InternalEnforcer extends CoreEnforcer {
       return false;
     }
 
+    // Persist when an adapter is configured and autoSave is enabled.
     if (this.adapter && this.autoSave) {
       try {
         await this.adapter.addPolicy(sec, ptype, rule);
@@ -67,7 +68,8 @@ export class InternalEnforcer extends CoreEnforcer {
       }
     }
 
-    if (this.autoSave) {
+    // Persist when an adapter is configured and autoSave is enabled.
+    if (this.adapter && this.autoSave) {
       if ('addPolicies' in this.adapter) {
         try {
           await this.adapter.addPolicies(sec, ptype, rules);
@@ -113,7 +115,8 @@ export class InternalEnforcer extends CoreEnforcer {
       return false;
     }
 
-    if (this.autoSave) {
+    // Persist when an adapter is configured and autoSave is enabled.
+    if (this.adapter && this.autoSave) {
       if ('addPolicies' in this.adapter) {
         try {
           await this.adapter.addPolicies(sec, ptype, newRules);
@@ -158,8 +161,8 @@ export class InternalEnforcer extends CoreEnforcer {
     if (!this.model.hasPolicy(sec, ptype, oldRule)) {
       return false;
     }
-
-    if (this.autoSave) {
+    // Persist when an adapter is configured and autoSave is enabled.
+    if (this.adapter && this.autoSave) {
       if ('updatePolicy' in this.adapter) {
         try {
           await this.adapter.updatePolicy(sec, ptype, oldRule, newRule);
@@ -200,6 +203,7 @@ export class InternalEnforcer extends CoreEnforcer {
       return false;
     }
 
+    // Persist when an adapter is configured and autoSave is enabled.
     if (this.adapter && this.autoSave) {
       try {
         await this.adapter.removePolicy(sec, ptype, rule);
@@ -236,7 +240,8 @@ export class InternalEnforcer extends CoreEnforcer {
       }
     }
 
-    if (this.autoSave) {
+    // Persist when an adapter is configured and autoSave is enabled.
+    if (this.adapter && this.autoSave) {
       if ('removePolicies' in this.adapter) {
         try {
           await this.adapter.removePolicies(sec, ptype, rules);
@@ -278,6 +283,7 @@ export class InternalEnforcer extends CoreEnforcer {
     fieldValues: string[],
     useWatcher: boolean
   ): Promise<boolean> {
+    // Persist when an adapter is configured and autoSave is enabled.
     if (this.adapter && this.autoSave) {
       try {
         await this.adapter.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
@@ -319,5 +325,111 @@ export class InternalEnforcer extends CoreEnforcer {
   public setFieldIndex(ptype: string, field: string, index: number): void {
     const assertion = this.model.model.get('p')?.get(ptype);
     assertion?.fieldIndexMap.set(field, index);
+  }
+
+  protected async addPolicyWithoutNotify(sec: string, ptype: string, rule: string[]): Promise<boolean> {
+    if (this.model.hasPolicy(sec, ptype, rule)) {
+      return false;
+    }
+
+    const ok = this.model.addPolicy(sec, ptype, rule);
+    if (sec === 'g' && ok) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, [rule]);
+    }
+    return ok;
+  }
+
+  protected async addPoliciesWithoutNotify(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
+    for (const rule of rules) {
+      if (this.model.hasPolicy(sec, ptype, rule)) {
+        return false;
+      }
+    }
+
+    const [ok, effects] = await this.model.addPolicies(sec, ptype, rules);
+    if (sec === 'g' && ok && effects?.length) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, effects);
+    }
+    return ok;
+  }
+
+  protected async addPoliciesWithoutNotifyEx(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
+    const newRules = rules.filter((rule) => !this.model.hasPolicy(sec, ptype, rule));
+    if (newRules.length === 0) {
+      return false;
+    }
+
+    const [ok, effects] = await this.model.addPolicies(sec, ptype, newRules);
+    if (sec === 'g' && ok && effects?.length) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, effects);
+    }
+    return ok;
+  }
+
+  protected async updatePolicyWithoutNotify(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
+    if (!this.model.hasPolicy(sec, ptype, oldRule)) {
+      return false;
+    }
+
+    const ok = this.model.updatePolicy(sec, ptype, oldRule, newRule);
+    if (sec === 'g' && ok) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, [oldRule]);
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, [newRule]);
+    }
+    return ok;
+  }
+
+  protected async removePolicyWithoutNotify(sec: string, ptype: string, rule: string[]): Promise<boolean> {
+    if (!this.model.hasPolicy(sec, ptype, rule)) {
+      return false;
+    }
+
+    const ok = await this.model.removePolicy(sec, ptype, rule);
+    if (sec === 'g' && ok) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, [rule]);
+    }
+    return ok;
+  }
+
+  protected async removePoliciesWithoutNotify(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
+    for (const rule of rules) {
+      if (!this.model.hasPolicy(sec, ptype, rule)) {
+        return false;
+      }
+    }
+
+    const [ok, effects] = this.model.removePolicies(sec, ptype, rules);
+    if (sec === 'g' && ok && effects?.length) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, effects);
+    }
+    return ok;
+  }
+
+  protected async removeFilteredPolicyWithoutNotify(
+    sec: string,
+    ptype: string,
+    fieldIndex: number,
+    fieldValues: string[]
+  ): Promise<boolean> {
+    const [ok, effects] = this.model.removeFilteredPolicy(sec, ptype, fieldIndex, ...fieldValues);
+    if (sec === 'g' && ok && effects?.length) {
+      await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, effects);
+    }
+    return ok;
+  }
+
+  protected async updatePoliciesWithoutNotify(sec: string, ptype: string, oldRules: string[][], newRules: string[][]): Promise<boolean> {
+    // Mirror the Go updatePoliciesWithoutNotify; reuse the existing internal flow.
+    // Because updatePoliciesInternal isn't implemented yet, fall back to per-item updates.
+    if (oldRules.length !== newRules.length) {
+      throw new Error('the length of oldRules should be equal to the length of newRules');
+    }
+    for (let i = 0; i < oldRules.length; i++) {
+      const ok = await this.updatePolicyWithoutNotify(sec, ptype, oldRules[i], newRules[i]);
+      if (!ok) {
+        return false;
+      }
+    }
+    return true;
   }
 }
