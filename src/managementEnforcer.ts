@@ -590,27 +590,95 @@ export class ManagementEnforcer extends InternalEnforcer {
     this.fm.addFunction(name, func);
   }
 
+  /**
+   * selfAddPolicy adds an authorization rule to the current policy in memory only.
+   * This method is intended for use in distributed setups (e.g., inside a Watcher callback)
+   * where you want to update the local policy cache without triggering database writes
+   * or watcher notifications, thus preventing infinite loops.
+   *
+   * @param sec section, "p" or "g"
+   * @param ptype the policy type, can be "p", "p2", "p3", .. or "g", "g2", "g3", ..
+   * @param rule the policy rule to add
+   * @return succeeds or not
+   */
   public async selfAddPolicy(sec: string, ptype: string, rule: string[]): Promise<boolean> {
-    return this.addPolicyInternal(sec, ptype, rule, false);
+    return this.addPolicyInternal(sec, ptype, rule, false, false);
   }
 
+  /**
+   * selfRemovePolicy removes an authorization rule from the current policy in memory only.
+   * This method is intended for use in distributed setups (e.g., inside a Watcher callback)
+   * where you want to update the local policy cache without triggering database writes
+   * or watcher notifications, thus preventing infinite loops.
+   *
+   * @param sec section, "p" or "g"
+   * @param ptype the policy type, can be "p", "p2", "p3", .. or "g", "g2", "g3", ..
+   * @param rule the policy rule to remove
+   * @return succeeds or not
+   */
   public async selfRemovePolicy(sec: string, ptype: string, rule: string[]): Promise<boolean> {
-    return this.removePolicyInternal(sec, ptype, rule, false);
+    return this.removePolicyInternal(sec, ptype, rule, false, false);
   }
 
+  /**
+   * selfRemoveFilteredPolicy removes authorization rules based on field filters from the current policy in memory only.
+   * This method is intended for use in distributed setups (e.g., inside a Watcher callback)
+   * where you want to update the local policy cache without triggering database writes
+   * or watcher notifications, thus preventing infinite loops.
+   *
+   * @param sec section, "p" or "g"
+   * @param ptype the policy type, can be "p", "p2", "p3", .. or "g", "g2", "g3", ..
+   * @param fieldIndex the policy rule's start index to be matched
+   * @param fieldValues the field values to be matched
+   * @return succeeds or not
+   */
   public async selfRemoveFilteredPolicy(sec: string, ptype: string, fieldIndex: number, fieldValues: string[]): Promise<boolean> {
-    return this.removeFilteredPolicyInternal(sec, ptype, fieldIndex, fieldValues, false);
+    return this.removeFilteredPolicyInternal(sec, ptype, fieldIndex, fieldValues, false, false);
   }
 
+  /**
+   * selfUpdatePolicy updates an authorization rule in the current policy in memory only.
+   * This method is intended for use in distributed setups (e.g., inside a Watcher callback)
+   * where you want to update the local policy cache without triggering database writes
+   * or watcher notifications, thus preventing infinite loops.
+   *
+   * @param sec section, "p" or "g"
+   * @param ptype the policy type, can be "p", "p2", "p3", .. or "g", "g2", "g3", ..
+   * @param oldRule the old policy rule to be replaced
+   * @param newRule the new policy rule
+   * @return succeeds or not
+   */
   public async selfUpdatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
-    return this.updatePolicyInternal(sec, ptype, oldRule, newRule, false);
+    return this.updatePolicyInternal(sec, ptype, oldRule, newRule, false, false);
   }
 
+  /**
+   * selfAddPolicies adds authorization rules to the current policy in memory only.
+   * This method is intended for use in distributed setups (e.g., inside a Watcher callback)
+   * where you want to update the local policy cache without triggering database writes
+   * or watcher notifications, thus preventing infinite loops.
+   *
+   * @param sec section, "p" or "g"
+   * @param ptype the policy type, can be "p", "p2", "p3", .. or "g", "g2", "g3", ..
+   * @param rule the policy rules to add
+   * @return succeeds or not
+   */
   public async selfAddPolicies(sec: string, ptype: string, rule: string[][]): Promise<boolean> {
-    return this.addPoliciesInternal(sec, ptype, rule, false);
+    return this.addPoliciesInternal(sec, ptype, rule, false, false);
   }
 
+  /**
+   * selfRemovePolicies removes authorization rules from the current policy in memory only.
+   * This method is intended for use in distributed setups (e.g., inside a Watcher callback)
+   * where you want to update the local policy cache without triggering database writes
+   * or watcher notifications, thus preventing infinite loops.
+   *
+   * @param sec section, "p" or "g"
+   * @param ptype the policy type, can be "p", "p2", "p3", .. or "g", "g2", "g3", ..
+   * @param rule the policy rules to remove
+   * @return succeeds or not
+   */
   public async selfRemovePolicies(sec: string, ptype: string, rule: string[][]): Promise<boolean> {
-    return this.removePoliciesInternal(sec, ptype, rule, false);
+    return this.removePoliciesInternal(sec, ptype, rule, false, false);
   }
 }
