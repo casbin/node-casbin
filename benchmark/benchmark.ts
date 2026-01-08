@@ -14,7 +14,7 @@
 
 import Benchmark from 'benchmark';
 
-// Dynamic import to resolve path at runtime
+// Use CommonJS require to import from built library
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const casbin = require('../cjs');
 const { newEnforcer } = casbin;
