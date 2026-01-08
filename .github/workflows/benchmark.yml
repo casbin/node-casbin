@@ -49,6 +49,12 @@ jobs:
         id: pr-results
         run: node benchmark/extract-results.js pr-benchmark.txt pr-results.json
 
+      - name: Save benchmark scripts
+        run: |
+          mkdir -p /tmp/benchmark-scripts
+          cp benchmark/extract-results.js /tmp/benchmark-scripts/
+          cp benchmark/compare-results.js /tmp/benchmark-scripts/
+
       - name: Checkout base branch
         run: |
           git fetch origin ${{ github.event.pull_request.base.ref }}
@@ -76,11 +82,11 @@ jobs:
 
       - name: Extract base results
         id: base-results
-        run: node benchmark/extract-results.js base-benchmark.txt base-results.json
+        run: node /tmp/benchmark-scripts/extract-results.js base-benchmark.txt base-results.json
 
       - name: Compare and format results
         id: compare
-        run: node benchmark/compare-results.js base-results.json pr-results.json > comment.txt
+        run: node /tmp/benchmark-scripts/compare-results.js base-results.json pr-results.json > comment.txt
 
       - name: Post comment to PR
         uses: actions/github-script@v6
