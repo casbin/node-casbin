@@ -5,7 +5,7 @@
 const fs = require('fs');
 
 if (process.argv.length < 4) {
-  console.error('Usage: compare-results.js <base-results.json> <pr-results.json>');
+  console.error('Usage: node compare-results.js <base-results.json> <pr-results.json>');
   process.exit(1);
 }
 

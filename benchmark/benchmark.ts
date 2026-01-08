@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import Benchmark from 'benchmark';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Use CommonJS require to import from built library
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -27,6 +29,31 @@ interface BenchmarkResult {
 }
 
 const results: BenchmarkResult[] = [];
+
+// Verify required example files exist
+function checkExampleFiles(): void {
+  const requiredFiles = [
+    'examples/rbac_model.conf',
+    'examples/rbac_policy.csv',
+    'examples/abac_model.conf',
+    'examples/basic_model.conf',
+    'examples/basic_policy.csv',
+  ];
+
+  const missingFiles: string[] = [];
+  for (const file of requiredFiles) {
+    if (!fs.existsSync(path.join(process.cwd(), file))) {
+      missingFiles.push(file);
+    }
+  }
+
+  if (missingFiles.length > 0) {
+    console.error('Error: Required example files not found:');
+    missingFiles.forEach((file) => console.error(`  - ${file}`));
+    console.error('\nPlease ensure you are running this from the repository root directory.');
+    process.exit(1);
+  }
+}
 
 async function setupEnforcers(): Promise<{
   rbacEnforcer: any;
@@ -63,6 +90,9 @@ function createSuite(name: string): Benchmark.Suite {
 }
 
 async function runBenchmarks(): Promise<void> {
+  // Check that all required files exist
+  checkExampleFiles();
+
   console.log('Setting up enforcers...');
   const { rbacEnforcer, abacEnforcer, basicEnforcer } = await setupEnforcers();
 

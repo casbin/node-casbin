@@ -5,7 +5,7 @@
 const fs = require('fs');
 
 if (process.argv.length < 4) {
-  console.error('Usage: extract-benchmark-results.js <input-file> <output-file>');
+  console.error('Usage: node extract-results.js <input-file> <output-file>');
   process.exit(1);
 }
 

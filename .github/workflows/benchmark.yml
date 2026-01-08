@@ -33,15 +33,17 @@ jobs:
 
       - name: Run PR benchmarks
         id: pr-benchmark
+        continue-on-error: true
         run: |
           echo "Running benchmarks on PR branch..."
           yarn benchmark > pr-benchmark.txt 2>&1
           EXIT_CODE=$?
           cat pr-benchmark.txt
-          if [ $EXIT_CODE -ne 0 ]; then
-            echo "⚠️ Benchmark run failed with exit code $EXIT_CODE"
-          fi
-          exit 0
+          exit $EXIT_CODE
+
+      - name: Check PR benchmark status
+        if: steps.pr-benchmark.outcome == 'failure'
+        run: echo "⚠️ PR benchmarks failed - will attempt to extract partial results"
 
       - name: Extract PR results
         id: pr-results
@@ -60,15 +62,17 @@ jobs:
 
       - name: Run base benchmarks
         id: base-benchmark
+        continue-on-error: true
         run: |
           echo "Running benchmarks on base branch..."
           yarn benchmark > base-benchmark.txt 2>&1
           EXIT_CODE=$?
           cat base-benchmark.txt
-          if [ $EXIT_CODE -ne 0 ]; then
-            echo "⚠️ Benchmark run failed with exit code $EXIT_CODE"
-          fi
-          exit 0
+          exit $EXIT_CODE
+
+      - name: Check base benchmark status
+        if: steps.base-benchmark.outcome == 'failure'
+        run: echo "⚠️ Base benchmarks failed - will attempt to extract partial results"
 
       - name: Extract base results
         id: base-results
