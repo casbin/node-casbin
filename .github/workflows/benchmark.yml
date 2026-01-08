@@ -1,0 +1,189 @@
+name: Benchmark
+
+on:
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build project
+        run: yarn build
+
+      - name: Run PR benchmarks
+        id: pr-benchmark
+        run: |
+          echo "Running benchmarks on PR branch..."
+          yarn benchmark > pr-benchmark.txt 2>&1 || true
+          cat pr-benchmark.txt
+
+      - name: Extract PR results
+        id: pr-results
+        run: |
+          # Extract JSON results from benchmark output
+          node -e "
+          const fs = require('fs');
+          const output = fs.readFileSync('pr-benchmark.txt', 'utf8');
+          const jsonMatch = output.match(/--- Benchmark Results \(JSON\) ---\s*\n([\s\S]*?)\n--- Benchmarks Complete ---/);
+          if (jsonMatch && jsonMatch[1]) {
+            const results = JSON.parse(jsonMatch[1]);
+            fs.writeFileSync('pr-results.json', JSON.stringify(results, null, 2));
+            console.log('PR results extracted successfully');
+          } else {
+            console.log('Could not extract JSON results, using empty array');
+            fs.writeFileSync('pr-results.json', '[]');
+          }
+          " || echo '[]' > pr-results.json
+
+      - name: Checkout base branch
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          git checkout origin/${{ github.event.pull_request.base.ref }}
+
+      - name: Install dependencies (base)
+        run: yarn install --frozen-lockfile
+
+      - name: Build project (base)
+        run: yarn build
+
+      - name: Run base benchmarks
+        id: base-benchmark
+        run: |
+          echo "Running benchmarks on base branch..."
+          yarn benchmark > base-benchmark.txt 2>&1 || true
+          cat base-benchmark.txt
+
+      - name: Extract base results
+        id: base-results
+        run: |
+          # Extract JSON results from benchmark output
+          node -e "
+          const fs = require('fs');
+          const output = fs.readFileSync('base-benchmark.txt', 'utf8');
+          const jsonMatch = output.match(/--- Benchmark Results \(JSON\) ---\s*\n([\s\S]*?)\n--- Benchmarks Complete ---/);
+          if (jsonMatch && jsonMatch[1]) {
+            const results = JSON.parse(jsonMatch[1]);
+            fs.writeFileSync('base-results.json', JSON.stringify(results, null, 2));
+            console.log('Base results extracted successfully');
+          } else {
+            console.log('Could not extract JSON results, using empty array');
+            fs.writeFileSync('base-results.json', '[]');
+          }
+          " || echo '[]' > base-results.json
+
+      - name: Compare and format results
+        id: compare
+        run: |
+          node -e "
+          const fs = require('fs');
+
+          const baseResults = JSON.parse(fs.readFileSync('base-results.json', 'utf8'));
+          const prResults = JSON.parse(fs.readFileSync('pr-results.json', 'utf8'));
+
+          function formatNumber(num) {
+            return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(num);
+          }
+
+          function getPercentageChange(base, pr) {
+            if (!base || base === 0) return 'N/A';
+            const change = ((pr - base) / base) * 100;
+            return change.toFixed(2);
+          }
+
+          function getChangeEmoji(change) {
+            if (change === 'N/A') return '➖';
+            const num = parseFloat(change);
+            if (num > 5) return '🚀';
+            if (num > 0) return '✅';
+            if (num < -5) return '⚠️';
+            if (num < 0) return '⬇️';
+            return '➖';
+          }
+
+          let comment = '## 📊 Benchmark Results\\n\\n';
+          comment += 'Performance comparison between base branch and PR:\\n\\n';
+          comment += '| Benchmark | Base (ops/sec) | PR (ops/sec) | Change | |\\n';
+          comment += '|-----------|----------------|--------------|--------|---|\\n';
+
+          // Create a map of base results
+          const baseMap = new Map(baseResults.map(r => [r.name, r]));
+
+          prResults.forEach(pr => {
+            const base = baseMap.get(pr.name);
+            const baseOps = base ? base.ops : 0;
+            const change = getPercentageChange(baseOps, pr.ops);
+            const emoji = getChangeEmoji(change);
+            
+            comment += \`| \${pr.name} | \${formatNumber(baseOps)} | \${formatNumber(pr.ops)} | \${change}% | \${emoji} |\\n\`;
+          });
+
+          comment += '\\n---\\n';
+          comment += '**Legend:**\\n';
+          comment += '- 🚀 Significant improvement (>5%)\\n';
+          comment += '- ✅ Improvement (0-5%)\\n';
+          comment += '- ➖ No significant change\\n';
+          comment += '- ⬇️ Minor regression (0-5%)\\n';
+          comment += '- ⚠️ Regression (>5%)\\n';
+
+          // Save comment to file
+          fs.writeFileSync('comment.txt', comment);
+          console.log('Comment generated successfully');
+          " || echo "Failed to generate comparison" > comment.txt
+
+      - name: Post comment to PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const comment = fs.readFileSync('comment.txt', 'utf8');
+            
+            // Find existing benchmark comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const benchmarkComment = comments.find(comment => 
+              comment.body.includes('📊 Benchmark Results')
+            );
+            
+            if (benchmarkComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: benchmarkComment.id,
+                body: comment
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }

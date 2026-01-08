@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2017",
+    "outDir": "../lib/benchmark",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "moduleResolution": "node",
+    "baseUrl": "../lib"
+  },
+  "include": ["*.ts"]
+}

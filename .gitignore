@@ -5,3 +5,6 @@ lib
 yarn-error.log
 package-lock.json
 coverage
+*-benchmark.txt
+*-results.json
+comment.txt

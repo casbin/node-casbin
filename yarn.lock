@@ -815,16 +815,6 @@
   dependencies:
     any-observable "^0.3.0"
 
-"@semantic-release/changelog@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.npmjs.org/@semantic-release/changelog/-/changelog-5.0.1.tgz#50a84b63e5d391b7debfe021421589fa2bcdafe4"
-  integrity sha512-unvqHo5jk4dvAf2nZ3aw4imrlwQ2I50eVVvq9D47Qc3R+keNqepx1vDYwkjF8guFXnOYaYcR28yrZWno1hFbiw==
-  dependencies:
-    "@semantic-release/error" "^2.1.0"
-    aggregate-error "^3.0.0"
-    fs-extra "^9.0.0"
-    lodash "^4.17.4"
-
 "@semantic-release/commit-analyzer@^8.0.0", "@semantic-release/commit-analyzer@^8.0.1":
   version "8.0.1"
   resolved "https://registry.npmjs.org/@semantic-release/commit-analyzer/-/commit-analyzer-8.0.1.tgz#5d2a37cd5a3312da0e3ac05b1ca348bf60b90bca"
@@ -838,24 +828,10 @@
     lodash "^4.17.4"
     micromatch "^4.0.2"
 
-"@semantic-release/error@^2.1.0", "@semantic-release/error@^2.2.0":
+"@semantic-release/error@^2.2.0":
   version "2.2.0"
   resolved "https://registry.npmjs.org/@semantic-release/error/-/error-2.2.0.tgz#ee9d5a09c9969eade1ec864776aeda5c5cddbbf0"
   integrity sha512-9Tj/qn+y2j+sjCI3Jd+qseGtHjOAeg7dU2/lVcqIQ9TV3QDaDXDYXcoOHU+7o2Hwh8L8ymL4gfuO7KxDs3q2zg==
-
-"@semantic-release/git@^9.0.0":
-  version "9.0.0"
-  resolved "https://registry.npmjs.org/@semantic-release/git/-/git-9.0.0.tgz#304c4883c87d095b1faaae93300f1f1e0466e9a5"
-  integrity sha512-AZ4Zha5NAPAciIJH3ipzw/WU9qLAn8ENaoVAhD6srRPxTpTzuV3NhNh14rcAo8Paj9dO+5u4rTKcpetOBluYVw==
-  dependencies:
-    "@semantic-release/error" "^2.1.0"
-    aggregate-error "^3.0.0"
-    debug "^4.0.0"
-    dir-glob "^3.0.0"
-    execa "^4.0.0"
-    lodash "^4.17.4"
-    micromatch "^4.0.0"
-    p-reduce "^2.0.0"
 
 "@semantic-release/github@^7.0.0":
   version "7.2.1"
@@ -1022,6 +998,11 @@
   integrity sha512-Vs0hm0vPahPMYi9tDjtP66llufgO3ST16WXaSTtDGEl9cewAl3AibmxWw6TINOqHPT9z0uABKAYjT9jNSg4npw==
   dependencies:
     "@babel/types" "^7.3.0"
+
+"@types/benchmark@^2.1.5":
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/@types/benchmark/-/benchmark-2.1.5.tgz#940c1850c18fdfdaee3fd6ed29cd92ae0d445b45"
+  integrity sha512-cKio2eFB3v7qmKcvIHLUMw/dIx/8bhWPuzpzRT4unCPRTD8VdA9Zb0afxpcxOqR4PixRS7yT42FqGS8BYL8g1w==
 
 "@types/graceful-fs@^4.1.2":
   version "4.1.5"
@@ -1615,6 +1596,14 @@ before-after-hook@^2.2.0:
   version "2.2.1"
   resolved "https://registry.npmjs.org/before-after-hook/-/before-after-hook-2.2.1.tgz#73540563558687586b52ed217dad6a802ab1549c"
   integrity sha512-/6FKxSTWoJdbsLDF8tdIjaRiFXiE6UHsEHE3OPI/cwPURCVi1ukP0gmLn7XWEiFk5TcwQjjY5PWsU+j+tgXgmw==
+
+benchmark@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/benchmark/-/benchmark-2.1.4.tgz#09f3de31c916425d498cc2ee565a0ebf3c2a5629"
+  integrity sha512-l9MlfN4M1K/H2fbhfMy3B7vJd6AGKJVQn2h6Sg/Yx+KckoUA7ewS5Vv6TjSq18ooE1kS9hhAlQRH3AkXIh/aOQ==
+  dependencies:
+    lodash "^4.17.4"
+    platform "^1.3.3"
 
 bin-links@^2.2.1:
   version "2.2.1"
@@ -5230,7 +5219,7 @@ micromatch@^3.0.4, micromatch@^3.1.4, micromatch@^3.1.8:
     snapdragon "^0.8.1"
     to-regex "^3.0.2"
 
-micromatch@^4.0.0, micromatch@^4.0.2:
+micromatch@^4.0.2:
   version "4.0.4"
   resolved "https://registry.npmjs.org/micromatch/-/micromatch-4.0.4.tgz#896d519dfe9db25fce94ceb7a500919bf881ebf9"
   integrity sha512-pRmzw/XUcwXGpD9aI9q/0XOwLNygjETJ8y0ao0wdqprrzDa4YnxLcz7fQRZr8voh8V10kGhABbNcHVk5wHgWwg==
@@ -6175,6 +6164,11 @@ pkg-dir@^4.1.0, pkg-dir@^4.2.0:
   integrity sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==
   dependencies:
     find-up "^4.0.0"
+
+platform@^1.3.3:
+  version "1.3.6"
+  resolved "https://registry.yarnpkg.com/platform/-/platform-1.3.6.tgz#48b4ce983164b209c2d45a107adb31f473a6e7a7"
+  integrity sha512-fnWVljUchTro6RiCFvCXBbNhJc2NijN7oIQxbwsyL0buWJPG85v81ehlHI9fXrJsMNgTofEoWIQeClKpgxFLrg==
 
 please-upgrade-node@^3.0.2, please-upgrade-node@^3.1.1:
   version "3.2.0"
