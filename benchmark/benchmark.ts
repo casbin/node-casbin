@@ -13,8 +13,11 @@
 // limitations under the License.
 
 import Benchmark from 'benchmark';
-// @ts-ignore - path resolution at build time
-const { newEnforcer, Enforcer } = require('../cjs');
+
+// Dynamic import to resolve path at runtime
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const casbin = require('../cjs');
+const { newEnforcer } = casbin;
 
 interface BenchmarkResult {
   name: string;
