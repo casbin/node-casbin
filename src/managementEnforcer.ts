@@ -589,28 +589,31 @@ export class ManagementEnforcer extends InternalEnforcer {
   public async addFunction(name: string, func: MatchingFunction): Promise<void> {
     this.fm.addFunction(name, func);
   }
-
   public async selfAddPolicy(sec: string, ptype: string, rule: string[]): Promise<boolean> {
-    return this.addPolicyInternal(sec, ptype, rule, false);
+    return this.addPolicyWithoutNotify(sec, ptype, rule);
+  }
+
+  public async selfAddPolicies(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
+    return this.addPoliciesWithoutNotify(sec, ptype, rules);
   }
 
   public async selfRemovePolicy(sec: string, ptype: string, rule: string[]): Promise<boolean> {
-    return this.removePolicyInternal(sec, ptype, rule, false);
+    return this.removePolicyWithoutNotify(sec, ptype, rule);
   }
 
-  public async selfRemoveFilteredPolicy(sec: string, ptype: string, fieldIndex: number, fieldValues: string[]): Promise<boolean> {
-    return this.removeFilteredPolicyInternal(sec, ptype, fieldIndex, fieldValues, false);
+  public async selfRemovePolicies(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
+    return this.removePoliciesWithoutNotify(sec, ptype, rules);
+  }
+
+  public async selfRemoveFilteredPolicy(sec: string, ptype: string, fieldIndex: number, ...fieldValues: string[]): Promise<boolean> {
+    return this.removeFilteredPolicyWithoutNotify(sec, ptype, fieldIndex, fieldValues);
   }
 
   public async selfUpdatePolicy(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
-    return this.updatePolicyInternal(sec, ptype, oldRule, newRule, false);
+    return this.updatePolicyWithoutNotify(sec, ptype, oldRule, newRule);
   }
 
-  public async selfAddPolicies(sec: string, ptype: string, rule: string[][]): Promise<boolean> {
-    return this.addPoliciesInternal(sec, ptype, rule, false);
-  }
-
-  public async selfRemovePolicies(sec: string, ptype: string, rule: string[][]): Promise<boolean> {
-    return this.removePoliciesInternal(sec, ptype, rule, false);
+  public async selfUpdatePolicies(sec: string, ptype: string, oldRules: string[][], newRules: string[][]): Promise<boolean> {
+    return this.updatePoliciesWithoutNotify(sec, ptype, oldRules, newRules);
   }
 }
