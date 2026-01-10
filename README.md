@@ -103,6 +103,40 @@ https://casbin.org/docs/supported-models
 
 https://casbin.org/docs/adapters
 
+## Filtered Policies
+
+For web frameworks with many users, you may want to load only a subset of policies. Casbin supports filtered policies:
+
+```node.js
+const { newFilteredEnforcer } = require('casbin');
+
+// Load only policies for a specific organization/domain
+// For a model with: p = sub, dom, obj, act and g = _, _, _
+const enforcer = await newFilteredEnforcer(
+  'model.conf',
+  adapter,
+  { 
+    p: ['', 'org1'],      // Load p rules where domain='org1'
+    g: ['', '', 'org1']   // Load g rules where domain='org1'
+  }
+);
+
+// The enforcer now only has policies for org1
+const allowed = await enforcer.enforce('alice', 'org1', 'data1', 'read');
+
+// You can still modify individual policies
+await enforcer.addPolicy('bob', 'org1', 'data2', 'write');
+```
+
+**Important Notes:**
+- Filtered enforcers are marked as "filtered" and `savePolicy()` will throw an error to prevent data loss
+- Individual policy operations (`addPolicy`, `removePolicy`, etc.) work normally with `autoSave` enabled
+- Use filtered enforcers for per-request contexts, not as shared instances
+- Your adapter must implement the `FilteredAdapter` interface
+- Filter format: empty strings act as wildcards, e.g., `['', 'org1']` matches any subject with domain='org1'
+
+See [FILTERED_POLICIES.md](FILTERED_POLICIES.md) for detailed usage patterns and best practices.
+
 ## Policy consistence between multiple nodes
 
 https://casbin.org/docs/watchers
