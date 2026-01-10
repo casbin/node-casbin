@@ -152,10 +152,7 @@ describe('Management self* APIs bypass adapter and update memory', () => {
     const rule1 = ['jack', 'data13', 'read'];
     await e.selfAddPolicy('p', 'p', rule1);
 
-    const rules = [
-      rule1,
-      ['karen', 'data14', 'write'],
-    ];
+    const rules = [rule1, ['karen', 'data14', 'write']];
 
     const added = await e.selfAddPolicies('p', 'p', rules);
 
@@ -166,10 +163,7 @@ describe('Management self* APIs bypass adapter and update memory', () => {
     const rule1 = ['leo', 'data15', 'read'];
     await e.selfAddPolicy('p', 'p', rule1);
 
-    const rules = [
-      rule1,
-      ['nonexistent', 'data16', 'write'],
-    ];
+    const rules = [rule1, ['nonexistent', 'data16', 'write']];
 
     const removed = await e.selfRemovePolicies('p', 'p', rules);
 
