@@ -25,7 +25,7 @@
  * 4. savePolicy() is blocked for filtered enforcers to prevent data loss
  */
 
-const { newEnforcer } = require('casbin');
+const { newEnforcer, DefaultFilteredAdapter } = require('../lib/cjs/index');
 
 /**
  * Example 1: Creating a per-request filtered enforcer
@@ -36,21 +36,22 @@ async function perRequestFilteredEnforcer() {
   // Simulating a web framework middleware
   async function authMiddleware(req, res, next) {
     const userId = req.user.id;
-    const orgId = req.user.org;
+    const domain = req.user.domain;
 
     // Create a new enforcer instance for this request with filtered policies
     // In production, you would use a database adapter instead of file adapter
-    const enforcer = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
+    const adapter = new DefaultFilteredAdapter('examples/rbac_with_domains_policy.csv');
+    const enforcer = await newEnforcer('examples/rbac_with_domains_model.conf', adapter, true); // lazyLoad=true
 
-    // Load only policies for this organization/domain
+    // Load only policies for this domain
     // Note: The DefaultFilteredAdapter is for demonstration. 
     // For production, use a database adapter that implements FilteredAdapter interface
     // Filter format: fields match policy definition order after the policy type
     // For rbac_with_domains: p = sub, dom, obj, act
-    // So filter.p = ['', 'org1'] means: any sub, domain='org1', any obj, any act
+    // So filter.p = ['', 'domain1'] means: any sub, domain='domain1', any obj, any act
     await enforcer.loadFilteredPolicy({
-      p: ['', orgId],  // Filter p rules by domain (second field)
-      g: ['', '', orgId]  // Filter g rules by domain (third field)
+      p: ['', domain],  // Filter p rules by domain (second field)
+      g: ['', '', domain]  // Filter g rules by domain (third field)
     });
 
     // Attach enforcer to request for use in route handlers
@@ -60,7 +61,7 @@ async function perRequestFilteredEnforcer() {
 
   // Simulated request
   const req = {
-    user: { id: 'alice', org: 'org1' },
+    user: { id: 'alice', domain: 'domain1' },
     enforcer: null
   };
 
@@ -68,8 +69,8 @@ async function perRequestFilteredEnforcer() {
   await authMiddleware(req, {}, () => {});
 
   // Now in your route handler, use the filtered enforcer
-  const canRead = await req.enforcer.enforce('alice', 'org1', 'data1', 'read');
-  console.log('Alice can read data1 in org1:', canRead);
+  const canRead = await req.enforcer.enforce('alice', 'domain1', 'data1', 'read');
+  console.log('Alice can read data1 in domain1:', canRead);
 
   // The enforcer is filtered, so savePolicy() will throw an error
   try {
@@ -96,23 +97,24 @@ async function cachedFilteredEnforcer() {
   const enforcerCache = new Map();
   const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-  async function getEnforcerForOrg(orgId) {
-    const cacheKey = `org:${orgId}`;
+  async function getEnforcerForDomain(domain) {
+    const cacheKey = `domain:${domain}`;
     const cached = enforcerCache.get(cacheKey);
 
     // Check if cached and not expired
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      console.log(`Using cached enforcer for ${orgId}`);
+      console.log(`Using cached enforcer for ${domain}`);
       return cached.enforcer;
     }
 
     // Create new filtered enforcer
-    console.log(`Creating new filtered enforcer for ${orgId}`);
-    const enforcer = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
+    console.log(`Creating new filtered enforcer for ${domain}`);
+    const adapter = new DefaultFilteredAdapter('examples/rbac_with_domains_policy.csv');
+    const enforcer = await newEnforcer('examples/rbac_with_domains_model.conf', adapter, true); // lazyLoad=true
     
     await enforcer.loadFilteredPolicy({
-      p: ['', orgId],  // Filter by domain field
-      g: ['', '', orgId]
+      p: ['', domain],  // Filter by domain field
+      g: ['', '', domain]
     });
 
     // Cache it
@@ -125,8 +127,8 @@ async function cachedFilteredEnforcer() {
   }
 
   // Usage
-  const enforcer1 = await getEnforcerForOrg('org1');
-  const enforcer2 = await getEnforcerForOrg('org1'); // Will use cached version
+  const enforcer1 = await getEnforcerForDomain('domain1');
+  const enforcer2 = await getEnforcerForDomain('domain1'); // Will use cached version
 
   console.log('Both enforcers are the same instance:', enforcer1 === enforcer2);
 }
@@ -137,15 +139,16 @@ async function cachedFilteredEnforcer() {
 async function incrementalPolicyUpdates() {
   console.log('\n=== Example 3: Incremental Policy Updates ===\n');
 
-  const enforcer = await newEnforcer('examples/rbac_with_domains_model.conf', 'examples/rbac_with_domains_policy.csv');
+  const adapter = new DefaultFilteredAdapter('examples/rbac_with_domains_policy.csv');
+  const enforcer = await newEnforcer('examples/rbac_with_domains_model.conf', adapter, true); // lazyLoad=true
   
-  // Load filtered policies for org1
+  // Load filtered policies for org1 (domain1)
   await enforcer.loadFilteredPolicy({
-    p: ['', 'org1'],  // Filter by domain
-    g: ['', '', 'org1']
+    p: ['', 'domain1'],  // Filter by domain
+    g: ['', '', 'domain1']
   });
 
-  console.log('Loaded filtered policies for org1');
+  console.log('Loaded filtered policies for domain1');
   console.log('Is filtered:', enforcer.isFiltered());
 
   // Check current permissions
@@ -155,17 +158,17 @@ async function incrementalPolicyUpdates() {
   // Add a new policy - this works even with filtered enforcer
   // because it uses adapter.addPolicy() which is an incremental operation
   console.log('\nAdding new policy...');
-  const added = await enforcer.addPolicy('alice', 'org1', 'data3', 'read');
+  const added = await enforcer.addPolicy('alice', 'domain1', 'data3', 'read');
   console.log('Policy added:', added);
 
   // Remove a policy - also works with filtered enforcer
   console.log('\nRemoving policy...');
-  const removed = await enforcer.removePolicy('alice', 'org1', 'data3', 'read');
+  const removed = await enforcer.removePolicy('alice', 'domain1', 'data3', 'read');
   console.log('Policy removed:', removed);
 
   // Add role for user - works with filtered enforcer
   console.log('\nAdding role for user...');
-  const roleAdded = await enforcer.addRoleForUser('bob', 'admin', 'org1');
+  const roleAdded = await enforcer.addRoleForUser('bob', 'admin', 'domain1');
   console.log('Role added:', roleAdded);
 }
 
