@@ -2,7 +2,7 @@ import { FilteredAdapter } from './filteredAdapter';
 import { Model } from '../model';
 import { FileAdapter } from './fileAdapter';
 import { Helper } from './helper';
-import { readFile } from '../util';
+import { mustGetDefaultFileSystem } from './fileSystem';
 
 export class Filter {
   public g: string[] = [];
@@ -38,7 +38,8 @@ export class DefaultFilteredAdapter extends FileAdapter implements FilteredAdapt
   }
 
   private async loadFilteredPolicyFile(model: Model, filter: Filter, handler: (line: string, model: Model) => void): Promise<void> {
-    const bodyBuf = await readFile(this.filePath);
+    const fs = this.fs ? this.fs : mustGetDefaultFileSystem();
+    const bodyBuf = fs.readFileSync(this.filePath);
     const lines = bodyBuf.toString().split('\n');
     lines.forEach((n: string, index: number) => {
       const line = n;
@@ -88,7 +89,8 @@ export class DefaultFilteredAdapter extends FileAdapter implements FilteredAdapt
     }
     let skipLine = false;
     for (let i = 0; i < filter.length; i++) {
-      if (filter[i] && filter[i] !== filter[i + 1]) {
+      const lineValue = line[i + 1].trim();
+      if (filter[i] && filter[i].trim() !== lineValue) {
         skipLine = true;
         break;
       }

@@ -592,3 +592,79 @@ export async function newEnforcerWithClass<T extends Enforcer>(enforcer: new () 
 export async function newEnforcer(...params: any[]): Promise<Enforcer> {
   return newEnforcerWithClass(Enforcer, ...params);
 }
+
+/**
+ * newFilteredEnforcer creates an enforcer with filtered policies loaded.
+ * This is useful for creating per-request enforcers in web frameworks where you only
+ * need policies for a specific user, organization, or domain.
+ *
+ * Usage:
+ * ```js
+ * // For a specific organization/domain
+ * const e = await newFilteredEnforcer(
+ *   'path/to/model.conf',
+ *   adapter,
+ *   { p: ['org1'], g: ['org1'] }
+ * );
+ * 
+ * // The enforcer will only have policies for org1 loaded
+ * const allowed = await e.enforce('alice', 'org1', 'data1', 'read');
+ * 
+ * // You can still modify individual policies (with autoSave enabled)
+ * await e.addPolicy('bob', 'org1', 'data2', 'write');
+ * 
+ * // But savePolicy() will throw an error to prevent data loss
+ * // await e.savePolicy(); // throws Error: Cannot save a filtered policy
+ * ```
+ *
+ * Important notes:
+ * - The enforcer will be marked as "filtered" and savePolicy() will throw an error
+ * - Individual policy modifications (addPolicy, removePolicy) work normally with autoSave
+ * - Use this for per-request contexts, not as a shared instance
+ * - The adapter must implement FilteredAdapter interface
+ *
+ * @param modelPath path to the model configuration file
+ * @param adapter adapter instance that implements FilteredAdapter interface
+ * @param filter filter object to specify which policies to load
+ * @param enableLog whether to enable Casbin logs (default: false)
+ * @returns Promise<Enforcer> a new enforcer instance with filtered policies loaded
+ */
+export async function newFilteredEnforcer(
+  modelPath: string,
+  adapter: Adapter,
+  filter: any,
+  enableLog = false
+): Promise<Enforcer> {
+  const e = new Enforcer();
+  
+  // Set up file system if needed
+  if (!getDefaultFileSystem()) {
+    try {
+      if (typeof process !== 'undefined' && process?.versions?.node) {
+        const fs = await import('fs');
+        const defaultFileSystem = {
+          readFileSync(path: string, encoding?: string) {
+            return fs.readFileSync(path, { encoding });
+          },
+          writeFileSync(path: string, text: string, encoding?: string) {
+            return fs.writeFileSync(path, text, encoding);
+          },
+        };
+        setDefaultFileSystem(defaultFileSystem);
+      }
+    } catch (ignored) {}
+  }
+  
+  // Enable logging if requested
+  if (enableLog) {
+    getLogger().enableLog(true);
+  }
+  
+  // Initialize with lazy load (don't load policies yet)
+  await e.initWithAdapter(modelPath, adapter, true);
+  
+  // Load filtered policies
+  await e.loadFilteredPolicy(filter);
+  
+  return e;
+}
