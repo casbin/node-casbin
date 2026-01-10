@@ -165,6 +165,12 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deleteRoleForUser(user: string, role: string, domain?: string): Promise<boolean> {
+    if (!user) {
+      throw new Error('user must not be empty');
+    }
+    if (!role) {
+      throw new Error('role must not be empty');
+    }
     if (domain === undefined) {
       return this.removeGroupingPolicy(user, role);
     } else {
@@ -181,6 +187,9 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deleteRolesForUser(user: string, domain?: string): Promise<boolean> {
+    if (!user) {
+      throw new Error('user must not be empty');
+    }
     if (domain === undefined) {
       const subIndex = this.getFieldIndex('p', FieldIndex.Subject);
       return this.removeFilteredGroupingPolicy(subIndex, user);
@@ -197,6 +206,9 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deleteUser(user: string): Promise<boolean> {
+    if (!user) {
+      throw new Error('user must not be empty');
+    }
     const subIndex = this.getFieldIndex('p', FieldIndex.Subject);
     const res1 = await this.removeFilteredGroupingPolicy(subIndex, user);
     const res2 = await this.removeFilteredPolicy(subIndex, user);
@@ -211,6 +223,9 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deleteRole(role: string): Promise<boolean> {
+    if (!role) {
+      throw new Error('role must not be empty');
+    }
     const subIndex = this.getFieldIndex('p', FieldIndex.Subject);
     const res1 = await this.removeFilteredGroupingPolicy(subIndex, role);
     const res2 = await this.removeFilteredPolicy(subIndex, role);
@@ -225,6 +240,9 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deletePermission(...permission: string[]): Promise<boolean> {
+    if (permission.length === 0) {
+      throw new Error('permission must not be empty');
+    }
     return this.removeFilteredPolicy(1, ...permission);
   }
 
@@ -250,6 +268,9 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deletePermissionForUser(user: string, ...permission: string[]): Promise<boolean> {
+    if (!user) {
+      throw new Error('user must not be empty');
+    }
     permission.unshift(user);
     return this.removePolicy(...permission);
   }
@@ -262,6 +283,9 @@ export class Enforcer extends ManagementEnforcer {
    * @return succeeds or not.
    */
   public async deletePermissionsForUser(user: string): Promise<boolean> {
+    if (!user) {
+      throw new Error('user must not be empty');
+    }
     const subIndex = this.getFieldIndex('p', FieldIndex.Subject);
     return this.removeFilteredPolicy(subIndex, user);
   }
