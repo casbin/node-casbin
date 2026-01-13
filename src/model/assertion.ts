@@ -25,6 +25,7 @@ export class Assertion {
   public policy: string[][];
   public rm: rbac.RoleManager;
   public fieldIndexMap: Map<string, number>;
+  public policyIndexMap: Map<string, number[]>;
 
   /**
    * constructor is the constructor for Assertion.
@@ -36,6 +37,52 @@ export class Assertion {
     this.policy = [];
     this.rm = new rbac.DefaultRoleManager(10);
     this.fieldIndexMap = new Map<string, number>();
+    this.policyIndexMap = new Map<string, number[]>();
+  }
+
+  /**
+   * buildPolicyIndex builds an index for policies by subject (first field).
+   * This improves performance when checking permissions with many policies.
+   */
+  public buildPolicyIndex(): void {
+    this.policyIndexMap.clear();
+    for (let i = 0; i < this.policy.length; i++) {
+      const rule = this.policy[i];
+      if (rule.length > 0) {
+        const subject = rule[0];
+        const indices = this.policyIndexMap.get(subject);
+        if (indices) {
+          indices.push(i);
+        } else {
+          this.policyIndexMap.set(subject, [i]);
+        }
+      }
+    }
+  }
+
+  /**
+   * addPolicyIndex adds an index entry for a newly added policy.
+   */
+  public addPolicyIndex(rule: string[], index: number): void {
+    if (rule.length > 0) {
+      const subject = rule[0];
+      const indices = this.policyIndexMap.get(subject);
+      if (indices) {
+        indices.push(index);
+      } else {
+        this.policyIndexMap.set(subject, [index]);
+      }
+    }
+  }
+
+  /**
+   * removePolicyIndex removes an index entry for a deleted policy.
+   * Since we don't track exact indices, we rebuild the entire index for efficiency.
+   */
+  public removePolicyIndex(rule: string[]): void {
+    // Simply rebuild the entire index
+    // This is more efficient than trying to track and update individual indices
+    this.buildPolicyIndex();
   }
 
   public async buildIncrementalRoleLinks(rm: rbac.RoleManager, op: PolicyOp, rules: string[][]): Promise<void> {

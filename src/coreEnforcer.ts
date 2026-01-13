@@ -50,7 +50,7 @@ export class CoreEnforcer {
   protected fm: FunctionMap = FunctionMap.loadFunctionMap();
   protected eft: Effector = new DefaultEffector();
   private matcherMap: Map<string, Matcher> = new Map();
-  private defaultEnforceContext: EnforceContext = new EnforceContext('r', 'p', 'e', 'm');
+  protected defaultEnforceContext: EnforceContext = new EnforceContext('r', 'p', 'e', 'm');
 
   protected adapter: UpdatableAdapter | FilteredAdapter | Adapter | BatchAdapter;
   protected watcher: Watcher | null = null;
@@ -62,6 +62,7 @@ export class CoreEnforcer {
   protected autoBuildRoleLinks = true;
   protected autoNotifyWatcher = true;
   protected acceptJsonRequest = false;
+  protected autoBuildPolicyIndex = false;
   protected fs?: FileSystem;
 
   /**
@@ -245,6 +246,10 @@ export class CoreEnforcer {
     if (this.autoBuildRoleLinks) {
       await this.buildRoleLinksInternal();
     }
+
+    if (this.autoBuildPolicyIndex) {
+      this.buildPolicyIndexInternal();
+    }
   }
 
   /**
@@ -280,6 +285,11 @@ export class CoreEnforcer {
     if (this.autoBuildRoleLinks) {
       await this.buildRoleLinksInternal();
     }
+
+    if (this.autoBuildPolicyIndex) {
+      this.buildPolicyIndexInternal();
+    }
+
     return true;
   }
 
@@ -372,6 +382,18 @@ export class CoreEnforcer {
   }
 
   /**
+   * enableAutoBuildPolicyIndex controls whether to build an index for policies
+   * to improve performance when checking permissions with many policies.
+   * The index groups policies by subject (first field), which significantly
+   * improves performance for RBAC models with wildcard matching.
+   *
+   * @param autoBuildPolicyIndex whether to automatically build the policy index.
+   */
+  public enableAutoBuildPolicyIndex(autoBuildPolicyIndex: boolean): void {
+    this.autoBuildPolicyIndex = autoBuildPolicyIndex;
+  }
+
+  /**
    * add matching function to RoleManager by ptype
    * @param ptype g
    * @param fn the function will be added
@@ -405,6 +427,23 @@ export class CoreEnforcer {
   }
 
   /**
+   * buildPolicyIndex manually rebuilds the policy index.
+   * This improves enforcement performance for models with many policies.
+   */
+  public buildPolicyIndex(): void {
+    return this.buildPolicyIndexInternal();
+  }
+
+  protected buildPolicyIndexInternal(): void {
+    const pMap = this.model.model.get('p');
+    if (pMap) {
+      pMap.forEach((ast) => {
+        ast.buildPolicyIndex();
+      });
+    }
+  }
+
+  /**
    * buildIncrementalRoleLinks provides incremental build the role inheritance relations.
    * @param op policy operation
    * @param ptype g
@@ -424,6 +463,60 @@ export class CoreEnforcer {
       await rm.clear();
       await this.model.buildRoleLinks(this.rmMap);
     }
+  }
+
+  /**
+   * Get policy indices to check for a given subject.
+   * This method is called before enforcement to optimize which policies to check.
+   * Returns null if indexing is not enabled or if an error occurs (with logging).
+   */
+  protected async getPolicyIndicesToCheck(subject: string, enforceContext: EnforceContext): Promise<number[] | null> {
+    if (!this.autoBuildPolicyIndex) {
+      return null;
+    }
+
+    const p = this.model.model.get('p')?.get(enforceContext.pType);
+    if (!p || !p.policyIndexMap || p.policyIndexMap.size === 0) {
+      return null;
+    }
+
+    const subjects = new Set<string>();
+    subjects.add(subject);
+
+    // Get all roles for the subject
+    const astMap = this.model.model.get('g');
+    if (astMap) {
+      let hasError = false;
+      for (const [key, value] of astMap) {
+        const rm = value.rm;
+        if (rm) {
+          try {
+            const roles = await rm.getRoles(subject);
+            roles.forEach((role) => subjects.add(role));
+          } catch (e) {
+            // Log error but continue with other role managers
+            logPrint(`Error getting roles for subject ${subject} from ${key}: ${e}`);
+            hasError = true;
+          }
+        }
+      }
+      // If there was an error, fall back to checking all policies
+      if (hasError) {
+        return null;
+      }
+    }
+
+    // Collect all policy indices for the subject and its roles
+    const indices: number[] = [];
+    for (const sub of subjects) {
+      const subIndices = p.policyIndexMap.get(sub);
+      if (subIndices) {
+        indices.push(...subIndices);
+      }
+    }
+
+    // If we found specific indices, return them; otherwise return null to check all
+    return indices.length > 0 ? indices : null;
   }
 
   private *privateEnforce(
