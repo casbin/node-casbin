@@ -674,8 +674,8 @@ test('TestEnforceEx', async () => {
 
   await e.addPermissionForUser('alice', 'data1', 'invalid');
 
-  testEnforceEx(e, 'alice', 'data1', 'read', [false, []]);
-  testEnforceEx(e, 'alice', 'data1', 'invalid', [true, ['alice', 'data1', 'invalid']]);
+  await testEnforceEx(e, 'alice', 'data1', 'read', [false, []]);
+  await testEnforceEx(e, 'alice', 'data1', 'invalid', [true, ['alice', 'data1', 'invalid']]);
 });
 
 test('TestSyncEnforceEx', async () => {
@@ -718,45 +718,90 @@ test('TestKeyGet2', async () => {
 
 test('TestEnforceExWithRBACDenyModel', async () => {
   const e = await newEnforcer('examples/rbac_with_deny_model.conf', 'examples/rbac_with_deny_policy.csv');
-  testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
-  testEnforceEx(e, 'bob', 'data2', 'write', [true, ['bob', 'data2', 'write', 'allow']]);
-  testEnforceEx(e, 'alice', 'data2', 'write', [false, ['alice', 'data2', 'write', 'deny']]);
-  testEnforceEx(e, 'data2_admin', 'data2', 'read', [true, ['data2_admin', 'data2', 'read', 'allow']]);
-  testEnforceEx(e, 'data2_admin', 'data2', 'write', [true, ['data2_admin', 'data2', 'write', 'allow']]);
-  testEnforceEx(e, 'data2_admin', 'data1', 'read', [false, []]);
-  testEnforceEx(e, 'data2_admin', 'data1', 'write', [false, []]);
+  await testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
+  await testEnforceEx(e, 'bob', 'data2', 'write', [true, ['bob', 'data2', 'write', 'allow']]);
+  await testEnforceEx(e, 'alice', 'data2', 'write', [false, ['alice', 'data2', 'write', 'deny']]);
+  await testEnforceEx(e, 'data2_admin', 'data2', 'read', [true, ['data2_admin', 'data2', 'read', 'allow']]);
+  await testEnforceEx(e, 'data2_admin', 'data2', 'write', [true, ['data2_admin', 'data2', 'write', 'allow']]);
+  await testEnforceEx(e, 'data2_admin', 'data1', 'read', [false, []]);
+  await testEnforceEx(e, 'data2_admin', 'data1', 'write', [false, []]);
 });
 
 test('TestEnforceExWithGlobModel', async () => {
   const e = await newEnforcer('examples/glob_model.conf', 'examples/glob_policy.csv');
-  testEnforceEx(e, 'u1', '/foo/1', 'read', [true, ['u1', '/foo/*', 'read']]);
-  testEnforceEx(e, 'u2', '/foo1', 'read', [true, ['u2', '/foo*', 'read']]);
-  testEnforceEx(e, 'u3', '/foo/2', 'read', [false, []]);
+  await testEnforceEx(e, 'u1', '/foo/1', 'read', [true, ['u1', '/foo/*', 'read']]);
+  await testEnforceEx(e, 'u2', '/foo1', 'read', [true, ['u2', '/foo*', 'read']]);
+  await testEnforceEx(e, 'u3', '/foo/2', 'read', [false, []]);
 });
 
 test('TestEnforceExWithKeyMatchModel', async () => {
   const e = await newEnforcer('examples/keymatch_model.conf', 'examples/keymatch_policy.csv');
-  testEnforceEx(e, 'alice', '/alice_data/1', 'GET', [true, ['alice', '/alice_data/*', 'GET']]);
-  testEnforceEx(e, 'bob', '/alice_data/1', 'POST', [false, []]);
+  await testEnforceEx(e, 'alice', '/alice_data/1', 'GET', [true, ['alice', '/alice_data/*', 'GET']]);
+  await testEnforceEx(e, 'bob', '/alice_data/1', 'POST', [false, []]);
 });
 
 test('TestEnforceExWithPriorityModel', async () => {
   const e = await newEnforcer('examples/priority_model.conf', 'examples/priority_policy.csv');
-  testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
-  testEnforceEx(e, 'bob', 'data2', 'read', [true, ['data2_allow_group', 'data2', 'read', 'allow']]);
-  testEnforceEx(e, 'alice', 'data2', 'read', [false, []]);
+  await testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
+  await testEnforceEx(e, 'bob', 'data2', 'read', [true, ['data2_allow_group', 'data2', 'read', 'allow']]);
+  await testEnforceEx(e, 'alice', 'data2', 'read', [false, []]);
 });
 
 test('TestSubjectPriority', async () => {
   const e = await newEnforcer('examples/subject_priority_model.conf', 'examples/subject_priority_policy.csv');
-  testEnforceEx(e, 'jane', 'data1', 'read', [true, ['jane', 'data1', 'read', 'allow']]);
-  testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
+  await testEnforceEx(e, 'jane', 'data1', 'read', [true, ['jane', 'data1', 'read', 'allow']]);
+  await testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
+});
+
+test('TestSubjectPriority with CSV converted to addPolicy/addGroupingPolicy', async () => {
+  const e = await newEnforcer('examples/subject_priority_model.conf');
+
+  await e.addPolicy('root', 'data1', 'read', 'deny');
+  await e.addPolicy('admin', 'data1', 'read', 'deny');
+  await e.addPolicy('editor', 'data1', 'read', 'deny');
+  await e.addPolicy('subscriber', 'data1', 'read', 'deny');
+  await e.addPolicy('jane', 'data1', 'read', 'allow');
+  await e.addPolicy('alice', 'data1', 'read', 'allow');
+
+  await e.addGroupingPolicy('admin', 'root');
+  await e.addGroupingPolicy('editor', 'admin');
+  await e.addGroupingPolicy('subscriber', 'admin');
+  await e.addGroupingPolicy('jane', 'editor');
+  await e.addGroupingPolicy('alice', 'subscriber');
+
+  await testEnforceEx(e, 'jane', 'data1', 'read', [true, ['jane', 'data1', 'read', 'allow']]);
+  await testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
+});
+
+test('TestSubjectPriority simpler with CSV', async () => {
+  const e = await newEnforcer('examples/subject_priority_model.conf', 'examples/subject_priority_policy_simple.csv');
+
+  await testEnforceEx(e, 'user', 'data1', 'read', [true, ['user', 'data1', 'read', 'allow']]);
+});
+
+test('TestSubjectPriority simpler with addPolicy', async () => {
+  const e = await newEnforcer('examples/subject_priority_model.conf');
+
+  await e.addPolicy('group', 'data1', 'read', 'deny');
+  await e.addPolicy('user', 'data1', 'read', 'allow');
+  await e.addGroupingPolicy('user', 'group');
+
+  await testEnforceEx(e, 'user', 'data1', 'read', [true, ['user', 'data1', 'read', 'allow']]);
+});
+
+test('TestSubjectPriority is kept after removing a grouping policy', async () => {
+  const e = await newEnforcer('examples/subject_priority_model.conf', 'examples/subject_priority_policy.csv');
+
+  // jane loses her role, so only the "jane" rule itself is left to match her.
+  await e.removeGroupingPolicy('jane', 'editor');
+  await testEnforceEx(e, 'jane', 'data1', 'read', [true, ['jane', 'data1', 'read', 'allow']]);
+  await testEnforceEx(e, 'alice', 'data1', 'read', [true, ['alice', 'data1', 'read', 'allow']]);
 });
 
 test('TestSubjectPriorityWithDomain', async () => {
   const e = await newEnforcer('examples/subject_priority_model_with_domain.conf', 'examples/subject_priority_policy_with_domain.csv');
-  testEnforceEx(e, 'alice', 'data1', 'write', [true, ['alice', 'data1', 'domain1', 'write', 'allow']], 'domain1');
-  testEnforceEx(e, 'bob', 'data2', 'write', [true, ['bob', 'data2', 'domain2', 'write', 'allow']], 'domain2');
+  await testEnforceEx(e, 'alice', 'data1', 'write', [true, ['alice', 'data1', 'domain1', 'write', 'allow']], 'domain1');
+  await testEnforceEx(e, 'bob', 'data2', 'write', [true, ['bob', 'data2', 'domain2', 'write', 'allow']], 'domain2');
 });
 
 test('TestEnforcerWithScopeFileSystem', async () => {

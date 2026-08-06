@@ -512,19 +512,23 @@ export class Model {
       return;
     }
 
+    const groupPolicies = this.model.get('g')?.get('g')?.policy;
+    if (!groupPolicies) {
+      return;
+    }
+
     this.model.get('p')?.forEach((assertion, ptype) => {
       const domainIndex = this.getFieldIndex(ptype, FieldIndex.Domain);
       const subIndex = this.getFieldIndex(ptype, FieldIndex.Subject);
-      // eslint-disable-next-line
-      const subjectHierarchyMap = this.getSubjectHierarchyMap(this.model.get('g')!.get('g')!.policy);
+      const subjectHierarchyMap = this.getSubjectHierarchyMap(groupPolicies);
 
       assertion.policy.sort((policyA, policyB) => {
         const domainA = domainIndex === -1 ? defaultDomain : policyA[domainIndex];
         const domainB = domainIndex === -1 ? defaultDomain : policyB[domainIndex];
-        // eslint-disable-next-line
-        const priorityA = subjectHierarchyMap.get(this.getNameWithDomain(domainA, policyA[subIndex]))!;
-        // eslint-disable-next-line
-        const priorityB = subjectHierarchyMap.get(this.getNameWithDomain(domainB, policyB[subIndex]))!;
+        // A subject that takes part in no "g" rule has no depth, so it sorts as a root would.
+        // Without the fallback the subtraction below yields NaN and scrambles the whole array.
+        const priorityA = subjectHierarchyMap.get(this.getNameWithDomain(domainA, policyA[subIndex])) ?? 0;
+        const priorityB = subjectHierarchyMap.get(this.getNameWithDomain(domainB, policyB[subIndex])) ?? 0;
         return priorityB - priorityA;
       });
     });

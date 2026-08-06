@@ -22,6 +22,18 @@ import { PolicyOp } from './model';
  */
 export class InternalEnforcer extends CoreEnforcer {
   /**
+   * The subjectPriority effect resolves conflicts by the order of the "p" rules, so that order has
+   * to be rebuilt whenever a "p" or "g" rule changes, not only when the policy is loaded from an
+   * adapter. It is a no-op for models that do not use the effect.
+   */
+  private resortPoliciesBySubjectHierarchy(ok: boolean): boolean {
+    if (ok) {
+      this.model.sortPoliciesBySubjectHierarchy();
+    }
+    return ok;
+  }
+
+  /**
    * addPolicyInternal adds a rule to the current policy.
    */
   protected async addPolicyInternal(sec: string, ptype: string, rule: string[], useWatcher: boolean): Promise<boolean> {
@@ -56,7 +68,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (sec === 'g' && ok) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, [rule]);
     }
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   // addPolicies adds rules to the current policy.
@@ -98,7 +110,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (sec === 'g' && ok && effects?.length) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, effects);
     }
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   /**
@@ -145,7 +157,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (sec === 'g' && ok && effects?.length) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, effects);
     }
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   /**
@@ -192,7 +204,7 @@ export class InternalEnforcer extends CoreEnforcer {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, [newRule]);
     }
 
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   /**
@@ -229,7 +241,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (sec === 'g' && ok) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, [rule]);
     }
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   // removePolicies removes rules from the current policy.
@@ -270,7 +282,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (sec === 'g' && ok && effects?.length) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, effects);
     }
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   /**
@@ -309,7 +321,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (sec === 'g' && ok && effects?.length) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, effects);
     }
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   /**
@@ -336,7 +348,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (sec === 'g' && ok) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, [rule]);
     }
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   protected async addPoliciesWithoutNotify(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
@@ -350,7 +362,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (sec === 'g' && ok && effects?.length) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, effects);
     }
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   protected async addPoliciesWithoutNotifyEx(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
@@ -363,7 +375,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (sec === 'g' && ok && effects?.length) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, effects);
     }
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   protected async updatePolicyWithoutNotify(sec: string, ptype: string, oldRule: string[], newRule: string[]): Promise<boolean> {
@@ -376,7 +388,7 @@ export class InternalEnforcer extends CoreEnforcer {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, [oldRule]);
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyAdd, ptype, [newRule]);
     }
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   protected async removePolicyWithoutNotify(sec: string, ptype: string, rule: string[]): Promise<boolean> {
@@ -388,7 +400,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (sec === 'g' && ok) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, [rule]);
     }
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   protected async removePoliciesWithoutNotify(sec: string, ptype: string, rules: string[][]): Promise<boolean> {
@@ -402,7 +414,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (sec === 'g' && ok && effects?.length) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, effects);
     }
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   protected async removeFilteredPolicyWithoutNotify(
@@ -415,7 +427,7 @@ export class InternalEnforcer extends CoreEnforcer {
     if (sec === 'g' && ok && effects?.length) {
       await this.buildIncrementalRoleLinks(PolicyOp.PolicyRemove, ptype, effects);
     }
-    return ok;
+    return this.resortPoliciesBySubjectHierarchy(ok);
   }
 
   protected async updatePoliciesWithoutNotify(sec: string, ptype: string, oldRules: string[][], newRules: string[][]): Promise<boolean> {
