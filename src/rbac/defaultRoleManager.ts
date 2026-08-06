@@ -182,6 +182,24 @@ export class DefaultRoleManager implements RoleManager {
   }
 
   /**
+   * match determines whether the domain str is covered by the domain pattern used
+   * in a policy or grouping rule. Without a domain matching function registered,
+   * only an exact match counts, which keeps the default behaviour unchanged.
+   *
+   * @param str the concrete domain, e.g. "tenant1"
+   * @param pattern the domain written in the rule, e.g. "*"
+   */
+  public match(str: string, pattern: string): boolean {
+    if (str === pattern) {
+      return true;
+    }
+    if (this.hasDomainPattern) {
+      return this.domainMatchingFunc(str, pattern);
+    }
+    return false;
+  }
+
+  /**
    * addDomainHierarchy sets a rolemanager to define role inheritance between domains
    * @param rm RoleManager to define domain hierarchy
    */
@@ -317,6 +335,51 @@ export class DefaultRoleManager implements RoleManager {
     }
 
     return allRoles.createRole(name, this.matchingFunc).getRoles();
+  }
+
+  /**
+   * getImplicitRoles gets the roles that a subject inherits, directly or through other
+   * roles. Compared to getRoles(), which only walks one hop, this follows the whole
+   * hierarchy, up to maxHierarchyLevel hops.
+   * domain is a prefix to the roles.
+   */
+  public async getImplicitRoles(name: string, ...domain: string[]): Promise<string[]> {
+    if (domain.length === 0) {
+      domain = [DEFAULT_DOMAIN];
+    } else if (domain.length > 1) {
+      throw new Error('error: domain should be 1 parameter');
+    }
+
+    // The role graph only has to be resolved once for the whole traversal.
+    const allRoles = this.generateTempRoles(domain[0]);
+
+    const res: string[] = [];
+    // Seeded with the subject so that a cycle back to it does not report the subject as
+    // one of its own roles, and so that the traversal terminates.
+    const roleSet = new Set<string>([name]);
+    let current = [name];
+
+    for (let level = 0; level < this.maxHierarchyLevel && current.length > 0; level++) {
+      const next: string[] = [];
+      for (const n of current) {
+        if (!allRoles.hasRole(n, this.matchingFunc)) {
+          continue;
+        }
+        allRoles
+          .createRole(n, this.matchingFunc)
+          .getRoles()
+          .forEach((r) => {
+            if (!roleSet.has(r)) {
+              roleSet.add(r);
+              res.push(r);
+              next.push(r);
+            }
+          });
+      }
+      current = next;
+    }
+
+    return res;
   }
 
   /**

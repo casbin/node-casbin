@@ -31,11 +31,21 @@ export interface RoleManager {
   // GetRoles gets the roles that a user inherits.
   // domain is a prefix to the roles (can be used for other purposes).
   getRoles(name: string, ...domain: string[]): Promise<string[]>;
+  // GetImplicitRoles gets the roles that a user inherits, directly or through other roles,
+  // respecting the hierarchy level limit of the implementation.
+  // domain is a prefix to the roles (can be used for other purposes).
+  // Optional: when not implemented, callers fall back to walking getRoles() themselves,
+  // which cannot honour a hierarchy level limit.
+  getImplicitRoles?(name: string, ...domain: string[]): Promise<string[]>;
   // GetUsers gets the users that inherits a role.
   // domain is a prefix to the users (can be used for other purposes).
   getUsers(name: string, ...domain: string[]): Promise<string[]>;
   // PrintRoles prints all the roles to log.
   printRoles(): Promise<void>;
+  // Match determines whether the domain str is covered by the domain pattern
+  // written in a policy or grouping rule, e.g. "tenant1" against "*".
+  // Optional: when not implemented, callers fall back to an exact comparison.
+  match?(str: string, pattern: string): boolean;
   // GetDomains gets domains that a user has
   getDomains(name: string): Promise<string[]>;
   // GetAllDomains gets all domains

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { newEnforcer } from '../src';
+import { keyMatchFunc } from '../src/util';
 
 test('test getRolesForUser', async () => {
   const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
@@ -73,6 +74,81 @@ test('test getImplicitPermissionsForUser', async () => {
     ['data2_admin', 'data2', 'read'],
     ['data2_admin', 'data2', 'write'],
   ]);
+});
+
+test('test getImplicitRolesForUser walks each role definition separately', async () => {
+  const e = await newEnforcer('examples/rbac_with_multiple_policy_model.conf', 'examples/rbac_with_multiple_policy_policy.csv');
+
+  // g: alice -> admin -> user, g2: alice -> user
+  expect(await e.getNamedImplicitRolesForUser('g', 'alice')).toEqual(['admin', 'user']);
+  expect(await e.getNamedImplicitRolesForUser('g2', 'alice')).toEqual(['user']);
+
+  // Each hierarchy is walked on its own and the results are concatenated, so "user" is
+  // reported once per role definition that grants it.
+  expect(await e.getImplicitRolesForUser('alice')).toEqual(['admin', 'user', 'user']);
+
+  // Following g and then g2 would wrongly hand admin the roles that only alice has via g2.
+  expect(await e.getImplicitRolesForUser('admin')).toEqual(['user']);
+});
+
+test('test getImplicitRolesForUser with a cycle back to the user', async () => {
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  expect(await e.addGroupingPolicy('data2_admin', 'alice')).toEqual(true);
+
+  // The user is never reported as one of its own roles.
+  expect(await e.getImplicitRolesForUser('alice')).toEqual(['admin', 'data1_admin', 'data2_admin']);
+});
+
+test('test getImplicitPermissionsForUser with a wildcard domain in the policy', async () => {
+  const e = await newEnforcer(
+    'examples/rbac_with_domain_pattern_in_policy_model.conf',
+    'examples/rbac_with_domain_pattern_in_policy_policy.csv'
+  );
+  await e.addNamedDomainMatchingFunc('g', keyMatchFunc);
+  await e.buildRoleLinks();
+
+  // The abstract role is reachable in tenant1 only, so nothing leaks into tenant2.
+  expect(await e.getImplicitRolesForUser('michael', 'tenant1')).toEqual(['roles1', 'abstract_roles1']);
+  expect(await e.getImplicitRolesForUser('michael', 'tenant2')).toEqual([]);
+
+  // Rules stored on the "*" domain are reported for the concrete domain that was asked for.
+  expect(await e.getImplicitPermissionsForUser('michael', 'tenant1')).toEqual([
+    ['abstract_roles1', 'devis', 'read', 'tenant1', 'allow'],
+    ['abstract_roles1', 'devis', 'create', 'tenant1', 'allow'],
+    ['roles1', 'devis', 'delete', 'tenant1', 'allow'],
+  ]);
+  expect(await e.getImplicitPermissionsForUser('michael', 'tenant2')).toEqual([]);
+
+  // A rule bound to tenant1 is not reported for tenant2.
+  expect(await e.getImplicitPermissionsForUser('thomas', 'tenant2')).toEqual([
+    ['abstract_roles2', 'devis', 'read', 'tenant2', 'allow'],
+    ['abstract_roles2', 'organization', 'read', 'tenant2', 'allow'],
+    ['abstract_roles2', 'organization', 'write', 'tenant2', 'allow'],
+  ]);
+
+  // A role granted on the "*" domain applies to every domain.
+  expect(await e.getImplicitPermissionsForUser('theo', 'tenant1')).toEqual([
+    ['abstract_roles2', 'devis', 'read', 'tenant1', 'allow'],
+    ['abstract_roles2', 'organization', 'read', 'tenant1', 'allow'],
+    ['abstract_roles2', 'organization', 'write', 'tenant1', 'allow'],
+  ]);
+
+  // getImplicitPermissionsForUser() now agrees with enforce().
+  expect(await e.enforce('michael', 'devis', 'read', 'tenant1')).toEqual(true);
+  expect(await e.enforce('michael', 'devis', 'read', 'tenant2')).toEqual(false);
+  expect(await e.enforce('theo', 'organization', 'write', 'tenant3')).toEqual(true);
+});
+
+test('test getNamedImplicitPermissionsForUser', async () => {
+  const e = await newEnforcer('examples/rbac_model.conf', 'examples/rbac_with_hierarchy_policy.csv');
+  expect(await e.getNamedImplicitPermissionsForUser('p', 'g', 'alice')).toEqual([
+    ['alice', 'data1', 'read'],
+    ['data1_admin', 'data1', 'read'],
+    ['data1_admin', 'data1', 'write'],
+    ['data2_admin', 'data2', 'read'],
+    ['data2_admin', 'data2', 'write'],
+  ]);
+  expect(await e.getNamedImplicitRolesForUser('g', 'alice')).toEqual(['admin', 'data1_admin', 'data2_admin']);
 });
 
 test('test getImplicitResourcesForUser', async () => {

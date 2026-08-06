@@ -356,22 +356,55 @@ export class Enforcer extends ManagementEnforcer {
    * But getImplicitRolesForUser("alice") will get: ["role:admin", "role:user"].
    */
   public async getImplicitRolesForUser(name: string, ...domain: string[]): Promise<string[]> {
-    const res = new Set<string>();
+    const res: string[] = [];
+
+    // Each role definition is a hierarchy of its own, so every role manager is walked
+    // separately and the results are concatenated. Following a "g" link and then a "g2"
+    // link off the role it led to would mix two unrelated hierarchies.
+    for (const ptype of this.rmMap.keys()) {
+      res.push(...(await this.getNamedImplicitRolesForUser(ptype, name, ...domain)));
+    }
+
+    return res;
+  }
+
+  /**
+   * getNamedImplicitRolesForUser gets implicit roles that a user has, using only the
+   * given role definition. Compared to getImplicitRolesForUser(), which walks every
+   * role manager, this one is restricted to "g", "g2", ...
+   *
+   * @param ptype the role definition type, can be "g", "g2", "g3", ..
+   * @param name the user.
+   * @param domain the domain, optional.
+   */
+  public async getNamedImplicitRolesForUser(ptype: string, name: string, ...domain: string[]): Promise<string[]> {
+    const rm = this.rmMap.get(ptype);
+    if (!rm) {
+      throw new Error(`role manager ${ptype} is not initialized`);
+    }
+
+    if (rm.getImplicitRoles) {
+      return rm.getImplicitRoles(name, ...domain);
+    }
+
+    // Fallback for role managers that only expose one hop. It cannot honour a hierarchy
+    // level limit, since that limit belongs to the role manager.
+    const res: string[] = [];
+    const visited = new Set<string>([name]);
     const q = [name];
     let n: string | undefined;
     while ((n = q.shift()) !== undefined) {
-      for (const rm of this.rmMap.values()) {
-        const role = await rm.getRoles(n, ...domain);
-        role.forEach((r) => {
-          if (!res.has(r)) {
-            res.add(r);
-            q.push(r);
-          }
-        });
-      }
+      const roles = await rm.getRoles(n, ...domain);
+      roles.forEach((r) => {
+        if (!visited.has(r)) {
+          visited.add(r);
+          res.push(r);
+          q.push(r);
+        }
+      });
     }
 
-    return Array.from(res);
+    return res;
   }
 
   /**
@@ -386,16 +419,78 @@ export class Enforcer extends ManagementEnforcer {
    * But getImplicitPermissionsForUser("alice") will get: [["admin", "data1", "read"], ["alice", "data2", "read"]].
    */
   public async getImplicitPermissionsForUser(user: string, ...domain: string[]): Promise<string[][]> {
-    const roles = await this.getImplicitRolesForUser(user, ...domain);
-    roles.unshift(user);
-    const res: string[][] = [];
+    return this.getNamedImplicitPermissionsForUser('p', 'g', user, ...domain);
+  }
 
-    for (const n of roles) {
-      const p = await this.getPermissionsForUser(n, ...domain);
-      res.push(...p);
+  /**
+   * getNamedImplicitPermissionsForUser gets implicit permissions for a user or role
+   * by the named policy and the named role definition.
+   *
+   * When a domain is given, a policy rule is kept if its domain field matches that
+   * domain according to the role manager, so a rule written for a wildcard domain
+   * (e.g. "p, admin, data, read, *") is reported for every concrete domain once a
+   * domain matching function has been registered with addNamedDomainMatchingFunc().
+   * The returned rule then carries the requested domain instead of the pattern.
+   *
+   * @param ptype the policy type, can be "p", "p2", "p3", ..
+   * @param gtype the role definition type, can be "g", "g2", "g3", ..
+   * @param user the user.
+   * @param domain the domain, optional.
+   */
+  public async getNamedImplicitPermissionsForUser(ptype: string, gtype: string, user: string, ...domain: string[]): Promise<string[][]> {
+    if (domain.length > 1) {
+      throw new Error('error: domain should be 1 parameter');
     }
 
-    return res;
+    const rm = this.rmMap.get(gtype);
+    if (!rm) {
+      throw new Error(`role manager ${gtype} is not initialized`);
+    }
+
+    const roles = await this.getNamedImplicitRolesForUser(gtype, user, ...domain);
+    const policyRoles = new Set<string>(roles);
+    policyRoles.add(user);
+
+    // The subject and the domain are not necessarily the first two tokens, so both
+    // have to be looked up in the model instead of being assumed to sit at a fixed index.
+    const subIndex = this.getFieldIndex(ptype, FieldIndex.Subject);
+    if (subIndex === -1) {
+      throw new Error(`${FieldIndex.Subject} index is not set, please use enforcer.setFieldIndex() to set index`);
+    }
+
+    const permission: string[][] = [];
+    const policy = await this.getNamedPolicy(ptype);
+
+    if (domain.length === 0) {
+      for (const rule of policy) {
+        if (policyRoles.has(rule[subIndex])) {
+          permission.push([...rule]);
+        }
+      }
+      return permission;
+    }
+
+    const domIndex = this.getFieldIndex(ptype, FieldIndex.Domain);
+    if (domIndex === -1) {
+      throw new Error(`${FieldIndex.Domain} index is not set, please use enforcer.setFieldIndex() to set index`);
+    }
+
+    const d = domain[0];
+    for (const rule of policy) {
+      // match() falls back to an exact comparison unless a domain matching function
+      // has been registered, so a "*" rule only spreads across domains on request.
+      const matched = rm.match ? rm.match(d, rule[domIndex]) : d === rule[domIndex];
+      if (!matched) {
+        continue;
+      }
+      if (policyRoles.has(rule[subIndex])) {
+        const newRule = [...rule];
+        newRule[domIndex] = d;
+        permission.push(newRule);
+      }
+    }
+
+    return permission;
   }
 
   /**
