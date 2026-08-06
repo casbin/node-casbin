@@ -27,16 +27,3 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: node-${{ matrix.node-version }}
           fail_ci_if_error: false
-
-  semantic-release:
-    needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run semantic-release
-        if: github.repository == 'apache/casbin-node-casbin' && github.event_name == 'push'
-        run: yarn install && yarn semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

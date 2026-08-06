@@ -1,0 +1,106 @@
+name: release
+
+# Releases are cut manually by pushing a git tag (Apache requires a release vote,
+# so nothing is ever published automatically from a commit or a merged PR).
+#
+#   v5.44.0-rc1  -> GitHub *pre-release* (the candidate the release manager votes on)
+#   v5.44.0      -> GitHub release + publish to npm
+#
+# Both cases attach an Apache-style source release tarball plus its SHA-512
+# checksum. The release manager downloads the tarball, signs it locally with
+# their own GPG key, and uses that for the vote.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+env:
+  # Base name of the Apache source release artifact.
+  ARTIFACT_PREFIX: apache-casbin-node-casbin
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      prerelease: ${{ steps.meta.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve release metadata
+        id: meta
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+
+          # A candidate tag (v5.44.0-rc1) is a pre-release; the artifact inside it is
+          # still named after the final version so it can be promoted unchanged.
+          if [[ "$VERSION" == *-rc* ]]; then
+            PRERELEASE=true
+          else
+            PRERELEASE=false
+          fi
+          BASE_VERSION="${VERSION%%-rc*}"
+
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          if [[ "$BASE_VERSION" != "$PKG_VERSION" ]]; then
+            echo "::error::Tag $TAG implies version $BASE_VERSION but package.json says $PKG_VERSION"
+            exit 1
+          fi
+
+          {
+            echo "tag=$TAG"
+            echo "version=$VERSION"
+            echo "base_version=$BASE_VERSION"
+            echo "prerelease=$PRERELEASE"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build source release tarball
+        id: src
+        run: |
+          set -euo pipefail
+          BASE_VERSION="${{ steps.meta.outputs.base_version }}"
+          NAME="${ARTIFACT_PREFIX}-${BASE_VERSION}-incubating-src"
+
+          git archive --format=tar.gz --prefix="${NAME}/" -o "${NAME}.tar.gz" "${{ steps.meta.outputs.tag }}"
+          sha512sum "${NAME}.tar.gz" > "${NAME}.tar.gz.sha512"
+
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          NAME="${{ steps.src.outputs.name }}"
+          ARGS=(--title "${{ steps.meta.outputs.tag }}" --generate-notes)
+          if [[ "${{ steps.meta.outputs.prerelease }}" == "true" ]]; then
+            ARGS+=(--prerelease)
+          fi
+          gh release create "${{ steps.meta.outputs.tag }}" "${ARGS[@]}" \
+            "${NAME}.tar.gz" "${NAME}.tar.gz.sha512"
+
+  publish:
+    # Only a final tag (no -rc) goes to the package registry.
+    needs: [release]
+    if: needs.release.outputs.prerelease == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: yarn install
+
+      # `prepack` runs lint + test + build, so the published tarball is built here.
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -294,11 +294,43 @@ export class Enforcer extends ManagementEnforcer {
    * getPermissionsForUser gets permissions for a user or role.
    *
    * @param user the user.
+   * @param domain the domain, optional. When given, only the permissions of that domain are returned.
    * @return the permissions, a permission is usually like (obj, act). It is actually the rule without the subject.
    */
-  public async getPermissionsForUser(user: string): Promise<string[][]> {
-    const subIndex = this.getFieldIndex('p', FieldIndex.Subject);
-    return this.getFilteredPolicy(subIndex, user);
+  public async getPermissionsForUser(user: string, ...domain: string[]): Promise<string[][]> {
+    return this.getNamedPermissionsForUser('p', user, ...domain);
+  }
+
+  /**
+   * getNamedPermissionsForUser gets permissions for a user or role by the named policy.
+   *
+   * @param ptype the policy type, can be "p", "p2", "p3", ..
+   * @param user the user.
+   * @param domain the domain, optional. When given, only the permissions of that domain are returned.
+   * @return the permissions, a permission is usually like (obj, act). It is actually the rule without the subject.
+   */
+  public async getNamedPermissionsForUser(ptype: string, user: string, ...domain: string[]): Promise<string[][]> {
+    const subIndex = this.getFieldIndex(ptype, FieldIndex.Subject);
+    if (subIndex === -1) {
+      return [];
+    }
+    if (domain.length === 0) {
+      return this.getFilteredNamedPolicy(ptype, subIndex, user);
+    }
+
+    // The domain is not necessarily the token right after the subject, so it has to be
+    // looked up in the model instead of being assumed to sit at a fixed index.
+    const domIndex = this.getFieldIndex(ptype, FieldIndex.Domain);
+    if (domIndex === -1) {
+      return this.getFilteredNamedPolicy(ptype, subIndex, user);
+    }
+
+    const start = Math.min(subIndex, domIndex);
+    // "" means not to match that field.
+    const fieldValues = new Array<string>(Math.abs(subIndex - domIndex) + 1).fill('');
+    fieldValues[subIndex - start] = user;
+    fieldValues[domIndex - start] = domain[0];
+    return this.getFilteredNamedPolicy(ptype, start, ...fieldValues);
   }
 
   /**
@@ -357,16 +389,10 @@ export class Enforcer extends ManagementEnforcer {
     const roles = await this.getImplicitRolesForUser(user, ...domain);
     roles.unshift(user);
     const res: string[][] = [];
-    const withDomain = domain && domain.length !== 0;
 
     for (const n of roles) {
-      if (withDomain) {
-        const p = await this.getFilteredPolicy(0, n, ...domain);
-        res.push(...p);
-      } else {
-        const p = await this.getPermissionsForUser(n);
-        res.push(...p);
-      }
+      const p = await this.getPermissionsForUser(n, ...domain);
+      res.push(...p);
     }
 
     return res;
